@@ -1,0 +1,29 @@
+# Template
+
+[server]
+posturl=http://[yourdomain.com]/[phpfile location]/store.php
+
+
+[input]
+count = 1 # [Number of inputs]
+devicename=template #Name of the device
+
+[input_1]
+inputname=empty        # Name to show in the list of values
+truestatetosend=true   # Value to send on true
+falsestatetosend=false # value to send on false
+addressbutton=1        # The raspberry pin to read  
+
+
+[input_2]
+inputname=empty 
+truestatetosend=true
+falsestatetosend=false
+addressbutton=1
+
+
+[input_x]
+inputname=empty 
+truestatetosend=true
+falsestatetosend=false
+addressbutton=1
