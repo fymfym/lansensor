@@ -24,6 +24,9 @@ RaspberryPi/Python
 Python script and configuration file to read the local configuration, read the 
 configuration for the device on what to monitor and how to react to it
 
+Prerequisite
+* Install python module gpiozero like "sudo apt install python3-gpiozero"
+
 
 website
 ---

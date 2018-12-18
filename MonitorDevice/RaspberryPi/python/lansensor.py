@@ -119,8 +119,6 @@ else:
         logging.info("GPIOZERO instatiate- FAILED")
         printLog("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
 
-
-exit()
 #############################################################
 ## Reading RPI Data
 logging.info("Starting: socket open")
