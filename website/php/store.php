@@ -2,6 +2,8 @@
 
 include('config.php');
 
+include('system.php');
+
 
 $db_conn = 0;
 $db_conn = mysqli_connect($host,$user,$password);
