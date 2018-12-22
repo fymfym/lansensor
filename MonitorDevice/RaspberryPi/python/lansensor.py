@@ -28,24 +28,30 @@ def getMac(interface='eth0'):
 
 #############################################################
 def printLog(message=''):
-    print ("{}".format(message))
+    # print ("{}".format(message))
     logging.info ("{}".format(message))
 
 #############################################################
 ## load script config
 
 config = configparser.ConfigParser()
-config.read('lansensor.config')
+config.read('/home/pi/lansensor.config')
 configServerUrl = config["configurationserver"]["serverurl"]
 logfile = config["log"]["logfile"]
 deviceId = config["device"]["deviceidentification"].strip()
+deviceGroupId = config["device"]["devicegroupidentification"].strip()
 
 if (deviceId==""):
     deviceId=getMac('eth0')
 
+if (deviceGroupId==""):
+    printLog("DeviceGroupId not present")
+    exit()
+
 printLog ("Config server url: {}".format(configServerUrl))
 printLog ("Log file: {}".format(logfile))
 printLog ("Device id: {}".format(deviceId))
+printLog ("Device group id: {}".format(deviceGroupId))
   
 #############################################################
 ## Logger
@@ -59,8 +65,11 @@ f = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s '
     '',
     datefmt="%Y-%m-%d %H:%M:%S")
 handler.setFormatter(f)
-logging.info("Fetching config")
+printLog("Fetching config")
 
+
+printLog("Waiting for linx to finish boot")
+time.sleep(40)
 
 #############################################################
 ## load config from server
@@ -68,18 +77,17 @@ logging.info("Fetching config")
 logging.info("Loading network config")
 
 url = configServerUrl + deviceId
-logging.info("URL config {}".format(url))
+printLog("URL config {}".format(url))
 
 try:
     req = urllib.request.urlopen(url)
     content=io.TextIOWrapper(req)
 except Exception as err:
     printLog ("Error fetching config:{}".format(err))
-    logging.info("Error fetching config")
     exit()
   
-logging.info("Configfile %s",url)
-logging.info("Config content: %s", content)
+printLog("Configfile {}".format(url))
+printLog("Config content: {}".format(content))
 
 #############################################################
 ## Parse config
@@ -151,8 +159,8 @@ def get_ip2(iface = 'eth0'):
 def get_ip(iface = 'eth0'):
     return ((([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")] or [[(s.connect(("8.8.8.8", 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[0])
 
-def setstate(id, datatype, datavalue):
-    completeUrl = postUrl + '?id={}&type={}&data={}'.format(id, datatype,datavalue)
+def setstate(datatype, datavalue):
+    completeUrl = postUrl + '?devicegroup={}&deviceid={}&type={}&data={}'.format(deviceGroupId, devicename, datatype, datavalue)
     printLog("CompleteURL: {}".format(completeUrl))
     response = urllib.request.urlopen(completeUrl)
     logging.info("State sent type=%s / value=%s",datatype,datavalue)
@@ -162,17 +170,16 @@ def setstate(id, datatype, datavalue):
 ## Spinning up program
 
 logging.info("Sending start state")
-setstate(devicename,'start','')
+setstate('start','')
 
 logging.info("Sending IP")
-setstate(devicename,'ip', get_ip('wlan0'))
+setstate('ip', get_ip('wlan0'))
 
 logging.info("Sending CPUTMP")
-setstate(devicename,'cputemp',  getCPUtemperature())
+setstate('cputemp',  getCPUtemperature())
 
 logging.info("Setting start time")
 starttime = time.time()
-
 
 inputs = []
 
@@ -225,16 +232,16 @@ while True:
                     activeinput.state = activeinput.button.is_pressed
                     activeinput.count = 0
                     if (activeinput.state):
-                        setstate(devicename,activeinput.inputname,activeinput.truestatetosend)
+                        setstate(activeinput.inputname,activeinput.truestatetosend)
                     else:
-                        setstate(devicename,activeinput.inputname,activeinput.falsestatetosend)
+                        setstate(activeinput.inputname,activeinput.falsestatetosend)
                     logging.info("Changed state send")
 
                 if ((time.time() - starttime) > 3600):
                     logging.info("Sending keepalive")
                     starttime = time.time()
-                    setstate(devicename,'keepalive','')
-                    setstate(devicename,'cputemp',  getCPUtemperature())
+                    setstate('keepalive','')
+                    setstate('cputemp',  getCPUtemperature())
                     logging.info("Keeep alive done")
 
             time.sleep(1)
