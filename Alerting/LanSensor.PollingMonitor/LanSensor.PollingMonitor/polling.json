@@ -1,0 +1,59 @@
+{
+    "deviceMonitors": [
+        {
+            "deviceGroupId": "group",
+            "deviceId": "device",
+            "dataType": "type",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "channel name",
+                    "message": "message part to slack"
+                }
+            ],
+            "keepalive":
+            {
+                "maxMinutesSinceKeepalive":  60 ,
+                "keepaliveDataType" :  "keepalive" 
+            },
+            "stateChangeNotification": {
+                "onDataValueChangeFrom": "",
+                "onDataValueChangeTo": "" 
+            } ,
+            "timeInterval": [
+                {
+                    "dataValue": "Closed",
+                    "messageMediums": [],
+                    "weekdays": [
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sau",
+                        "Sun"
+                    ],
+                    "times": [
+                        {
+                            "from": {
+                                "houre": "00",
+                                "minutes": "00"
+                            },
+                            "to": {
+                                "houre": "23",
+                                "minutes": "59"
+                            }
+
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "mysql": {
+        "connectionString": "Server=localhost;Database=default;User=root;Password=password"
+    },
+    "slack": {
+        "apiKey": ""
+    }
+}
