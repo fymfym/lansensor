@@ -25,19 +25,19 @@ namespace LanSensor.PollingMonitor.Test
             {
                 new TimeInterval()
                 {
-                    Weekdays = new[]{EWeekDays.Thu},
+                    Weekdays = new[]{DayOfWeek.Thursday},
                     Times = new List<TimeFromTo>()
                     {
                         new TimeFromTo()
                         {
                             From = new SingleTime()
                             {
-                                Houre = 11,
+                                Hour = 11,
                                 Minute = 00
                             },
                             To = new SingleTime()
                             {
-                                Houre = 14,
+                                Hour = 14,
                                 Minute = 00
                             }
 

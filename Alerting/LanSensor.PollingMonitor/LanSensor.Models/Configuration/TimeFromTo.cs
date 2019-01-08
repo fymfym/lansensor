@@ -6,5 +6,6 @@ namespace LanSensor.Models.Configuration
     {
         [JsonProperty("from")] public SingleTime From { get; set; }
         [JsonProperty("to")] public SingleTime To { get; set; }
+
     }
 }

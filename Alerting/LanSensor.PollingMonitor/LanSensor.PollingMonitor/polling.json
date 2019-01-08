@@ -25,23 +25,23 @@
                     "dataValue": "Closed",
                     "messageMediums": [],
                     "weekdays": [
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sau",
-                        "Sun"
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
                     ],
                     "times": [
                         {
                             "from": {
-                                "houre": "00",
-                                "minutes": "00"
+                                "hour": "00",
+                                "minute": "00"
                             },
                             "to": {
-                                "houre": "23",
-                                "minutes": "59"
+                                "hour": "23",
+                                "minute": "59"
                             }
 
                         }
