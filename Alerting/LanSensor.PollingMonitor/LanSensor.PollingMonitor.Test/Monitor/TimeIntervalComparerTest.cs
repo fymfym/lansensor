@@ -14,13 +14,13 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalWithEmptyDataReturnsNull()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new TimeInterval[]
             {
 
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = _dataType
@@ -33,7 +33,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalWrongDayOfWeekValueWeekReturnsTimeinterval()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -43,7 +43,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     Weekdays = new [] {DayOfWeek.Monday}
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = "other"
@@ -56,7 +56,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalRightDataValueWrongDayOfWeekReturnsNoTimeinterval()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -66,7 +66,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     Weekdays = new [] {DayOfWeek.Monday}
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = _dataType
@@ -80,7 +80,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalOtherDataValueWeekReturnsTimeinterval()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -90,7 +90,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     Weekdays = new [] {DayOfWeek.Monday}
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = "Other"
@@ -103,7 +103,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalReturnsNull()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -112,7 +112,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     Weekdays = new [] {DayOfWeek.Tuesday}
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = _dataType
@@ -125,7 +125,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalInsideSpanRightValueReturnsTimeInterval()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -149,7 +149,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     }
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = _dataType
@@ -162,7 +162,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalInsideSpanWrongValueReturnsTimeInterval()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -186,7 +186,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     }
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = "other"
@@ -199,7 +199,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalOutsieSpanReturnsTimeInterval()
         {
-            ITimeIntervalComparer interval = new TimeIntervalComparer();
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -223,7 +223,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     }
                 }
             };
-            var log = new DeviceLog()
+            var log = new DeviceLogEntity()
             {
                 DateTime = _testDateTime,
                 DataValue = _dataType

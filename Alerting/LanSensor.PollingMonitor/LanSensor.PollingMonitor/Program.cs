@@ -5,9 +5,12 @@ using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Alert.Slack;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
+using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceLog.MySQL;
+using LanSensor.Repository.DeviceState;
+using LanSensor.Repository.DeviceState.LiteDb;
 
 namespace LanSensor.PollingMonitor
 {
@@ -21,12 +24,14 @@ namespace LanSensor.PollingMonitor
 
                 try
                 {
-                    IDeviceLogRepository repository = new MySqlDataStoreRepository(configuration);
+                    IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
+                    IDeviceStateRepository deviceStateRepository = new LiteDbDeviceStateRepository();
                     IGetDateTime getDate = new GetDateTime();
                     IAlert alerter = new SendSlackAlert(configuration);
-                    ITimeIntervalComparer stateCheckComparer = new TimeIntervalComparer();
-                    IKeepaliveMonitor keepalive = new KeepaliveMonitor(repository,getDate);
-                    var monitor = new Services.Monitor.PollingMonitor(configuration, repository, alerter, stateCheckComparer, keepalive);
+                    ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
+                    IKeepaliveMonitor keepalive = new KeepaliveMonitor(deviceLogRepository, getDate);
+                    IStateChangeMonitor stateChange = new StateChangeMonitor(deviceStateRepository, deviceLogRepository);
+                    var monitor = new Services.Monitor.PollingMonitor(configuration, deviceLogRepository, alerter, stateCheckComparer, keepalive, stateChange);
                     Task.Run(() => monitor.Run());
                 }
                 catch (Exception ex)

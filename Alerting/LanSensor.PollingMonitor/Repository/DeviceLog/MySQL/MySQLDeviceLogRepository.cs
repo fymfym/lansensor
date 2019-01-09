@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
+using LanSensor.Models.DeviceLog;
 
 namespace LanSensor.Repository.DeviceLog.MySQL
 {
@@ -12,12 +15,12 @@ namespace LanSensor.Repository.DeviceLog.MySQL
             _confiugration = configuration;
         }
 
-        public async Task<Models.DeviceLog.DeviceLog> GetLatestPresence(string deviceGroupId, string deviceId)
+        public async Task<Models.DeviceLog.DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId)
         {
             return await GetLatestPresence(deviceGroupId, deviceId, null);
         }
 
-        public async Task<Models.DeviceLog.DeviceLog> GetLatestPresence(string deviceGroupId, string deviceId, string dataType)
+        public async Task<Models.DeviceLog.DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId, string dataType)
         {
             string sql = "select DataValue, DataType, DateTime from sensorstate where ";
 
@@ -29,7 +32,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
             sql += "order by DateTime desc limit 1";
 
-            Models.DeviceLog.DeviceLog resultRecord = new Models.DeviceLog.DeviceLog()
+            Models.DeviceLog.DeviceLogEntity resultRecord = new Models.DeviceLog.DeviceLogEntity()
             {
                 DeviceGroupId = deviceGroupId,
                 DeviceId = deviceId
@@ -56,6 +59,11 @@ namespace LanSensor.Repository.DeviceLog.MySQL
                 }
             }
             return resultRecord;
+        }
+
+        public Task<IEnumerable<DeviceLogEntity>> GetPresenceListSince(string deviceGroupId, string deviceId, DateTime lastKnownPresence)
+        {
+            throw new NotImplementedException();
         }
     }
 }

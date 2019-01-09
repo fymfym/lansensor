@@ -2,7 +2,7 @@
 
 namespace LanSensor.Models.DeviceLog
 {
-    public class DeviceLog
+    public class DeviceLogEntity
     {
         public string DeviceGroupId;
         public string DeviceId;

@@ -4,11 +4,11 @@ using LanSensor.Models.DeviceLog;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
 {
-    public class TimeIntervalComparer : ITimeIntervalComparer
+    public class TimeIntervalComparer : ITimeIntervalMonitor
     {
         public Models.Configuration.TimeInterval GetFailedTimerInterval(
             IEnumerable<Models.Configuration.TimeInterval> timeIntervals, 
-            DeviceLog presenceRedocrd)
+            DeviceLogEntity presenceRedocrd)
         {
             foreach (var interval in timeIntervals)
             {
@@ -23,12 +23,13 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
                         return interval;
                 }
             }
-            return null;
+            
+            return  null;
         }
 
         private bool PresenceInConfiguredWeekdays(
             Models.Configuration.TimeInterval timeInterval,
-            DeviceLog presenceRedocrd)
+            DeviceLogEntity presenceRedocrd)
         {
             if (timeInterval?.Weekdays == null) return true;
             if (!timeInterval.Weekdays.Any()) return true;
@@ -38,7 +39,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
 
         private bool PresenceTimeInConfiguredTimes(
             Models.Configuration.TimeInterval timeInterval,
-            DeviceLog presenceRedocrd)
+            DeviceLogEntity presenceRedocrd)
         {
             if (timeInterval?.Times == null) return true;
             if (!timeInterval.Times.Any()) return true;

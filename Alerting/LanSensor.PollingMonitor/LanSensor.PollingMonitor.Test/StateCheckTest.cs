@@ -14,7 +14,7 @@ namespace LanSensor.PollingMonitor.Test
         public void RunWeekdayIntervalsTest()
         {
 
-            var deviceLog = new DeviceLog()
+            var deviceLog = new DeviceLogEntity()
             {
                 DateTime = new DateTime(2019, 1, 1, 12, 0, 0),
                 DataType = "keepalive",
@@ -46,7 +46,7 @@ namespace LanSensor.PollingMonitor.Test
                 }
             };
 
-            ITimeIntervalComparer checker = new TimeIntervalComparer();
+            ITimeIntervalMonitor checker = new TimeIntervalComparer();
             checker.GetFailedTimerInterval(timeIntervals, deviceLog);
 
         }
