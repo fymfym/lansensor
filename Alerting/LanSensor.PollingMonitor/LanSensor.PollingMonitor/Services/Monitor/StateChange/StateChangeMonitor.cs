@@ -1,36 +1,34 @@
-﻿using LanSensor.Models.DeviceState;
-using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceState;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using LanSensor.Models.DeviceState;
+using LanSensor.Models.Configuration;
+using LanSensor.Models.DeviceLog;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
 {
     public class StateChangeMonitor : IStateChangeMonitor
     {
-        private readonly IDeviceStateRepository _deviceStateRepository;
-        private readonly IDeviceLogRepository _deviceLogRepository;
 
-        public StateChangeMonitor(
-               IDeviceStateRepository deviceStateRepository,
-               IDeviceLogRepository deviceLogRepository
-            )
+        public StateChangeResult GetStateChangeNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
+            StateChangeNotification stateChangeNotification)
         {
-            _deviceLogRepository = deviceLogRepository;
-            _deviceStateRepository = deviceStateRepository;
+            StateChangeResult result = null;
+
+            if (!string.Equals(deviceState.LastKnownDataValue?.ToLower(),
+                deviceLogEntity.DataValue?.ToLower(), StringComparison.Ordinal))
+            {
+                result = new StateChangeResult();
+                result.DataValue = deviceLogEntity.DataValue;
+                result.ChangedToValue = true;
+            }
+            return result;
         }
 
-        public async Task<StateChangeResult> GetStateChangeNotification(
-            string devicegroupId, string deviceId,
-            Models.Configuration.StateChangeNotification stateChangeNotification)
+        public StateChangeResult GetStateChangeFromToNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
+            StateChangeNotification stateChangeNotification)
         {
-            var latestState = await _deviceStateRepository.GetLatestDeviceStateEntity(devicegroupId, deviceId);
+            var latestState = deviceState;
 
-            var list = await _deviceLogRepository.GetPresenceListSince(
-                devicegroupId, deviceId,
-                latestState.LastKnownDataValueDate);
-
-            var presence = list.OrderByDescending(x => x.DateTime).FirstOrDefault();
+            var presence = deviceLogEntity;
 
             StateChangeResult result = null;
 
@@ -60,10 +58,6 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
                     };
                 }
             }
-
-            latestState.LastKnownDataValue = presence.DataValue;
-            latestState.LastKnownDataValueDate = presence.DateTime;
-            await _deviceStateRepository.SetDeviceStateEntity(latestState);
 
             return result;
         }

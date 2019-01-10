@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using LanSensor.Models;
+using LanSensor.Models.DeviceState;
 
 namespace LanSensor.Repository.DeviceState
 {
