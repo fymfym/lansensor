@@ -1,10 +1,5 @@
 ﻿using System;
 using LanSensor.Models.DeviceState;
-using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceState;
-using System.Linq;
-using System.Threading.Tasks;
-using LanSensor.Models;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceLog;
 
@@ -13,20 +8,18 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
     public class StateChangeMonitor : IStateChangeMonitor
     {
 
-        public StateChangeMonitor(
-            )
-        {
-        }
-
         public StateChangeResult GetStateChangeNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
             StateChangeNotification stateChangeNotification)
         {
-            var result = new StateChangeResult
+            StateChangeResult result = null;
+
+            if (!string.Equals(deviceState.LastKnownDataValue?.ToLower(),
+                deviceLogEntity.DataValue?.ToLower(), StringComparison.Ordinal))
             {
-                DataValue = deviceLogEntity.DataValue,
-                ChangedToValue = !string.Equals(deviceState.LastKnownDataValue?.ToLower(),
-                    deviceLogEntity.DataValue?.ToLower(), StringComparison.Ordinal)
-            };
+                result = new StateChangeResult();
+                result.DataValue = deviceLogEntity.DataValue;
+                result.ChangedToValue = true;
+            }
             return result;
         }
 
