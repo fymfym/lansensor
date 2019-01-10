@@ -6,6 +6,7 @@ using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
+using LanSensor.Repository.DeviceState;
 
 namespace LanSensor.PollingMonitor.Services.Monitor
 {
@@ -17,6 +18,9 @@ namespace LanSensor.PollingMonitor.Services.Monitor
         private readonly ITimeIntervalMonitor _stateCheckMonitor;
         private readonly IKeepaliveMonitor _keepaliveMonitor;
         private readonly IStateChangeMonitor _stateChange;
+        private readonly IDeviceStateRepository _deviceStateRepository;
+        private readonly IDeviceLogRepository _deviceLogRepository;
+
         private bool _stop;
 
         public PollingMonitor
@@ -26,9 +30,13 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             IAlert alert,
             ITimeIntervalMonitor stateCheckMonitor,
             IKeepaliveMonitor keepaliveMonitor,
-            IStateChangeMonitor stateChange
+            IStateChangeMonitor stateChange,
+            IDeviceStateRepository deviceStateRepository,
+            IDeviceLogRepository deviceLogRepository
         )
         {
+            _deviceLogRepository = deviceLogRepository;
+            _deviceStateRepository = deviceStateRepository;
             _configuration = configuration ?? throw new Exception("Add configurtation");
             _dastastore = dastastore;
             _alert = alert;
@@ -67,17 +75,43 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                         _alert.SendTimerIntervalAlert(presenceRecord,failedTimeInterval,deviceMonitor);
                     }
 
-                    var stateChange = await _stateChange.GetStateChangeNotification(
-                        deviceMonitor.DeviceGroupId,
-                        deviceMonitor.DeviceId, 
-                        deviceMonitor.StateChangeNotification );
-                    if (stateChange != null)
+                    var latestState = await _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                    var deviceLog = await _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                    var deviceKeepalive = await _deviceLogRepository.GetLatestKeepalive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+
+                    if (deviceMonitor.StateChangeNotification.OnEveryChange)
                     {
-                        _alert.SendStateChangeAlert(stateChange, deviceMonitor);
+                        var stateChange = _stateChange.GetStateChangeNotification(
+                            latestState,deviceLog,
+                            deviceMonitor.StateChangeNotification);
+                        if (stateChange != null)
+                        {
+                            _alert.SendStateChangeAlert(stateChange, deviceMonitor);
+                        }
                     }
 
+                    var stateOnChange = _stateChange.GetStateChangeFromToNotification(
+                        latestState, deviceLog,
+                        deviceMonitor.StateChangeNotification);
+                    if (stateOnChange != null)
+                    {
+                        _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
+                    }
+
+                    latestState.LastKnownDataValue = deviceLog.DataValue;
+                    latestState.LastExecutedKeepaliveCheck = System.DateTime.Now;
+                    latestState.LastKnownDataValueDate = deviceKeepalive.DateTime;
+
+                    await _deviceStateRepository.SetDeviceStateEntity(latestState);
                 }
 
+                var count = 0;
+                while (_configuration.ApplicationConfiguration.MonitorConfiguration.PollingIntervalSeconds > count)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    count++;
+                    if (_stop) break;
+                }
             }
 
             return _stop ? 0: -1;

@@ -18,8 +18,9 @@
             },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
-                "onDataValueChangeTo": "" 
-            } ,
+                "onDataValueChangeTo": "",
+                "onEveryChange": "" 
+            },
             "timeInterval": [
                 {
                     "dataValue": "Closed",
@@ -55,5 +56,10 @@
     },
     "slack": {
         "apiKey": ""
+    },
+    "monitor":
+    {
+        "pollingIntervalSeconds":  "20" 
     }
+
 }

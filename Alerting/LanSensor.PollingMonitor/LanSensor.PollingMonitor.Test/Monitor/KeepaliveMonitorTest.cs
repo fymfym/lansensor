@@ -7,17 +7,22 @@ using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
 using System;
+using LanSensor.Repository.DeviceState;
 using Xunit;
 
 namespace LanSensor.PollingMonitor.Test.Monitor
 {
     public class KeepaliveMonitorTest
     {
-        private IStateChangeMonitor _fakedStatechange;
+        private readonly IStateChangeMonitor _fakedStatechange;
+        private readonly IDeviceLogRepository _fakedDeviceLog;
+        private readonly IDeviceStateRepository _fakedDeviceStage;
 
         public KeepaliveMonitorTest()
         {
             _fakedStatechange = A.Fake<IStateChangeMonitor>();
+            _fakedDeviceLog = A.Fake<IDeviceLogRepository>();
+            _fakedDeviceStage = A.Fake<IDeviceStateRepository>();
         }
 
 
@@ -64,7 +69,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var stateCheck = A.Fake<TimeIntervalComparer>();
             var keepalive = new Services.Monitor.Keepalive.KeepaliveMonitor(repository, testDateTime);
 
-            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(config, repository, alert, stateCheck, keepalive, _fakedStatechange);
+            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(config, repository, alert, stateCheck, keepalive, _fakedStatechange, _fakedDeviceStage, _fakedDeviceLog);
             pollingMonitor.Run();
             pollingMonitor.Stop();
 
@@ -118,7 +123,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var stateCheck = A.Fake<TimeIntervalComparer>();
             var keepalive = new Services.Monitor.Keepalive.KeepaliveMonitor(repository, nowDateTime);
 
-            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(config, repository, alert, stateCheck, keepalive, _fakedStatechange);
+            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(config, repository, alert, stateCheck, keepalive, _fakedStatechange,_fakedDeviceStage, _fakedDeviceLog);
             pollingMonitor.Run();
             pollingMonitor.Stop();
 

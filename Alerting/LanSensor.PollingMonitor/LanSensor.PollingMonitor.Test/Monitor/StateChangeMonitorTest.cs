@@ -3,6 +3,7 @@ using FakeItEasy;
 using LanSensor.Models;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceLog;
+using LanSensor.Models.DeviceState;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceState;
@@ -14,6 +15,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
     {
         private readonly StateChangeNotification _stateChangeNotification;
 
+        private readonly DeviceStateEntity _deviceState;
+
         public StateChangeMonitorTest()
         {
             _stateChangeNotification = new StateChangeNotification()
@@ -21,22 +24,32 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 OnDataValueChangeFrom = "changefrom",
                 OnDataValueChangeTo = "changeto"
             };
+
+            _deviceState = new DeviceStateEntity()
+            {
+                LastKnownDataValue = "value"
+            };
+
         }
 
         [Fact]
-        public async void GetStateChangeNotification_No_Change_Test()
+        public void GetStateChangeNotification_No_Change_Test()
         {
-            var fakedDeviceLogRepository = A.Fake<IDeviceLogRepository>();
-            var fakedDeviceStateRepository = A.Fake<IDeviceStateRepository>();
-            IStateChangeMonitor worker = new StateChangeMonitor(fakedDeviceStateRepository, fakedDeviceLogRepository);
+            IStateChangeMonitor worker = new StateChangeMonitor();
 
-            var result = await worker.GetStateChangeNotification("123","456", _stateChangeNotification);
+            var deviceLog = new DeviceLogEntity()
+            {
+                DataValue = "value"
+            };
+
+
+            var result = worker.GetStateChangeNotification(_deviceState, deviceLog, _stateChangeNotification);
 
             Assert.Null(result);
         }
 
         [Fact]
-        public async void GetStateChangeNotification_From_Change_Test_Outsiode_Value()
+        public void GetStateChangeNotification_From_Change_Test_Outsiode_Value()
         {
             DateTime testDate = DateTime.Now;
             string testDataValue = "test";
@@ -68,17 +81,20 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     }
                     );
 
-            IStateChangeMonitor worker = new StateChangeMonitor(fakedDeviceStateRepository, fakedDeviceLogRepository);
+            IStateChangeMonitor worker = new StateChangeMonitor();
 
-            var result = await worker.GetStateChangeNotification("123", "456", _stateChangeNotification);
+            var deviceLog = new DeviceLogEntity()
+            {
+                DataValue = "value"
+            };
 
-            A.CallTo(() => fakedDeviceStateRepository.SetDeviceStateEntity(A<DeviceStateEntity>.Ignored))
-                .MustHaveHappened();
+            var result = worker.GetStateChangeNotification(_deviceState, deviceLog, _stateChangeNotification);
+
             Assert.Null(result);
         }
 
         [Fact]
-        public async void GetStateChangeNotification_From_Change_Test_Inside_Value()
+        public void GetStateChangeNotification_From_Change_Test_Inside_Value()
         {
             DateTime testDate = DateTime.Now;
             string testDataValue = _stateChangeNotification.OnDataValueChangeFrom;
@@ -110,19 +126,22 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     }
                 );
 
-            IStateChangeMonitor worker = new StateChangeMonitor(fakedDeviceStateRepository, fakedDeviceLogRepository);
+            var deviceLog = new DeviceLogEntity()
+            {
+                DataValue = testDataValue
+            };
 
-            var result = await worker.GetStateChangeNotification("123", "456", _stateChangeNotification);
+            IStateChangeMonitor worker = new StateChangeMonitor();
 
-            A.CallTo(() => fakedDeviceStateRepository.SetDeviceStateEntity(A<DeviceStateEntity>.Ignored))
-                .MustHaveHappened();
+            var result = worker.GetStateChangeFromToNotification(_deviceState, deviceLog, _stateChangeNotification);
+
             Assert.NotNull(result);
             Assert.True(result.ChangedFromValue);
             Assert.Equal(_stateChangeNotification.OnDataValueChangeFrom, result.DataValue);
         }
 
         [Fact]
-        public async void GetStateChangeNotification_To_Change_Test_Inside_Value()
+        public void GetStateChangeNotification_To_Change_Test_Inside_Value()
         {
             DateTime testDate = DateTime.Now;
             string testDataValue = _stateChangeNotification.OnDataValueChangeTo;
@@ -154,12 +173,15 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     }
                 );
 
-            IStateChangeMonitor worker = new StateChangeMonitor(fakedDeviceStateRepository, fakedDeviceLogRepository);
+            IStateChangeMonitor worker = new StateChangeMonitor();
 
-            var result = await worker.GetStateChangeNotification("123", "456", _stateChangeNotification);
+            var deviceLog = new DeviceLogEntity()
+            {
+                DataValue = testDataValue
+            };
 
-            A.CallTo(() => fakedDeviceStateRepository.SetDeviceStateEntity(A<DeviceStateEntity>.Ignored))
-                .MustHaveHappened();
+            var result = worker.GetStateChangeNotification(_deviceState, deviceLog, _stateChangeNotification);
+
             Assert.NotNull(result);
             Assert.True(result.ChangedToValue);
             Assert.Equal(_stateChangeNotification.OnDataValueChangeTo, result.DataValue);

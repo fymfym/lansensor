@@ -7,7 +7,8 @@ namespace LanSensor.Models.Configuration
     {
         [JsonProperty("deviceMonitors")] public IEnumerable<DeviceMonitor> DeviceMonitors { get; set; }
         [JsonProperty("mysql")] public MySqlConfiguration MySqlConfiguration{ get; set; }
-        [JsonProperty("slack")] public SlackConfiguration SlackConfiguration{ get; set; }
+        [JsonProperty("slack")] public SlackConfiguration SlackConfiguration { get; set; }
+        [JsonProperty("monitor")] public MonitorConfiguration MonitorConfiguration { get; set; }
 
     }
 }

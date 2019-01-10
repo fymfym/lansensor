@@ -5,7 +5,7 @@ namespace LanSensor.Models.Configuration
 {
     public class DeviceMonitors
     {
-        [JsonProperty("deviceMonitors")] public IEnumerable<DeviceMonitor> DeviceMonitores { get; set; }
-        [JsonProperty("mySql")] public MySqlConfiguration MySqlConfiguration { get; set; }
+        [JsonIgnore, JsonProperty("deviceMonitors")] public IEnumerable<DeviceMonitor> DeviceMonitores { get; set; }
+        [JsonIgnore, JsonProperty("mySql")] public MySqlConfiguration MySqlConfiguration { get; set; }
     }
 }
