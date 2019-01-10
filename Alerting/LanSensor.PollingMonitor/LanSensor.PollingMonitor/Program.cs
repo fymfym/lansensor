@@ -30,8 +30,15 @@ namespace LanSensor.PollingMonitor
                     IAlert alerter = new SendSlackAlert(configuration);
                     ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
                     IKeepaliveMonitor keepalive = new KeepaliveMonitor(deviceLogRepository, getDate);
-                    IStateChangeMonitor stateChange = new StateChangeMonitor(deviceStateRepository, deviceLogRepository);
-                    var monitor = new Services.Monitor.PollingMonitor(configuration, deviceLogRepository, alerter, stateCheckComparer, keepalive, stateChange);
+                    IStateChangeMonitor stateChange = new StateChangeMonitor();
+                    var monitor = new Services.Monitor.PollingMonitor(
+                        configuration, 
+                        deviceLogRepository, 
+                        alerter, 
+                        stateCheckComparer, 
+                        keepalive, 
+                        stateChange,deviceStateRepository, 
+                        deviceLogRepository);
                     Task.Run(() => monitor.Run());
                 }
                 catch (Exception ex)

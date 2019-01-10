@@ -1,13 +1,20 @@
 ﻿using System.Threading.Tasks;
+using LanSensor.Models;
+using LanSensor.Models.DeviceLog;
 using LanSensor.Models.DeviceState;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
 {
     public interface IStateChangeMonitor
     {
-        Task<StateChangeResult> GetStateChangeNotification(
-            string devicegroupId,
-            string deviceId,
+        StateChangeResult GetStateChangeNotification(
+            DeviceStateEntity deviceState,
+            DeviceLogEntity deviceLogEntity,
+            Models.Configuration.StateChangeNotification stateChangeNotification);
+
+        StateChangeResult GetStateChangeFromToNotification(
+            DeviceStateEntity deviceState,
+            DeviceLogEntity deviceLogEntity,
             Models.Configuration.StateChangeNotification stateChangeNotification);
 
     }
