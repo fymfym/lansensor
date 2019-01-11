@@ -11,15 +11,14 @@
                     "message": "message part to slack"
                 }
             ],
-            "keepalive":
-            {
-                "maxMinutesSinceKeepalive":  60 ,
-                "keepaliveDataType" :  "keepalive" 
+            "keepalive": {
+                "maxMinutesSinceKeepalive": 60,
+                "keepaliveDataType": "keepalive"
             },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "",
-                "onEveryChange": "" 
+                "onEveryChange": ""
             },
             "timeInterval": [
                 {
@@ -54,12 +53,14 @@
     "mysql": {
         "connectionString": "Server=localhost;Database=default;User=root;Password=password"
     },
+    "litedb": {
+        "filename": ""
+    },
     "slack": {
         "apiKey": ""
     },
-    "monitor":
-    {
-        "pollingIntervalSeconds":  "20" 
+    "monitor": {
+        "pollingIntervalSeconds": "20"
     }
 
 }

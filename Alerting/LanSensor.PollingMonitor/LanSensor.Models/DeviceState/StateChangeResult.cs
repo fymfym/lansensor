@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LanSensor.Models.DeviceState
+﻿namespace LanSensor.Models.DeviceState
 {
     public class StateChangeResult
     {

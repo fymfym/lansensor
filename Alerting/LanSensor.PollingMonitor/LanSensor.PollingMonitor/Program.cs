@@ -11,6 +11,9 @@ using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceLog.MySQL;
 using LanSensor.Repository.DeviceState;
 using LanSensor.Repository.DeviceState.LiteDb;
+using LanSensor.Repository.DeviceState.MySql;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace LanSensor.PollingMonitor
 {
@@ -25,19 +28,24 @@ namespace LanSensor.PollingMonitor
                 try
                 {
                     IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
-                    IDeviceStateRepository deviceStateRepository = new LiteDbDeviceStateRepository();
+                    IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration);
                     IGetDateTime getDate = new GetDateTime();
                     IAlert alerter = new SendSlackAlert(configuration);
                     ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
                     IKeepaliveMonitor keepalive = new KeepaliveMonitor(deviceLogRepository, getDate);
                     IStateChangeMonitor stateChange = new StateChangeMonitor();
+
+                    ILoggerFactory loggerFactory = new LoggerFactory().AddNLog();
+
+
                     var monitor = new Services.Monitor.PollingMonitor(
                         configuration, 
                         deviceLogRepository, 
                         alerter, 
                         stateCheckComparer, 
                         keepalive, 
-                        stateChange,deviceStateRepository, 
+                        stateChange,
+                        deviceStateRepository, 
                         deviceLogRepository);
                     Task.Run(() => monitor.Run());
                 }

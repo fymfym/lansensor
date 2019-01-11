@@ -3,18 +3,31 @@
   <head>
     <title>Sensors....</title>
   </head>
-
 <body>
-
-<tabel>
-    <tr>
-        <td><a href="/sensors">Top</a></td>
-    </tr>
-</tabel>
 <?
 
 include('system.php');
 include('config.php');
+
+$deviceGroupid = system_getvar("devicegroup");
+$deviceId = system_getvar("device");
+
+
+?>
+
+<table>
+    <tr>
+        <td><a href="/sensors">Device groups</a></td>
+        <td>&nbsp;&nbsp;-&nbsp;&nbsp;</td>
+		<?
+		if (strlen($deviceGroupid) > 0)
+		{
+			print "<td><a href=\"/sensors/?devicegroup=" .  $deviceGroupid . "\">Devices</a></td>";
+		}
+		?>
+    </tr>
+</table>
+<?
 
 
 $db_conn = 0;
@@ -32,12 +45,9 @@ $today = getdate();
   		
 $mktfirst = mktime($today['hours']-1,0,0,$today['mon'],$today['mday'],$today['year']);
 
-$deviceGroupid = system_getvar("devicegroup");
-$deviceId = system_getvar("device");
-
 if ($deviceGroupid == "")
 {
-    $sql = "select distinct devicegroupid from sensorstate";
+    $sql = "select distinct devicegroupid from devicelog";
     $result = mysqli_query ($db_conn,$sql);
     print mysqli_error($db_conn);
     $numrows = mysqli_num_rows ($result);
@@ -53,7 +63,7 @@ if ($deviceGroupid == "")
 
 if ($deviceId == "")
 {
-    $sql = "select distinct deviceid from sensorstate";
+    $sql = "select distinct deviceid from devicelog";
     $result = mysqli_query ($db_conn,$sql);
     print mysqli_error($db_conn);
     $numrows = mysqli_num_rows ($result);
@@ -69,7 +79,7 @@ if ($deviceId == "")
 
 
 print "<table border=\"1\"><th>Device id</th><th>Reading date</th><th>Reading type</th><th>Value</th></tr>";
-$sql = "select deviceid, DateTime, DataType, DataValue  from sensorstate where devicegroupid='". $deviceGroupid."' and deviceid='" .$deviceId. "' order by DateTime desc limit 50";
+$sql = "select deviceid, DateTime, DataType, DataValue  from devicelog where devicegroupid='". $deviceGroupid."' and deviceid='" .$deviceId. "' order by DateTime desc limit 50";
 $result = mysqli_query ($db_conn,$sql);
 print mysqli_error($db_conn);
 $numrows = mysqli_num_rows ($result);

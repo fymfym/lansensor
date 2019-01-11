@@ -2,6 +2,7 @@
 
 namespace LanSensor.Models.Configuration
 {
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class StateChangeNotification
     {
         [JsonProperty("onDataValueChangeFrom")] public string OnDataValueChangeFrom { get; set; }
