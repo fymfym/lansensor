@@ -10,10 +10,7 @@ using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceLog.MySQL;
 using LanSensor.Repository.DeviceState;
-using LanSensor.Repository.DeviceState.LiteDb;
 using LanSensor.Repository.DeviceState.MySql;
-using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 
 namespace LanSensor.PollingMonitor
 {
@@ -34,9 +31,6 @@ namespace LanSensor.PollingMonitor
                     ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
                     IKeepaliveMonitor keepalive = new KeepaliveMonitor(deviceLogRepository, getDate);
                     IStateChangeMonitor stateChange = new StateChangeMonitor();
-
-                    ILoggerFactory loggerFactory = new LoggerFactory().AddNLog();
-
 
                     var monitor = new Services.Monitor.PollingMonitor(
                         configuration, 
