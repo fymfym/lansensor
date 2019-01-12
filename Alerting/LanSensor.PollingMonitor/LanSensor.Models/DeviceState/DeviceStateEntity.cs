@@ -8,7 +8,8 @@ namespace LanSensor.Models.DeviceState
         public string DeviceId { get; set; }
         public string LastKnownDataValue { get; set; }
         public DateTime LastKnownDataValueDate { get; set; }
-        public string LastKnownKeepAlive { get; set; }
+        public DateTime LastExecutedKeepaliveDate { get; set; }
+        public DateTime LastExecutedKeepaliveCheckDate { get; set; }
         public DateTime LastExecutedKeepaliveCheck { get; set; }
     }
 }

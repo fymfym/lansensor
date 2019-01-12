@@ -13,9 +13,8 @@
             ],
             "keepalive":
             {
-                "maxMinutesSinceKeepalive": 60,
-                "keepaliveDataType" :  "keepalive",
-                "keepaliveReportOnlyOnce":  "true" 
+                "maxMinutesSinceKeepalive":  60 ,
+                "keepaliveDataType" :  "keepalive" 
             },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",

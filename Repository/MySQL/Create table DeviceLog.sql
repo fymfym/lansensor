@@ -1,4 +1,4 @@
-CREATE TABLE `sensorstate` (
+CREATE TABLE `devicelog` (
   `id` double NOT NULL AUTO_INCREMENT,
   `DateTime` datetime DEFAULT NULL,
   `deviceId` varchar(45) DEFAULT NULL,
@@ -7,4 +7,4 @@ CREATE TABLE `sensorstate` (
   `deviceGroupId` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) AUTO_INCREMENT=360 DEFAULT ;
+)

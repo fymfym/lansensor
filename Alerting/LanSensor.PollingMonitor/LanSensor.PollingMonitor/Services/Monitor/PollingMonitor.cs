@@ -60,24 +60,23 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 
                 foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
                 {
-
-                    var keepalive = await _keepaliveMonitor.IsKeepaliveWithinSpec(deviceMonitor);
-                    if (!keepalive)
-                        _alert.SendKeepaliveMissingAlert(deviceMonitor);
+                    var latestState = await _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                    var deviceLog = await _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                    var deviceKeepalive = await _deviceLogRepository.GetLatestKeepalive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
 
                     var presenceRecord = await _dastastore.GetLatestPresence(deviceMonitor.DeviceGroupId, 
                         deviceMonitor.DeviceId, 
                         deviceMonitor.DataType );
+
+                    var keepalive = await _keepaliveMonitor.IsKeepaliveWithinSpec(deviceMonitor);
+                    if (!keepalive)
+                        _alert.SendKeepaliveMissingAlert(deviceMonitor);
 
                     var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
                     if (failedTimeInterval != null)
                     {
                         _alert.SendTimerIntervalAlert(presenceRecord,failedTimeInterval,deviceMonitor);
                     }
-
-                    var latestState = await _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                    var deviceLog = await _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                    var deviceKeepalive = await _deviceLogRepository.GetLatestKeepalive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
 
                     if (deviceMonitor.StateChangeNotification.OnEveryChange)
                     {

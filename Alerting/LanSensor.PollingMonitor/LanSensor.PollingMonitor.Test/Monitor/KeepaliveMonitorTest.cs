@@ -7,6 +7,7 @@ using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
 using System;
+using LanSensor.Models.DeviceState;
 using LanSensor.Repository.DeviceState;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
 
         [Fact]
-        public void KeepalieWithinSpec()
+        public void KeepaliveWithinSpec()
         {
             var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
 
@@ -79,7 +80,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         }
 
         [Fact]
-        public void KeepalieOutsideSpec()
+        public void KeepaliveOutsideSpec()
         {
             var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
 
@@ -132,5 +133,60 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             Assert.NotNull(pollingMonitor);
         }
 
+        [Fact]
+        public void KeepaliveOnlyOnce()
+        {
+            var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
+
+            var keepaliveDateTime = A.Fake<IGetDateTime>();
+            var nowDateTime = A.Fake<IGetDateTime>();
+            A.CallTo(() => keepaliveDateTime.Now).Returns(testTime);
+            A.CallTo(() => nowDateTime.Now).Returns(testTime.AddMinutes(61));
+
+            var deviceLogRepository = A.Fake<IDeviceLogRepository>();
+            A.CallTo(() => deviceLogRepository.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored)).Returns(
+                new Models.DeviceLog.DeviceLogEntity()
+                {
+                    DataType = "keepalive",
+                    DeviceGroupId = "",
+                    DeviceId = "",
+                    DateTime = testTime
+                }
+            );
+
+
+            var deviceStateRepository = A.Fake<IDeviceStateRepository>();
+            A.CallTo(() => deviceStateRepository.GetLatestDeviceStateEntity(A<string>.Ignored, A<string>.Ignored)).Returns(
+                new DeviceStateEntity()
+                {
+                    DeviceId = "",
+                    LastExecutedKeepaliveCheckDate = testTime,
+                    LastKnownKeepAlive = testTime.AddHours(-2)
+                }
+            );
+
+            var config = A.Fake<IConfiguration>();
+            A.CallTo(() => config.ApplicationConfiguration).Returns(
+                new ApplicationConfiguration()
+                {
+                    DeviceMonitors = new[]
+                    {
+                        new DeviceMonitor()
+                        {
+                            DeviceGroupId = "dg",
+                            DeviceId = "di",
+                            Keepalive = new Keepalive()
+                            {
+                                KeepaliveReportOnlyOnce = true
+                            }
+                        }
+                    }
+                });
+
+            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(config, repository, alert, stateCheck, keepalive, _fakedStatechange,_fakedDeviceStage, _fakedDeviceLog);
+            pollingMonitor.Run();
+            pollingMonitor.Stop();
+
+        }
     }
 }
