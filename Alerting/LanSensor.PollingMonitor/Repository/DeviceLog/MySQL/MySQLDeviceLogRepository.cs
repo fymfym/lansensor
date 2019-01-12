@@ -8,35 +8,35 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 {
     public class MySqlDataStoreRepository : IDeviceLogRepository
     {
-        private readonly IConfiguration _confiugration;
+        private readonly IConfiguration _configuration;
 
         public MySqlDataStoreRepository(IConfiguration configuration)
         {
-            _confiugration = configuration;
+            _configuration = configuration;
         }
 
-        public async Task<Models.DeviceLog.DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId)
+        public async Task<DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId)
         {
             return await GetLatestPresence(deviceGroupId, deviceId, null);
         }
 
         public async Task<DeviceLogEntity> GetLatestKeepalive(string deviceGroupId, string deviceId)
         {
-            string sql = "select DataValue, DataType, DateTime from sensorstate where ";
+            string sql = "select DataValue, DataType, DateTime from devicelog where ";
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
-                   " and DeviceId='" + deviceId + "' " +
-                   " and DataValie='keepalive'";
+                   "and DeviceId='" + deviceId + "' " +
+                   "and DataValie='keepalive' ";
 
             sql += "order by DateTime desc limit 1";
 
-            Models.DeviceLog.DeviceLogEntity resultRecord = new Models.DeviceLog.DeviceLogEntity()
+            var resultRecord = new DeviceLogEntity()
             {
                 DeviceGroupId = deviceGroupId,
                 DeviceId = deviceId
             };
 
-            string mySqlConnectionString = _confiugration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
+            string mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
             using (var mysql = new MySql.Data.MySqlClient.MySqlConnection())
             {
                 var strConnect = mySqlConnectionString;
@@ -59,25 +59,21 @@ namespace LanSensor.Repository.DeviceLog.MySQL
             return resultRecord;
         }
 
-        public async Task<Models.DeviceLog.DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId, string dataType)
+        public async Task<DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId, string dataType)
         {
-            string sql = "select DataValue, DataType, DateTime from sensorstate where ";
+            string sql = "select DataValue, DataType, DateTime from DeviceLog where ";
 
-            sql += "DeviceGroupId = '" + deviceGroupId + 
-                   "' and DeviceId='" + deviceId + "' ";
+            sql += "DeviceGroupId = '" + deviceGroupId + "' " + 
+                   "and DeviceId='" + deviceId + "' ";
 
             if (!string.IsNullOrEmpty(dataType))
-                sql = "and DataType='" + dataType + "''";
+                sql += "and DataType='" + dataType + "' ";
 
             sql += "order by DateTime desc limit 1";
 
-            Models.DeviceLog.DeviceLogEntity resultRecord = new Models.DeviceLog.DeviceLogEntity()
-            {
-                DeviceGroupId = deviceGroupId,
-                DeviceId = deviceId
-            };
+            DeviceLogEntity resultRecord = null;
 
-            string mySqlConnectionString = _confiugration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
+            string mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
             using (var mysql = new MySql.Data.MySqlClient.MySqlConnection())
             {
                 var strConnect = mySqlConnectionString;
@@ -90,9 +86,14 @@ namespace LanSensor.Repository.DeviceLog.MySQL
                     {
                         while (rdr.Read())
                         {
-                            resultRecord.DataValue = rdr.GetString(0);
-                            resultRecord.DataType = rdr.GetString(1);
-                            resultRecord.DateTime = rdr.GetDateTime(2);
+                            resultRecord = new DeviceLogEntity()
+                            {
+                                DeviceGroupId = deviceGroupId,
+                                DeviceId = deviceId,
+                                DataValue = rdr.GetString(0),
+                                DataType = rdr.GetString(1),
+                                DateTime = rdr.GetDateTime(2)
+                            };
                         }
                     }
                 }

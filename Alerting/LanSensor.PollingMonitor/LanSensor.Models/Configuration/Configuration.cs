@@ -14,10 +14,20 @@ namespace LanSensor.Models.Configuration
         /// <param name="alternateConfigFilename"></param>
         public Configuration( string alternateConfigFilename)
         {
-            string filename = @"polling.json";
+            string filename;
             if (alternateConfigFilename?.Length > 0)
+            {
                 filename = alternateConfigFilename;
-
+            }
+            else
+            {
+                var altFile = new FileInfo("polling_production.json");
+                if (!altFile.Exists)
+                    altFile = new FileInfo("polling_develop.json");
+                if (!altFile.Exists)
+                    altFile = new FileInfo("polling.json");
+                filename = altFile.Name;
+            }
             using (StreamReader file = File.OpenText(filename))
             {
                 JsonSerializer serializer = new JsonSerializer();

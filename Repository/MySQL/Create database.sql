@@ -1,0 +1,1 @@
+CREATE DATABASE `Lansensor` /*!40100 COLLATE 'latin1_general_ci' */

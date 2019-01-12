@@ -8,18 +8,20 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
     {
         public Models.Configuration.TimeInterval GetFailedTimerInterval(
             IEnumerable<Models.Configuration.TimeInterval> timeIntervals, 
-            DeviceLogEntity presenceRedocrd)
+            DeviceLogEntity presenceRecord)
         {
+            if (presenceRecord == null) return timeIntervals.FirstOrDefault();
+
             foreach (var interval in timeIntervals)
             {
-                if (presenceRedocrd.DataValue != null && !string.IsNullOrEmpty(interval?.DataValue))
+                if (presenceRecord.DataValue != null && !string.IsNullOrEmpty(interval?.DataValue))
                 {
-                    var weekDays = PresenceInConfiguredWeekdays(interval, presenceRedocrd);
-                    if (weekDays && interval.DataValue?.ToLower() != presenceRedocrd.DataValue.ToLower())
+                    var weekDays = PresenceInConfiguredWeekdays(interval, presenceRecord);
+                    if (weekDays && interval.DataValue?.ToLower() != presenceRecord.DataValue.ToLower())
                         return interval;
 
-                    var times = PresenceTimeInConfiguredTimes(interval, presenceRedocrd);
-                    if (times && interval.DataValue?.ToLower() != presenceRedocrd.DataValue?.ToLower())
+                    var times = PresenceTimeInConfiguredTimes(interval, presenceRecord);
+                    if (times && interval.DataValue?.ToLower() != presenceRecord.DataValue?.ToLower())
                         return interval;
                 }
             }

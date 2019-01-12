@@ -16,9 +16,11 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             if (!string.Equals(deviceState.LastKnownDataValue?.ToLower(),
                 deviceLogEntity.DataValue?.ToLower(), StringComparison.Ordinal))
             {
-                result = new StateChangeResult();
-                result.DataValue = deviceLogEntity.DataValue;
-                result.ChangedToValue = true;
+                result = new StateChangeResult
+                {
+                    DataValue = deviceLogEntity.DataValue,
+                    ChangedToValue = true
+                };
             }
             return result;
         }
