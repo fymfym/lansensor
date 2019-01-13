@@ -2,6 +2,7 @@
 using FakeItEasy;
 using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
+using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
@@ -20,9 +21,10 @@ namespace LanSensor.PollingMonitor.Test
         private readonly ITimeIntervalMonitor _fakedStateCheckComparer;
         private readonly IKeepaliveMonitor _fakedKeepaliveMonitor;
         private readonly IStateChangeMonitor _fakedStageChange;
-        private readonly IDeviceLogRepository _fakedDeviceLog;
         private readonly IDeviceStateRepository _fakedDeviceStage;
- 
+        private readonly IGetDateTime _fakedGetDate;
+
+
         public PollingMonitorTest()
         {
             _fakedConfig = A.Fake<IConfiguration>();
@@ -31,8 +33,8 @@ namespace LanSensor.PollingMonitor.Test
             _fakedStateCheckComparer = A.Fake<ITimeIntervalMonitor>();
             _fakedKeepaliveMonitor = A.Fake<IKeepaliveMonitor>();
             _fakedStageChange = A.Fake<IStateChangeMonitor>();
-            _fakedDeviceLog = A.Fake<IDeviceLogRepository>();
             _fakedDeviceStage = A.Fake<IDeviceStateRepository>();
+            _fakedGetDate = A.Fake<IGetDateTime>();
         }
 
 
@@ -40,14 +42,16 @@ namespace LanSensor.PollingMonitor.Test
         public void RunNulParameterTest()
         {
             Assert.Throws<Exception>(() => new Services.Monitor.PollingMonitor(
-                null,_fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog));
+                null,_fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,
+                _fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedGetDate));
         }
 
         [Fact]
         public void RunConfigurationFakedParameterTest()
         {
             var monitor = new Services.Monitor.PollingMonitor(
-                _fakedConfig, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
+                _fakedConfig, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,
+                _fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedGetDate);
             Assert.NotNull(monitor);
         }
 
@@ -56,7 +60,8 @@ namespace LanSensor.PollingMonitor.Test
         {
             var config = new Configuration(null);
             var monitor = new Services.Monitor.PollingMonitor(
-                config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
+                config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, 
+                _fakedStageChange, _fakedDeviceStage, _fakedGetDate);
             Assert.NotNull(monitor);
         }
 
@@ -66,7 +71,8 @@ namespace LanSensor.PollingMonitor.Test
             var config = new Configuration(null);
 
             var monitor = new Services.Monitor.PollingMonitor(
-                config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
+                config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor,
+                _fakedStageChange, _fakedDeviceStage, _fakedGetDate);
             monitor.Stop();
 
             Assert.NotNull(monitor);

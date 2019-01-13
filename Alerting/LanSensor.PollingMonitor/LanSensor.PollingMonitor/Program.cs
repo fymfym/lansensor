@@ -40,7 +40,7 @@ namespace LanSensor.PollingMonitor
                         keepalive, 
                         stateChange,
                         deviceStateRepository, 
-                        deviceLogRepository);
+                        getDate);
                     Task.Run(() => monitor.Run());
                 }
                 catch (Exception ex)

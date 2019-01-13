@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
+using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
@@ -14,36 +15,36 @@ namespace LanSensor.PollingMonitor.Services.Monitor
     public class PollingMonitor : IPollingMonitor
     {
         private readonly IConfiguration _configuration;
-        private readonly IDeviceLogRepository _dastastore;
         private readonly IAlert _alert;
         private readonly ITimeIntervalMonitor _stateCheckMonitor;
         private readonly IKeepaliveMonitor _keepaliveMonitor;
         private readonly IStateChangeMonitor _stateChange;
         private readonly IDeviceStateRepository _deviceStateRepository;
         private readonly IDeviceLogRepository _deviceLogRepository;
+        private readonly IGetDateTime _getDateTime;
 
         private bool _stop;
 
         public PollingMonitor
         (
             IConfiguration configuration,
-            IDeviceLogRepository dastastore,
+            IDeviceLogRepository deviceLogRepository,
             IAlert alert,
             ITimeIntervalMonitor stateCheckMonitor,
             IKeepaliveMonitor keepaliveMonitor,
             IStateChangeMonitor stateChange,
             IDeviceStateRepository deviceStateRepository,
-            IDeviceLogRepository deviceLogRepository
+            IGetDateTime getDateTime
         )
         {
             _deviceLogRepository = deviceLogRepository;
             _deviceStateRepository = deviceStateRepository;
             _configuration = configuration ?? throw new Exception("Add configurtation");
-            _dastastore = dastastore;
             _alert = alert;
             _stateCheckMonitor = stateCheckMonitor;
             _keepaliveMonitor = keepaliveMonitor;
             _stateChange = stateChange;
+            _getDateTime = getDateTime;
             _stop = false;
         }
 
@@ -61,7 +62,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 
                 foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
                 {
-                    var presenceRecord = await _dastastore.GetLatestPresence(
+                    var presenceRecord = await _deviceLogRepository.GetLatestPresence(
                         deviceMonitor.DeviceGroupId,
                         deviceMonitor.DeviceId,
                         deviceMonitor.DataType);
@@ -70,6 +71,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                     var deviceLog = await _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
                     var deviceKeepalive = await _deviceLogRepository.GetLatestKeepalive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
 
+                    latestState.LastExecutedKeepaliveCheckDate = _getDateTime.Now;
                     var keepalive = await _keepaliveMonitor.IsKeepaliveWithinSpec(deviceMonitor);
                     if (!keepalive)
                     {
@@ -78,7 +80,10 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                             sendKeepalive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
 
                         if (sendKeepalive)
+                        {
                             _alert.SendKeepaliveMissingAlert(deviceMonitor);
+                            latestState.LastKeepAliveAlert = _getDateTime.Now;
+                        }
                     }
 
                     var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
@@ -108,12 +113,8 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                     }
 
                     latestState.LastKnownDataValue = deviceLog.DataValue;
-                    latestState.LastExecutedKeepaliveCheckDate = System.DateTime.Now;
                     latestState.LastKnownDataValueDate = deviceKeepalive.DateTime;
-                    if (deviceKeepalive.DateTime > latestState.LastKnownKeepAlive)
-                    {
-                        latestState.LastKnownKeepAlive = deviceKeepalive.DateTime;
-                    }
+
                     await _deviceStateRepository.SetDeviceStateEntity(latestState);
                 }
 
