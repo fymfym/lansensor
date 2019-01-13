@@ -30,24 +30,27 @@ Prerequisite
   * $sudo apt-get install python3
 * Install python module gpiozero 
   * $sudo apt install python3-gpiozero
-* Scripts
+* Copy scripts
   * Copy lansensor related scripts to /home/pi
     * launcher.sh
-    * 777 ping.sh
+    * ping.sh
     * checkwifi.sh
-  * Change modes on the files
+  * Change access permissions on the files
     * $chmod 777 launcher.sh
     * $chmod 777 ping.sh
     * $chmod 777 checkwifi.sh
 * autorun check wifi scripts and ping (to try and stabilize network)
-  * In Crontab ($sudo ctrontab -e (Use "Nano", if it asks)), add:
+  * In Crontab ($sudo crontab -e (Use "Nano", if it asks)), at the bottom, add:
     * */2 * * * * /home/pi/checkwifi.sh 2>&1 >> /home/pi/resetwifi.log
     * */15 * * * * /home/pi/ping.sh > /home/pi/ping.log 2>&1
 * Auto start python script on PI start
   * $sudo nano /etc/rc.local
   * Add below line, before "exit" and after"fi" 
-    * sudo python3 /home/pi/lawnmower.py 2>&1 >> /home/pi/lawnmower.log &
+    * sudo python3 /home/pi/lansensor.py 2>&1 >> /home/pi/lansensor.log &
 
+Test
+* sudo python3 /home/pi/lansensor.py
+* Ctrl+c to break
 
 website
 ---

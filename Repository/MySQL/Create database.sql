@@ -1,1 +1,1 @@
-CREATE DATABASE `lansensor` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE `Lansensor` /*!40100 COLLATE 'latin1_general_ci' */

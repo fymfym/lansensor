@@ -7,4 +7,4 @@ CREATE TABLE `devicelog` (
   `deviceGroupId` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-)
+) AUTO_INCREMENT=1;

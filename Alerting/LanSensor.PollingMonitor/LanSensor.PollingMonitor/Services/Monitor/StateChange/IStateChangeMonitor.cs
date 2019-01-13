@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using LanSensor.Models;
-using LanSensor.Models.DeviceLog;
+﻿using LanSensor.Models.DeviceLog;
 using LanSensor.Models.DeviceState;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.StateChange

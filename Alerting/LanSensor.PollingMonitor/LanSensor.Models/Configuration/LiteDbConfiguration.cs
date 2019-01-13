@@ -3,8 +3,8 @@
 namespace LanSensor.Models.Configuration
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class SlackConfiguration
+    public class LiteDbConfiguration
     {
-        [JsonProperty("apikey")] public string ApiKey{ get; set; }
+        [JsonProperty("filename")] public string Filename{ get; set; }
     }
 }

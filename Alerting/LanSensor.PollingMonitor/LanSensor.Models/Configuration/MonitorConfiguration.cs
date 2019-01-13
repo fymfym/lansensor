@@ -2,9 +2,9 @@
 
 namespace LanSensor.Models.Configuration
 {
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MonitorConfiguration
     {
-        [JsonIgnore]
         [JsonProperty("pollingIntervalSeconds")] public int PollingIntervalSeconds { get; set; }
 
     }
