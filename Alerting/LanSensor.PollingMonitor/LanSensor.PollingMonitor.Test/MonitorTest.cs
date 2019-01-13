@@ -22,7 +22,7 @@ namespace LanSensor.PollingMonitor.Test
         private readonly IStateChangeMonitor _fakedStageChange;
         private readonly IDeviceLogRepository _fakedDeviceLog;
         private readonly IDeviceStateRepository _fakedDeviceStage;
-
+ 
         public PollingMonitorTest()
         {
             _fakedConfig = A.Fake<IConfiguration>();
@@ -64,9 +64,11 @@ namespace LanSensor.PollingMonitor.Test
         public void RunConfigurationFileRunTest()
         {
             var config = new Configuration(null);
+
             var monitor = new Services.Monitor.PollingMonitor(
                 config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
             monitor.Stop();
+
             Assert.NotNull(monitor);
             Assert.True(monitor.StoppedIntentionaly);
         }

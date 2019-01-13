@@ -1,52 +1,86 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceLog;
 using LanSensor.Models.DeviceState;
+using SlackAPI;
 
 namespace LanSensor.PollingMonitor.Services.Alert.Slack
 {
     public class SendSlackAlert : IAlert
     {
-
-        private readonly IConfiguration _configuration;
+        private IList<Channel> _slackAlertChannels;
+        private readonly SlackClient _slackClient;
 
         public SendSlackAlert(
             IConfiguration configuration)
         {
-            _configuration = configuration;
+            _slackClient = new SlackClient(configuration.ApplicationConfiguration.SlackConfiguration.ApiKey);
+            _slackClient.GetChannelList(SlackChannelListResponse);
+            int count = 1000;
+            while (true)
+            {
+                if (_slackAlertChannels != null) break;
+                System.Threading.Thread.Sleep(200);
+                if (count-- < 0)
+                {
+                    throw new Exception("No connection to slack");
+                }
+            }
+        }
+
+        private void SlackChannelListResponse(ChannelListResponse obj)
+        {
+            _slackAlertChannels = obj.channels.ToList();
         }
 
         public bool SendStateChangeAlert(StateChangeResult stateNotification, DeviceMonitor deviceMonitor)
         {
-            //TODO - Implement Send statechange Alert
-            throw new NotImplementedException();
+            var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
+            var msg =
+                $"State changed for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+            return SendToSlack(deviceMonitor, msg);
         }
 
         public bool SendKeepaliveMissingAlert(DeviceMonitor deviceMonitor)
         {
-            //TODO - Implement Send keepalive missing alert
-            throw new NotImplementedException();
+            var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
+            var msg =
+                $"Keepalive missing for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+            return SendToSlack(deviceMonitor, msg);
         }
 
         public bool SendTimerIntervalAlert(DeviceLogEntity presenceRecord, TimeInterval timeInterval, DeviceMonitor deviceMonitor)
         {
-            if (timeInterval == null) throw new ArgumentNullException(nameof(timeInterval));
-            var message = timeInterval.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower() == "slack") ??
-                          deviceMonitor?.MessageMediums?.FirstOrDefault(x => x.MediumType.ToLower() == "slack");
-            if (message == null) throw new Exception("no deviceMonitors/messageMediums/mediumType or deviceMonitors/messageMediums/timeInterval[]/mediumType has value 'slack'");
-
-            var msg = 
-                $"device {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId} is outside desired value of '{timeInterval.DataValue}' with message {timeInterval.AlertMessage}";
-
-            return SendToSlack(msg);
+            var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
+            var msg =
+                $"device {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId} is outside desired value of '{timeInterval.DataValue}' with message {deviceMonitorMessage}";
+            return SendToSlack(deviceMonitor, msg);
         }
 
-        private bool SendToSlack(string message)
+        private bool SendToSlack(DeviceMonitor monitor, string message)
         {
-            //TODO - Implement Slack send 
-            var slackApiKey = _configuration.ApplicationConfiguration.SlackConfiguration.ApiKey;
-            return false;
+            var slackChannel = GetMonitorSlackChannel(monitor);
+            if (slackChannel == null) return false;
+            _slackClient.PostMessage(null, slackChannel.id, message);
+            return true;
         }
+
+        private Channel GetMonitorSlackChannel(DeviceMonitor monitor)
+        {
+            var messageMedium = monitor.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower().Trim() == "slack");
+            if (messageMedium == null) return null;
+            var channel = _slackAlertChannels.FirstOrDefault(x => x.name == messageMedium.ReceiverId);
+            return channel;
+        }
+
+        private string GetMonitorMessage(DeviceMonitor monitor)
+        {
+            var messageMedium = monitor.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower().Trim() == "slack");
+            return messageMedium?.Message;
+        }
+
+
     }
 }

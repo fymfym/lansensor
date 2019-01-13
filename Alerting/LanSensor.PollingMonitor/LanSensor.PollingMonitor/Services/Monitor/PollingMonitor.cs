@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
@@ -55,34 +56,42 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 
         public async Task<int> Run()
         {
-            while(!_stop)
+            while (!_stop)
             {
 
                 foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
                 {
-
-                    var keepalive = await _keepaliveMonitor.IsKeepaliveWithinSpec(deviceMonitor);
-                    if (!keepalive)
-                        _alert.SendKeepaliveMissingAlert(deviceMonitor);
-
-                    var presenceRecord = await _dastastore.GetLatestPresence(deviceMonitor.DeviceGroupId, 
-                        deviceMonitor.DeviceId, 
-                        deviceMonitor.DataType );
-
-                    var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
-                    if (failedTimeInterval != null)
-                    {
-                        _alert.SendTimerIntervalAlert(presenceRecord,failedTimeInterval,deviceMonitor);
-                    }
+                    var presenceRecord = await _dastastore.GetLatestPresence(
+                        deviceMonitor.DeviceGroupId,
+                        deviceMonitor.DeviceId,
+                        deviceMonitor.DataType);
 
                     var latestState = await _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
                     var deviceLog = await _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
                     var deviceKeepalive = await _deviceLogRepository.GetLatestKeepalive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
 
+                    var keepalive = await _keepaliveMonitor.IsKeepaliveWithinSpec(deviceMonitor);
+                    if (!keepalive)
+                    {
+                        var sendKeepalive = true;
+                        if (deviceMonitor.Keepalive.NotifyOnceOnly)
+                            sendKeepalive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
+
+                        if (sendKeepalive)
+                            _alert.SendKeepaliveMissingAlert(deviceMonitor);
+                    }
+
+                    var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
+                    if (failedTimeInterval != null)
+                    {
+                        _alert.SendTimerIntervalAlert(presenceRecord, failedTimeInterval, deviceMonitor);
+                    }
+
+
                     if (deviceMonitor.StateChangeNotification.OnEveryChange)
                     {
                         var stateChange = _stateChange.GetStateChangeNotification(
-                            latestState,deviceLog,
+                            latestState, deviceLog,
                             deviceMonitor.StateChangeNotification);
                         if (stateChange != null)
                         {
@@ -99,23 +108,25 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                     }
 
                     latestState.LastKnownDataValue = deviceLog.DataValue;
-                    latestState.LastExecutedKeepaliveCheck = System.DateTime.Now;
+                    latestState.LastExecutedKeepaliveCheckDate = System.DateTime.Now;
                     latestState.LastKnownDataValueDate = deviceKeepalive.DateTime;
-
+                    if (deviceKeepalive.DateTime > latestState.LastKnownKeepAlive)
+                    {
+                        latestState.LastKnownKeepAlive = deviceKeepalive.DateTime;
+                    }
                     await _deviceStateRepository.SetDeviceStateEntity(latestState);
                 }
 
                 var count = 0;
                 while (_configuration.ApplicationConfiguration.MonitorConfiguration.PollingIntervalSeconds > count)
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    Thread.Sleep(1000);
                     count++;
                     if (_stop) break;
                 }
             }
-
-            return _stop ? 0: -1;
+            return 1;
         }
-        
+
     }
 }

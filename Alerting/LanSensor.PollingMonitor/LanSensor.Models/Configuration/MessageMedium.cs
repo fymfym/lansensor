@@ -2,6 +2,7 @@
 
 namespace LanSensor.Models.Configuration
 {
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MessageMedium
     {
         [JsonProperty("mediumType")] public string MediumType { get; set; }
