@@ -67,7 +67,7 @@ if ($deviceId == "")
     $result = mysqli_query ($db_conn,$sql);
     print mysqli_error($db_conn);
     $numrows = mysqli_num_rows ($result);
-    print "<table border=\"1\"><tr><th>Last 50</th><th>Overview</th></tr>";
+    print "<table border=\"1\"><tr><th>Device</th></tr>";
     for ($tel = 0; $tel < mysqli_num_rows ($result) ; $tel++)
     {
         $row = mysqli_fetch_row($result);
@@ -81,18 +81,34 @@ if ($deviceId == "")
 }
 
 
-print "<table border=\"1\"><th>Device id</th><th>Reading date</th><th>Reading type</th><th>Value</th></tr>";
-$sql = "select deviceid, DateTime, DataType, DataValue  from devicelog where devicegroupid='". $deviceGroupid."' and deviceid='" .$deviceId. "' order by DateTime desc limit 50";
+$sql = "select distinct DataType from devicelog where devicegroupid='". $deviceGroupid."' and deviceid='" .$deviceId. "' ";
 $result = mysqli_query ($db_conn,$sql);
 print mysqli_error($db_conn);
 $numrows = mysqli_num_rows ($result);
-    	
+$dataValues = array();
 	for ($tel = 0; $tel < mysqli_num_rows ($result) ; $tel++)
 	{
-		$row = mysqli_fetch_row($result);
-	  	print "<tr><td>" .$row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" .$row[3] . "</td></tr>";
+		$row2 = mysqli_fetch_row($result);
+	  	$dataValues[] = $row2[0];
 	}
-print "</table>";
+
+	print "<table border=\"0\"><tr>";
+	foreach($dataValues as $value)
+	{
+		$sql = "select DateTime, DataValue  from devicelog where devicegroupid='". $deviceGroupid."' and deviceid='" .$deviceId. "' and DataType='" . $value . "' order by DateTime desc limit 10";
+		$result = mysqli_query ($db_conn,$sql);
+		print mysqli_error($db_conn);
+		$numrows = mysqli_num_rows ($result);
+			
+			print "<td valign=\"top\"><strong>$value</strong><br><table cellspacing=\"1\" border=\"1\">";
+			for ($tel = 0; $tel < mysqli_num_rows ($result) ; $tel++)
+			{
+				$row = mysqli_fetch_row($result);
+				print "<tr><td style=\"white-space: nowrap\">" .$row[0] . "</td><td style=\"white-space: nowrap\">" . $row[1] . "</td></tr>";
+			}
+			print "</table>";
+	}
+	print "</table>";
 
 
 ?>	
