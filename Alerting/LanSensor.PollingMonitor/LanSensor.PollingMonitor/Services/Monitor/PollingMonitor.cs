@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.DateTime;
+using LanSensor.PollingMonitor.Services.Monitor.DataValueToOld;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
@@ -22,7 +23,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
         private readonly IDeviceStateRepository _deviceStateRepository;
         private readonly IDeviceLogRepository _deviceLogRepository;
         private readonly IGetDateTime _getDateTime;
-
+        private readonly IDataValueToOldMonitor _dataValueToOldMonitor;
         private bool _stop;
 
         public PollingMonitor
@@ -34,7 +35,8 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             IKeepaliveMonitor keepaliveMonitor,
             IStateChangeMonitor stateChange,
             IDeviceStateRepository deviceStateRepository,
-            IGetDateTime getDateTime
+            IGetDateTime getDateTime,
+            IDataValueToOldMonitor dataValueToOldMonitor
         )
         {
             _deviceLogRepository = deviceLogRepository;
@@ -46,6 +48,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             _stateChange = stateChange;
             _getDateTime = getDateTime;
             _stop = false;
+            _dataValueToOldMonitor = dataValueToOldMonitor;
         }
 
         public bool StoppedIntentionaly => _stop;
@@ -104,12 +107,27 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                         }
                     }
 
+                    // StateChangeFromToNotification
                     var stateOnChange = _stateChange.GetStateChangeFromToNotification(
                         latestState, deviceLog,
                         deviceMonitor.StateChangeNotification);
                     if (stateOnChange != null)
                     {
                         _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
+                    }
+
+                    // Data Value Too Old
+                    if (deviceMonitor.DataValueToOld != null)
+                    {
+                        var dataValueRecord = await _deviceLogRepository.GetLatestPresence(
+                            deviceMonitor.DeviceGroupId,
+                            deviceMonitor.DeviceId,
+                            deviceMonitor.DataValueToOld.DataValue);
+
+                        if (_dataValueToOldMonitor.IsDataValueToOld(dataValueRecord, deviceMonitor.DataValueToOld)) {
+                            _alert.SendDataValueToOld(dataValueRecord, deviceMonitor);
+                        }
+
                     }
 
                     latestState.LastKnownDataValue = deviceLog.DataValue;

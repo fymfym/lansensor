@@ -10,6 +10,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
             IEnumerable<Models.Configuration.TimeInterval> timeIntervals, 
             DeviceLogEntity presenceRecord)
         {
+            if (timeIntervals == null) return null;
             if (presenceRecord == null) return timeIntervals.FirstOrDefault();
 
             foreach (var interval in timeIntervals)

@@ -9,5 +9,6 @@ namespace LanSensor.PollingMonitor.Services.Alert
         bool SendStateChangeAlert(StateChangeResult stateNotification, DeviceMonitor deviceMonitor);
         bool SendKeepaliveMissingAlert(DeviceMonitor deviceMonitor);
         bool SendTimerIntervalAlert(DeviceLogEntity presenceRecord, TimeInterval timeInterval, DeviceMonitor deviceMonitor);
+        bool SendDataValueToOld(DeviceLogEntity presenceRecord, DeviceMonitor deviceMonitor);
     }
 }

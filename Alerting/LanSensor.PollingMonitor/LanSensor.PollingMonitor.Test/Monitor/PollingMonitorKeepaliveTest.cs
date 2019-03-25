@@ -6,6 +6,7 @@ using LanSensor.Models.DeviceState;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor;
+using LanSensor.PollingMonitor.Services.Monitor.DataValueToOld;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
@@ -18,11 +19,13 @@ namespace LanSensor.PollingMonitor.Test.Monitor
     {
         private readonly IStateChangeMonitor _fakedStatechange;
         private readonly IGetDateTime _fakedGetDateTime;
+        private readonly IDataValueToOldMonitor _fakedDataToOldMonitor;
 
         public PollingMonitorKeepaliveTest()
         {
             _fakedStatechange = A.Fake<IStateChangeMonitor>();
             _fakedGetDateTime = A.Fake<IGetDateTime>();
+            _fakedDataToOldMonitor = A.Fake<IDataValueToOldMonitor>();
         }
 
         [Fact]
@@ -93,7 +96,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var keepalive = new Services.Monitor.Keepalive.KeepaliveMonitor(deviceLogRepository, nowDateTime);
 
             IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(config, deviceLogRepository, alert, stateCheck, keepalive, 
-                _fakedStatechange,deviceStateRepository, _fakedGetDateTime);
+                _fakedStatechange,deviceStateRepository, _fakedGetDateTime, _fakedDataToOldMonitor);
             pollingMonitor.Run();
             pollingMonitor.Stop();
 
@@ -173,7 +176,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 config, deviceLogRepository, 
                 alert, timeIntervalComparer, keepalive, 
                 _fakedStatechange, deviceStateRepository, 
-                _fakedGetDateTime);
+                _fakedGetDateTime, _fakedDataToOldMonitor);
             pollingMonitor.Run();
             pollingMonitor.Stop();
 

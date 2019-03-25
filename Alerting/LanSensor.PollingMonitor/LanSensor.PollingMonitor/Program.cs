@@ -4,6 +4,7 @@ using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Alert.Slack;
 using LanSensor.PollingMonitor.Services.DateTime;
+using LanSensor.PollingMonitor.Services.Monitor.DataValueToOld;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
@@ -31,6 +32,7 @@ namespace LanSensor.PollingMonitor
                     ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
                     IKeepaliveMonitor keepalive = new KeepaliveMonitor(deviceLogRepository, getDate);
                     IStateChangeMonitor stateChange = new StateChangeMonitor();
+                    IDataValueToOldMonitor dataToOld = new DataValueToOldMonitor();
 
                     var monitor = new Services.Monitor.PollingMonitor(
                         configuration, 
@@ -40,7 +42,9 @@ namespace LanSensor.PollingMonitor
                         keepalive, 
                         stateChange,
                         deviceStateRepository, 
-                        getDate);
+                        getDate,
+                        dataToOld
+                        );
                     Task.Run(() => monitor.Run());
                 }
                 catch (Exception ex)
