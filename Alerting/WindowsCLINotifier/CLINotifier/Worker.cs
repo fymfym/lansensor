@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using SlackAPI;
-using System.Configuration;
 
-namespace LawnMowerNotifier
+namespace LanSensor.CliNotifier
 {
     public class Worker
     {
@@ -59,8 +59,8 @@ namespace LawnMowerNotifier
         {
 
             var channelList = channelListResponse.channels.ToList();
-            string slackChannelNaame = ConfigurationManager.AppSettings.Get("slackChannelNaame");
-            _notificationChannel = channelList.Find(x => x.name.Equals(slackChannelNaame));
+            string slackChannelName = ConfigurationManager.AppSettings.Get("slackChannelName");
+            _notificationChannel = channelList.Find(x => x.name.Equals(slackChannelName));
         }
 
         private static DateTime GetPrecense(string dataType, string dataValue)

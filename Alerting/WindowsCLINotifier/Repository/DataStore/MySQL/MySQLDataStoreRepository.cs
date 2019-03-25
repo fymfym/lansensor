@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using LanSensor.Repository.DataStore.MySQL.Models;
 
 namespace LanSensor.Repository.DataStore.MySQL
 {
     public class MySqlDataStoreRepository : IDataStoreRepository
     {
-        private Configuration _configruation;
+        private readonly Configuration _configruation;
 
         public MySqlDataStoreRepository(Configuration configruation)
         {

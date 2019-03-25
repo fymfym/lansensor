@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanSensor.CLINotifier", "CLINotifier\LanSensor.CLINotifier.csproj", "{722A7575-D94E-47B4-BC78-858F1DD1BD00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanSensor.CliNotifier", "CliNotifier\LanSensor.CliNotifier.csproj", "{722A7575-D94E-47B4-BC78-858F1DD1BD00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanSensor.Repository", "Repository\LanSensor.Repository.csproj", "{8F55993B-A5F6-4F2D-9F6F-F33A530383A8}"
 EndProject
