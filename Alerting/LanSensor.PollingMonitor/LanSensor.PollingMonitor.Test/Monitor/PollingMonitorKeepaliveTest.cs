@@ -38,7 +38,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 {
                     LastExecutedKeepaliveCheckDate = testTime,
                     LastKeepAliveAlert = testTime.AddDays(-2),
-                    LastKnownKeepAlive = testTime.AddDays(-1)
+                    LastKnownKeepAliveDate = testTime.AddDays(-1)
                 }
                 );
 
@@ -115,7 +115,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 {
                     LastExecutedKeepaliveCheckDate = testTime,
                     LastKeepAliveAlert = testTime.AddHours(-1),
-                    LastKnownKeepAlive = testTime.AddHours(-2)
+                    LastKnownKeepAliveDate = testTime.AddHours(-2)
                 }
                 );
 

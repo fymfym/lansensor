@@ -8,9 +8,9 @@ using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceLog.MySQL;
+using LanSensor.Repository.DeviceLog.MySqlDeviceLog;
 using LanSensor.Repository.DeviceState;
-using LanSensor.Repository.DeviceState.MySql;
+using LanSensor.Repository.DeviceState.MySqlDeviceState;
 
 namespace LanSensor.PollingMonitor
 {
@@ -18,9 +18,10 @@ namespace LanSensor.PollingMonitor
     {
         public static void Main(string[] args)
         {
-            while (true)
+            int globlaRetryCount = 10;
+            while (globlaRetryCount > 0)
             {
-                IConfiguration configuration = new Configuration(null);
+                IConfiguration configuration = new Configuration();
 
                 try
                 {
@@ -41,11 +42,14 @@ namespace LanSensor.PollingMonitor
                         stateChange,
                         deviceStateRepository, 
                         getDate);
-                    Task.Run(() => monitor.Run());
+                    var runTask =  monitor.Run();
+                    Task.WaitAll(runTask);
+                    globlaRetryCount = 10;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
+                    globlaRetryCount--;
                 }
             }
             // ReSharper disable once FunctionNeverReturns

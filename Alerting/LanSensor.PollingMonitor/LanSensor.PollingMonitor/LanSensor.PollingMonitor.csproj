@@ -47,4 +47,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="polling_temp.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

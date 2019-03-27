@@ -77,7 +77,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                     {
                         var sendKeepalive = true;
                         if (deviceMonitor.Keepalive.NotifyOnceOnly)
-                            sendKeepalive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
+                            sendKeepalive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAliveDate);
 
                         if (sendKeepalive)
                         {

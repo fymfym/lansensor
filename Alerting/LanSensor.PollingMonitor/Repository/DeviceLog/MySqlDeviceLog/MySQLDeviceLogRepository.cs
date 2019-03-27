@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceLog;
 
-namespace LanSensor.Repository.DeviceLog.MySQL
+namespace LanSensor.Repository.DeviceLog.MySqlDeviceLog
 {
     public class MySqlDataStoreRepository : IDeviceLogRepository
     {
@@ -26,7 +26,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' " +
-                   "and DataValie='keepalive' ";
+                   "and DataValue='keepalive' ";
 
             sql += "order by DateTime desc limit 1";
 
@@ -76,8 +76,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
             string mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
             using (var mysql = new MySql.Data.MySqlClient.MySqlConnection())
             {
-                var strConnect = mySqlConnectionString;
-                mysql.ConnectionString = strConnect;
+                mysql.ConnectionString = mySqlConnectionString;
                 mysql.Open();
 
                 using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, mysql))
