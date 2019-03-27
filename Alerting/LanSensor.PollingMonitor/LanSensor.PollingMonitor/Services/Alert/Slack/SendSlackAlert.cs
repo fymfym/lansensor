@@ -59,6 +59,14 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
             return SendToSlack(deviceMonitor, msg);
         }
 
+        public bool SendDataValueToOld(DeviceLogEntity presenceRecord, DeviceMonitor deviceMonitor)
+        {
+            var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
+            var msg =
+                $"Device {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId} data value is old than {deviceMonitor.DataValueToOld.MaxAgeInMinutes} minutes - message {deviceMonitorMessage}";
+            return SendToSlack(deviceMonitor, msg);
+        }
+
         private bool SendToSlack(DeviceMonitor monitor, string message)
         {
             var slackChannel = GetMonitorSlackChannel(monitor);

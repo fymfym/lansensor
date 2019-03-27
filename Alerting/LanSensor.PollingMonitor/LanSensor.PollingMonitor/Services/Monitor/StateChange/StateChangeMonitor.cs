@@ -28,6 +28,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
         public StateChangeResult GetStateChangeFromToNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
             StateChangeNotification stateChangeNotification)
         {
+            if (stateChangeNotification == null) return null;
             var latestState = deviceState;
 
             var presence = deviceLogEntity;
