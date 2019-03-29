@@ -71,7 +71,6 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                         deviceMonitor.DataType);
 
                     var latestState = await _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                    var deviceLog = await _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
                     var deviceKeepalive = await _deviceLogRepository.GetLatestKeepalive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
 
                     latestState.LastExecutedKeepaliveCheckDate = _getDateTime.Now;
@@ -99,7 +98,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                     if (deviceMonitor.StateChangeNotification.OnEveryChange)
                     {
                         var stateChange = _stateChange.GetStateChangeNotification(
-                            latestState, deviceLog,
+                            latestState, presenceRecord,
                             deviceMonitor.StateChangeNotification);
                         if (stateChange != null)
                         {
@@ -109,7 +108,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 
                     // StateChangeFromToNotification
                     var stateOnChange = _stateChange.GetStateChangeFromToNotification(
-                        latestState, deviceLog,
+                        latestState, presenceRecord,
                         deviceMonitor.StateChangeNotification);
                     if (stateOnChange != null)
                     {
@@ -130,7 +129,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 
                     }
 
-                    latestState.LastKnownDataValue = deviceLog.DataValue;
+                    latestState.LastKnownDataValue = presenceRecord.DataValue;
                     latestState.LastKnownDataValueDate = deviceKeepalive.DateTime;
 
                     await _deviceStateRepository.SetDeviceStateEntity(latestState);
