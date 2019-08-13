@@ -63,15 +63,18 @@ if ($deviceGroupid == "")
 
 if ($deviceId == "")
 {
-    $sql = "select distinct deviceid from devicelog";
+    $sql = "select distinct deviceid from devicelog where devicegroupid='". $deviceGroupid."'";
     $result = mysqli_query ($db_conn,$sql);
     print mysqli_error($db_conn);
     $numrows = mysqli_num_rows ($result);
-    print "<table border=\"1\"><tr><th>Device</th></tr>";
+    print "<table border=\"1\"><tr><th>Last 50</th><th>Overview</th></tr>";
     for ($tel = 0; $tel < mysqli_num_rows ($result) ; $tel++)
     {
         $row = mysqli_fetch_row($result);
-        print "<tr><td><a href=\"?devicegroup=".$deviceGroupid."&device=".$row[0]."\">" .$row[0] . "</a></td></tr>";
+        print "<tr>";
+		print "<td><a href=\"?devicegroup=".$deviceGroupid."&device=".$row[0]."\">" .$row[0] . "</a></td>";
+		print "<td><a href=\"index2.php?devicegroup=".$deviceGroupid."&device=".$row[0]."\">" .$row[0] . "</a></td>";
+		print "</tr>";
     	}
     print "</table>";
     exit();

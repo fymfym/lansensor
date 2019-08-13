@@ -21,6 +21,6 @@ if ($deviceid == "") exit;
 
 $sql = "insert into DeviceLog (DateTime,devicegroupid, deviceid,datatype,datavalue) values ('$date','$devicegroup','$deviceid','$type','$data')";
 mysqli_query ($db_conn,$sql);
-print $sql;
+//print $sql;
 print "Done";
 ?>
