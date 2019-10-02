@@ -12,7 +12,7 @@ namespace LanSensor.Models.Configuration
         /// Reads "polling.json" is no parameter is given
         /// </summary>
         /// <param name="alternateConfigFilename"></param>
-        public Configuration( string alternateConfigFilename)
+        public Configuration(string alternateConfigFilename)
         {
             string filename;
             if (alternateConfigFilename?.Length > 0)
@@ -28,10 +28,12 @@ namespace LanSensor.Models.Configuration
                     altFile = new FileInfo("polling.json");
                 filename = altFile.Name;
             }
+
             using (StreamReader file = File.OpenText(filename))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                ApplicationConfiguration = (ApplicationConfiguration)serializer.Deserialize(file, typeof(ApplicationConfiguration));
+                ApplicationConfiguration =
+                    (ApplicationConfiguration) serializer.Deserialize(file, typeof(ApplicationConfiguration));
             }
         }
     }

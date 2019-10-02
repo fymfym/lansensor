@@ -7,7 +7,6 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
 {
     public class StateChangeMonitor : IStateChangeMonitor
     {
-
         public StateChangeResult GetStateChangeNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
             StateChangeNotification stateChangeNotification)
         {
@@ -22,6 +21,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
                     ChangedToValue = true
                 };
             }
+
             return result;
         }
 

@@ -20,7 +20,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
             return await GetLatestPresence(deviceGroupId, deviceId, null);
         }
 
-        public async Task<DeviceLogEntity> GetLatestKeepalive(string deviceGroupId, string deviceId)
+        public async Task<DeviceLogEntity> GetLatestKeepAlive(string deviceGroupId, string deviceId)
         {
             string sql = "select DataValue, DataType, DateTime from devicelog where ";
 
@@ -56,6 +56,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
                     }
                 }
             }
+
             return resultRecord;
         }
 
@@ -63,7 +64,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
         {
             string sql = "select DataValue, DataType, DateTime from DeviceLog where ";
 
-            sql += "DeviceGroupId = '" + deviceGroupId + "' " + 
+            sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' ";
 
             if (!string.IsNullOrEmpty(dataType))
@@ -98,6 +99,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
                     }
                 }
             }
+
             return resultRecord;
         }
 

@@ -4,8 +4,8 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 {
     public interface IPollingMonitor
     {
-        bool StoppedIntentionaly { get; }
+        bool StoppedIntentionally { get; }
         void Stop();
-        Task<int> Run();
+        int Run();
     }
 }

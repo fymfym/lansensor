@@ -1,5 +1,15 @@
 {
+
     "deviceMonitors": [
+        {
+            "deviceGroupId": "system",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "channel name"
+                }
+            ]
+        },
         {
             "deviceGroupId": "group",
             "deviceId": "device",
@@ -11,15 +21,14 @@
                     "message": "message part to slack"
                 }
             ],
-            "keepalive":
-            {
-                "maxMinutesSinceKeepalive":  60 ,
-                "keepaliveDataType" :  "keepalive" 
+            "keepalive": {
+                "maxMinutesSinceKeepalive": 60,
+                "keepaliveDataType": "keepalive"
             },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "",
-                "onEveryChange": "" 
+                "onEveryChange": ""
             },
             "timeInterval": [
                 {
@@ -55,7 +64,7 @@
         "connectionString": "Server=localhost;Database=default;User=root;Password=password"
     },
     "slack": {
-        "apiKey": ""
+        "apiKey": "xoxb-156370544176-RsQx019lrF2zcRPP45RwZWxa"
     },
     "monitor":
     {

@@ -4,13 +4,14 @@ using LanSensor.Models.DeviceState;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
+using MySql.Data.MySqlClient;
 
 namespace LanSensor.Repository.DeviceState.MySql
 {
     public class MySqlDeviceStateRepository : IDeviceStateRepository
     {
-
         private readonly IConfiguration _configuration;
+
         public MySqlDeviceStateRepository
         (
             IConfiguration configuration
@@ -28,9 +29,9 @@ namespace LanSensor.Repository.DeviceState.MySql
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' ";
 
-            using (var mysql = new SqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+            using (var mysql = new MySqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
             {
-                result =  mysql.Query<DeviceStateEntity>(sql).FirstOrDefault();
+                result = mysql.Query<DeviceStateEntity>(sql).FirstOrDefault();
             }
 
             return Task.Run(() => result);
@@ -59,11 +60,14 @@ namespace LanSensor.Repository.DeviceState.MySql
             sql += "DeviceGroupId = '" + deviceStateEntity.DeviceGroupId + "' " +
                    "and DeviceId='" + deviceStateEntity.DeviceId + "' ";
 
-            using (var mysql = new SqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
-                await mysql.ExecuteAsync(sql,deviceStateEntity);
+            using (var mysql = new MySqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+            {
+                await mysql.ExecuteAsync(sql, deviceStateEntity);
+            }
 
             return deviceStateEntity;
         }
+
         private async Task<DeviceStateEntity> InsertDeviceStateEntity(DeviceStateEntity deviceStateEntity)
         {
             string sql = "insert devicestate into (DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAlive, LastExecutedKeepaliveCheckDate,LastKeepAliveAlert) value (@DeviceGroupId, @DeviceId, @LastKnownDataValue, @LastKnownDataValueDate, @LastKnownKeepAlive, @LastExecutedKeepaliveCheckDate, @LastKeepAliveAlert) ";
@@ -72,11 +76,12 @@ namespace LanSensor.Repository.DeviceState.MySql
             sql += "DeviceGroupId = '" + deviceStateEntity.DeviceGroupId + "' " +
                    "and DeviceId='" + deviceStateEntity.DeviceId + "' ";
 
-            using (var mysql = new SqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+            using (var mysql = new MySqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+            {
                 await mysql.ExecuteAsync(sql, deviceStateEntity);
+            }
 
             return deviceStateEntity;
         }
-
     }
 }

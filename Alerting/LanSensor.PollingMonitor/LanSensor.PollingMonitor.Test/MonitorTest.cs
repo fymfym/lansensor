@@ -7,32 +7,34 @@ using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceState;
+using NLog;
 using Xunit;
 
 namespace LanSensor.PollingMonitor.Test
 {
-
     public class PollingMonitorTest
     {
         private readonly IConfiguration _fakedConfig;
         private readonly IDeviceLogRepository _fakedDeviceLogRepository;
         private readonly IAlert _fakedAlert;
+        private readonly ILogger _fakedLogger;
         private readonly ITimeIntervalMonitor _fakedStateCheckComparer;
-        private readonly IKeepaliveMonitor _fakedKeepaliveMonitor;
+        private readonly IKeepaliveMonitor _fakedKeepAliveMonitor;
         private readonly IStateChangeMonitor _fakedStageChange;
         private readonly IDeviceLogRepository _fakedDeviceLog;
         private readonly IDeviceStateRepository _fakedDeviceStage;
- 
+
         public PollingMonitorTest()
         {
             _fakedConfig = A.Fake<IConfiguration>();
             _fakedDeviceLogRepository = A.Fake<IDeviceLogRepository>();
             _fakedAlert = A.Fake<IAlert>();
             _fakedStateCheckComparer = A.Fake<ITimeIntervalMonitor>();
-            _fakedKeepaliveMonitor = A.Fake<IKeepaliveMonitor>();
+            _fakedKeepAliveMonitor = A.Fake<IKeepaliveMonitor>();
             _fakedStageChange = A.Fake<IStateChangeMonitor>();
             _fakedDeviceLog = A.Fake<IDeviceLogRepository>();
             _fakedDeviceStage = A.Fake<IDeviceStateRepository>();
+            _fakedLogger = A.Fake<ILogger>();
         }
 
 
@@ -40,14 +42,14 @@ namespace LanSensor.PollingMonitor.Test
         public void RunNulParameterTest()
         {
             Assert.Throws<Exception>(() => new Services.Monitor.PollingMonitor(
-                null,_fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog));
+                null, _fakedDeviceLogRepository, _fakedAlert, _fakedStateCheckComparer, _fakedKeepAliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog, _fakedLogger));
         }
 
         [Fact]
         public void RunConfigurationFakedParameterTest()
         {
             var monitor = new Services.Monitor.PollingMonitor(
-                _fakedConfig, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
+                _fakedConfig, _fakedDeviceLogRepository, _fakedAlert, _fakedStateCheckComparer, _fakedKeepAliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog, _fakedLogger);
             Assert.NotNull(monitor);
         }
 
@@ -56,7 +58,7 @@ namespace LanSensor.PollingMonitor.Test
         {
             var config = new Configuration(null);
             var monitor = new Services.Monitor.PollingMonitor(
-                config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
+                config, _fakedDeviceLogRepository, _fakedAlert, _fakedStateCheckComparer, _fakedKeepAliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog, _fakedLogger);
             Assert.NotNull(monitor);
         }
 
@@ -66,14 +68,11 @@ namespace LanSensor.PollingMonitor.Test
             var config = new Configuration(null);
 
             var monitor = new Services.Monitor.PollingMonitor(
-                config, _fakedDeviceLogRepository,_fakedAlert,_fakedStateCheckComparer,_fakedKeepaliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog);
+                config, _fakedDeviceLogRepository, _fakedAlert, _fakedStateCheckComparer, _fakedKeepAliveMonitor, _fakedStageChange, _fakedDeviceStage, _fakedDeviceLog, _fakedLogger);
             monitor.Stop();
 
             Assert.NotNull(monitor);
-            Assert.True(monitor.StoppedIntentionaly);
+            Assert.True(monitor.StoppedIntentionally);
         }
-
-
-
     }
 }
