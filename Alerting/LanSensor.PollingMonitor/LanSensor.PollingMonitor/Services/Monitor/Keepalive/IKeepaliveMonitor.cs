@@ -5,6 +5,6 @@ namespace LanSensor.PollingMonitor.Services.Monitor.Keepalive
 {
     public interface IKeepaliveMonitor
     {
-        Task<bool> IsKeepaliveWithinSpec(DeviceMonitor deviceMonitor);
+        Task<bool> IsKeepAliveWithinSpec(DeviceMonitor deviceMonitor);
     }
 }

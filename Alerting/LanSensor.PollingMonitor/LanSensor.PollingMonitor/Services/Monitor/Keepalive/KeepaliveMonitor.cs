@@ -21,15 +21,19 @@ namespace LanSensor.PollingMonitor.Services.Monitor.Keepalive
             _dateTime = dateTime;
         }
 
-        public async Task<bool> IsKeepaliveWithinSpec(DeviceMonitor monitor)
+        public async Task<bool> IsKeepAliveWithinSpec(DeviceMonitor monitor)
         {
-            var latestKeepalive = await _repository.GetLatestPresence(monitor.DeviceGroupId, monitor.DeviceId,
-                monitor.Keepalive.KeepaliveDataType);
+            if (monitor?.DeviceGroupId == null || monitor?.DeviceId == null || monitor?.Keepalive == null)
+            {
+                return true;
+            }
 
-            if (latestKeepalive == null)
+            var keepAlive = await _repository.GetLatestPresence(monitor.DeviceGroupId, monitor.DeviceId,
+                                monitor.Keepalive.KeepaliveDataType);
+            if (keepAlive == null)
                 return false;
 
-            var ts = new TimeSpan(_dateTime.Now.Ticks - latestKeepalive.DateTime.Ticks);
+            var ts = new TimeSpan(_dateTime.Now.Ticks - keepAlive.DateTime.Ticks);
             return (ts.TotalMinutes <=
                    monitor.Keepalive.MaxMinutesSinceKeepalive);
         }

@@ -6,6 +6,7 @@ using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
+using LanSensor.PollingMonitor.Services.Pause;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceLog.MySQL;
 using LanSensor.Repository.DeviceState;
@@ -32,6 +33,7 @@ namespace LanSensor.PollingMonitor
             ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
             IKeepaliveMonitor keepAlive = new KeepaliveMonitor(deviceLogRepository, getDate);
             IStateChangeMonitor stateChange = new StateChangeMonitor();
+            IPauseService pauseService = new PauseService();
 
             int retry = 10;
             while (true)
@@ -47,14 +49,15 @@ namespace LanSensor.PollingMonitor
                         stateChange,
                         deviceStateRepository,
                         deviceLogRepository,
-                        logger);
+                        logger,
+                        pauseService);
 
-                    monitor.Run();
+                    monitor.RunInLoop();
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString);
-                    Console.WriteLine(ex.ToString());
+                    logger.Error(ex.Message);
+                    Console.WriteLine(ex.Message.ToString());
                     retry--;
                     if (retry < 0)
                     {

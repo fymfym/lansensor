@@ -6,6 +6,6 @@ namespace LanSensor.PollingMonitor.Services.Monitor
     {
         bool StoppedIntentionally { get; }
         void Stop();
-        int Run();
+        int RunInLoop();
     }
 }

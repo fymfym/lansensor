@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
+using LanSensor.PollingMonitor.Services.Pause;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceState;
 using NLog;
@@ -24,6 +24,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
         private readonly IDeviceStateRepository _deviceStateRepository;
         private readonly IDeviceLogRepository _deviceLogRepository;
         private readonly ILogger _logger;
+        private readonly IPauseService _pauseService;
 
         private bool _stop;
 
@@ -37,11 +38,13 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             IStateChangeMonitor stateChange,
             IDeviceStateRepository deviceStateRepository,
             IDeviceLogRepository deviceLogRepository,
-            ILogger logger
+            ILogger logger,
+            IPauseService pauseService
         )
         {
             _deviceLogRepository = deviceLogRepository;
             _logger = logger;
+            _pauseService = pauseService;
             _deviceStateRepository = deviceStateRepository;
             _configuration = configuration ?? throw new Exception("Add configurtation");
             _dataStore = dataStore;
@@ -60,50 +63,44 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             _stop = true;
         }
 
-        public int Run()
+        public void RunThroughDeviceMonitors()
         {
-            _logger.Info("Run starting");
-
-            var systemDeviceMonitor = _configuration.ApplicationConfiguration.DeviceMonitors.FirstOrDefault(x =>
-                x.DeviceGroupId.Equals("system", StringComparison.CurrentCultureIgnoreCase));
-
-            if (systemDeviceMonitor != null)
-                _alert.SendTextMessage(systemDeviceMonitor, "Monitor starting");
-
-            while (!_stop)
+            foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
             {
-                foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
+                if (deviceMonitor == null) continue;
+
+                var presenceRecordTask = _dataStore.GetLatestPresence(
+                    deviceMonitor.DeviceGroupId,
+                    deviceMonitor.DeviceId,
+                    deviceMonitor.DataType);
+
+                var latestStateTask = _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                var deviceLogTask = _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                var latestKeepAliveTask = _deviceLogRepository.GetLatestKeepAlive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+
+                var keepAliveTask = _keepAliveMonitor.IsKeepAliveWithinSpec(deviceMonitor);
+
+                Task.WaitAll(presenceRecordTask, latestKeepAliveTask, deviceLogTask, latestStateTask);
+
+                var latestState = latestStateTask.Result;
+                var deviceLog = deviceLogTask.Result;
+                var latestKeepAlive = latestKeepAliveTask.Result;
+
+                var keepAlive = keepAliveTask.Result;
+                var presenceRecord = presenceRecordTask.Result;
+
+                if (!keepAlive && deviceMonitor.Keepalive != null)
                 {
-                    var presenceRecordTask = _dataStore.GetLatestPresence(
-                        deviceMonitor.DeviceGroupId,
-                        deviceMonitor.DeviceId,
-                        deviceMonitor.DataType);
+                    var sendKeepAlive = true;
+                    if (deviceMonitor.Keepalive.NotifyOnceOnly)
+                        sendKeepAlive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
 
-                    var latestStateTask = _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                    var deviceLogTask = _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                    var latestKeepAliveTask = _deviceLogRepository.GetLatestKeepAlive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                    if (sendKeepAlive)
+                        _alert.SendKeepaliveMissingAlert(deviceMonitor);
+                }
 
-                    var keepAliveTask = _keepAliveMonitor.IsKeepaliveWithinSpec(deviceMonitor);
-
-                    Task.WaitAll(presenceRecordTask, latestKeepAliveTask, deviceLogTask, latestStateTask);
-
-                    var latestState = latestStateTask.Result;
-                    var deviceLog = deviceLogTask.Result;
-                    var latestKeepAlive = latestKeepAliveTask.Result;
-
-                    var keepAlive = keepAliveTask.Result;
-                    var presenceRecord = presenceRecordTask.Result;
-
-                    if (!keepAlive)
-                    {
-                        var sendKeepAlive = true;
-                        if (deviceMonitor.Keepalive.NotifyOnceOnly)
-                            sendKeepAlive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
-
-                        if (sendKeepAlive)
-                            _alert.SendKeepaliveMissingAlert(deviceMonitor);
-                    }
-
+                if (deviceMonitor.TimeIntervals != null)
+                {
                     var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
                     if (failedTimeInterval != null)
                     {
@@ -111,8 +108,10 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                             $"SendTimerIntervalAlert {presenceRecord}, {failedTimeInterval}, {deviceMonitor}");
                         _alert.SendTimerIntervalAlert(presenceRecord, failedTimeInterval, deviceMonitor);
                     }
+                }
 
-
+                if (deviceMonitor.StateChangeNotification != null)
+                {
                     if (deviceMonitor.StateChangeNotification.OnEveryChange)
                     {
                         _logger.Info("State change");
@@ -144,14 +143,32 @@ namespace LanSensor.PollingMonitor.Services.Monitor
 
                     _deviceStateRepository.SetDeviceStateEntity(latestState);
                 }
+            }
 
-                var count = 0;
-                while (_configuration.ApplicationConfiguration.MonitorConfiguration.PollingIntervalSeconds > count)
-                {
-                    Thread.Sleep(1000);
-                    count++;
-                    if (_stop) break;
-                }
+            var count = _configuration.ApplicationConfiguration.MonitorConfiguration.PollingIntervalSeconds;
+            while (count > 0)
+            {
+                _pauseService.Pause(1000);
+                count--;
+                if (_stop) break;
+            }
+        }
+
+        public int RunInLoop()
+        {
+            _logger.Info("RunInLoop starting");
+
+            var systemDeviceMonitor = _configuration.ApplicationConfiguration.DeviceMonitors.FirstOrDefault(x =>
+                x.DeviceGroupId.Equals("system", StringComparison.CurrentCultureIgnoreCase));
+
+            if (systemDeviceMonitor != null)
+                _alert.SendTextMessage(systemDeviceMonitor, "Monitor starting");
+
+            _logger.Info("Starting run loop");
+
+            while (!_stop)
+            {
+                RunThroughDeviceMonitors();
             }
 
             return 1;

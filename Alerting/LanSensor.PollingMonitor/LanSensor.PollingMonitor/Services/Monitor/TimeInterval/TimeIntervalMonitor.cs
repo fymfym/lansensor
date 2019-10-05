@@ -25,8 +25,8 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
                         return interval;
                 }
             }
-            
-            return  null;
+
+            return null;
         }
 
         private bool PresenceInConfiguredWeekdays(

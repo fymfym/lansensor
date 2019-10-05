@@ -64,7 +64,7 @@
         "connectionString": "Server=localhost;Database=default;User=root;Password=password"
     },
     "slack": {
-        "apiKey": "xoxb-156370544176-RsQx019lrF2zcRPP45RwZWxa"
+        "apiKey": "xoxb...."
     },
     "monitor":
     {

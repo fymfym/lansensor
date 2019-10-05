@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceState;
-using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
 using MySql.Data.MySqlClient;
@@ -23,7 +22,7 @@ namespace LanSensor.Repository.DeviceState.MySql
         public Task<DeviceStateEntity> GetLatestDeviceStateEntity(string deviceGroupId, string deviceId)
         {
             DeviceStateEntity result;
-            string sql = "select DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAlive, LastExecutedKeepaliveCheckDate,LastKeepAliveAlert ";
+            string sql = "select DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAliveDate, LastExecutedKeepaliveCheckDate, LastKeepAliveAlert ";
             sql += " from devicestate where ";
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
