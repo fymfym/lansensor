@@ -6,6 +6,5 @@ namespace LanSensor.Models.Configuration
     public class MonitorConfiguration
     {
         [JsonProperty("pollingIntervalSeconds")] public int PollingIntervalSeconds { get; set; }
-
     }
 }

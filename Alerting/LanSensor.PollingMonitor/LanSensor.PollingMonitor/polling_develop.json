@@ -13,7 +13,7 @@
         {
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "dataType": "type",
+            "dataType": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -28,7 +28,7 @@
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "",
-                "onEveryChange": ""
+                "onEveryChange": "true"
             },
             "timeInterval": [
                 {

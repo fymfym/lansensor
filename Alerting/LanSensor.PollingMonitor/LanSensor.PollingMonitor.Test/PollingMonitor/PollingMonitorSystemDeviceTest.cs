@@ -30,16 +30,16 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
             var pauseService = A.Fake<IPauseService>();
 
             A.CallTo(() => config.ApplicationConfiguration).Returns(
-                new ApplicationConfiguration()
+                new ApplicationConfiguration
                 {
-                    DeviceMonitors = new List<DeviceMonitor>()
+                    DeviceMonitors = new List<DeviceMonitor>
                     {
-                        new DeviceMonitor()
+                        new DeviceMonitor
                         {
                             DeviceGroupId = "system",
-                            MessageMediums = new List<MessageMedium>()
+                            MessageMediums = new List<MessageMedium>
                             {
-                                new MessageMedium()
+                                new MessageMedium
                                 {
                                     MediumType = "slack",
                                     ReceiverId = "slack channel",
@@ -48,7 +48,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                             }
                         }
                     },
-                    MonitorConfiguration = new MonitorConfiguration()
+                    MonitorConfiguration = new MonitorConfiguration
                     {
                         PollingIntervalSeconds = 1
                     }

@@ -11,7 +11,7 @@ using LanSensor.Repository.DeviceState;
 using NLog;
 using Xunit;
 
-namespace LanSensor.PollingMonitor.Test.Monitor
+namespace LanSensor.PollingMonitor.Test.PollingMonitor
 {
     public class PollingMonitorStartTest
     {
@@ -30,10 +30,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var pauseService = A.Fake<IPauseService>();
 
             A.CallTo(() => config.ApplicationConfiguration).Returns(
-                new ApplicationConfiguration()
+                new ApplicationConfiguration
                 {
                     DeviceMonitors = new List<DeviceMonitor>(),
-                    MonitorConfiguration = new MonitorConfiguration()
+                    MonitorConfiguration = new MonitorConfiguration
                     {
                         PollingIntervalSeconds = 10
                     }

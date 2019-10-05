@@ -53,7 +53,7 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"Keepalive missing for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+                $"KeepAlive missing for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
             _logger.Info($"Slack SendKeepAliveMissingAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }

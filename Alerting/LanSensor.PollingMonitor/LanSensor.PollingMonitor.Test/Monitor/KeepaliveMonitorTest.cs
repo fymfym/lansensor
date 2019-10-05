@@ -12,13 +12,13 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 {
     public class KeepAliveMonitorTest
     {
-        private IDeviceLogRepository _fakedRepository;
+        private readonly IDeviceLogRepository _fakedRepository;
 
         public KeepAliveMonitorTest()
         {
             _fakedRepository = A.Fake<IDeviceLogRepository>();
             A.CallTo(() => _fakedRepository.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
-                .Returns(Task.FromResult(new DeviceLogEntity()
+                .Returns(Task.FromResult(new DeviceLogEntity
                 {
                     DateTime = new DateTime(1, 1, 1, 1, 1, 10)
                 }));
@@ -42,7 +42,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var getDateTime = A.Fake<IGetDateTime>();
             var keepAliveMonitor = new KeepaliveMonitor(repository, getDateTime);
 
-            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor()
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor
             {
                 DeviceId = ""
             });
@@ -57,7 +57,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var getDateTime = A.Fake<IGetDateTime>();
             var keepAliveMonitor = new KeepaliveMonitor(repository, getDateTime);
 
-            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor()
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor
             {
                 DeviceGroupId = ""
             });
@@ -93,13 +93,13 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
         private static DeviceMonitor GetDeviceMonitor()
         {
-            return new DeviceMonitor()
+            return new DeviceMonitor
             {
                 DeviceGroupId = "",
                 DeviceId = "",
-                Keepalive = new Keepalive()
+                KeepAlive = new KeepAlive
                 {
-                    MaxMinutesSinceKeepalive = 1
+                    MaxMinutesSinceKeepAlive = 1
                 }
             };
         }

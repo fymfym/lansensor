@@ -15,7 +15,7 @@ using NLog.Web;
 
 namespace LanSensor.PollingMonitor
 {
-    static class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -27,7 +27,7 @@ namespace LanSensor.PollingMonitor
             Console.WriteLine(configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString);
 
             IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
-            IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration,logger);
+            IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration, logger);
             IGetDateTime getDate = new GetDateTime();
             IAlert alerter = new SendSlackAlert(configuration, logger);
             ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
@@ -35,7 +35,7 @@ namespace LanSensor.PollingMonitor
             IStateChangeMonitor stateChange = new StateChangeMonitor();
             IPauseService pauseService = new PauseService();
 
-            int retry = 10;
+            var retry = 10;
             while (true)
             {
                 try
@@ -57,7 +57,7 @@ namespace LanSensor.PollingMonitor
                 catch (Exception ex)
                 {
                     logger.Error(ex.Message);
-                    Console.WriteLine(ex.Message.ToString());
+                    Console.WriteLine(ex.Message);
                     retry--;
                     if (retry < 0)
                     {

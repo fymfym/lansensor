@@ -71,6 +71,8 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             {
                 if (deviceMonitor == null) continue;
 
+                _logger.Info($"Device monitor: {deviceMonitor.DeviceGroupId}, {deviceMonitor.DeviceId}");
+
                 var presenceRecordTask = _dataStore.GetLatestPresence(
                     deviceMonitor.DeviceGroupId,
                     deviceMonitor.DeviceId,
@@ -99,16 +101,16 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                 var latestKeepAlive = latestKeepAliveTask.Result;
                 if (latestKeepAlive == null)
                 {
-                    latestKeepAlive = new DeviceLogEntity();
+                    continue;
                 }
 
                 var keepAlive = keepAliveTask.Result;
                 var presenceRecord = presenceRecordTask.Result;
 
-                if (!keepAlive && deviceMonitor.Keepalive != null)
+                if (!keepAlive && deviceMonitor.KeepAlive != null)
                 {
                     var sendKeepAlive = true;
-                    if (deviceMonitor.Keepalive.NotifyOnceOnly)
+                    if (deviceMonitor.KeepAlive.NotifyOnceOnly)
                         sendKeepAlive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
 
                     if (sendKeepAlive)
@@ -149,15 +151,17 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                         _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
                     }
 
+                    latestState.DeviceGroupId = deviceMonitor.DeviceGroupId;
+                    latestState.DeviceId = deviceMonitor.DeviceId;
                     latestState.LastKnownDataValue = deviceLog.DataValue;
-                    latestState.LastExecutedKeepaliveCheckDate = System.DateTime.Now;
+                    latestState.LastExecutedKeepAliveCheckDate = System.DateTime.Now;
                     latestState.LastKnownDataValueDate = latestKeepAlive.DateTime;
                     if (latestKeepAlive.DateTime > latestState.LastKnownKeepAlive)
                     {
                         latestState.LastKnownKeepAlive = latestKeepAlive.DateTime;
                     }
 
-                    _deviceStateRepository.SetDeviceStateEntity(latestState);
+                    _deviceStateRepository.SetDeviceStateEntity(latestState).Wait();
                 }
             }
 
