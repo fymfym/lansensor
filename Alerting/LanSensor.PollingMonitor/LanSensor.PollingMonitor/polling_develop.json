@@ -11,8 +11,8 @@
             ]
         },
         {
-            "deviceGroupId": "group",
-            "deviceId": "device",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "lawnmower",
             "dataType": "type",
             "messageMediums": [
                 {
@@ -61,7 +61,7 @@
         }
     ],
     "mysql": {
-        "connectionString": "Server=localhost;Database=default;User=root;Password=password"
+        "connectionString": "Server=127.0.01;Database=lansensor;User=fym;Password=password"
     },
     "slack": {
         "apiKey": "xoxb...."

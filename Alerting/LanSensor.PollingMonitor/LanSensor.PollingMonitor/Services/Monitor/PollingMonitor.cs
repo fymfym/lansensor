@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
+using LanSensor.Models.DeviceLog;
+using LanSensor.Models.DeviceState;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
@@ -83,8 +85,22 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                 Task.WaitAll(presenceRecordTask, latestKeepAliveTask, deviceLogTask, latestStateTask);
 
                 var latestState = latestStateTask.Result;
+                if (latestState == null)
+                {
+                    latestState = new DeviceStateEntity();
+                }
+
                 var deviceLog = deviceLogTask.Result;
+                if (deviceLog == null)
+                {
+                    deviceLog = new DeviceLogEntity();
+                }
+
                 var latestKeepAlive = latestKeepAliveTask.Result;
+                if (latestKeepAlive == null)
+                {
+                    latestKeepAlive = new DeviceLogEntity();
+                }
 
                 var keepAlive = keepAliveTask.Result;
                 var presenceRecord = presenceRecordTask.Result;
@@ -96,7 +112,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                         sendKeepAlive = (latestState.LastKeepAliveAlert < latestState.LastKnownKeepAlive);
 
                     if (sendKeepAlive)
-                        _alert.SendKeepaliveMissingAlert(deviceMonitor);
+                        _alert.SendKeepAliveMissingAlert(deviceMonitor);
                 }
 
                 if (deviceMonitor.TimeIntervals != null)

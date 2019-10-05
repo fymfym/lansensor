@@ -26,7 +26,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' " +
-                   "and DataValue='keepalive' ";
+                   "and DataType='keepalive' ";
 
             sql += "order by DateTime desc limit 1";
 

@@ -27,7 +27,7 @@ namespace LanSensor.PollingMonitor
             Console.WriteLine(configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString);
 
             IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
-            IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration);
+            IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration,logger);
             IGetDateTime getDate = new GetDateTime();
             IAlert alerter = new SendSlackAlert(configuration, logger);
             ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
