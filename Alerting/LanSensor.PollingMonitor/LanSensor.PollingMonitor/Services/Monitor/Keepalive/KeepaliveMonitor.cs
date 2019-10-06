@@ -6,7 +6,7 @@ using LanSensor.Repository.DeviceLog;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
 {
-    public class KeepAliveMonitor : IKeepaliveMonitor
+    public class KeepAliveMonitor : IKeepAliveMonitor
     {
         private readonly IDeviceLogRepository _repository;
         private readonly IDateTimeService _dateTimeService;
@@ -23,7 +23,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
 
         public async Task<bool> IsKeepAliveWithinSpec(DeviceMonitor monitor)
         {
-            if (monitor?.DeviceGroupId == null || monitor?.DeviceId == null || monitor?.KeepAlive == null)
+            if (monitor?.DeviceGroupId == null || monitor.DeviceId == null || monitor.KeepAlive == null)
             {
                 return true;
             }
@@ -34,8 +34,8 @@ namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
                 return false;
 
             var ts = new TimeSpan(_dateTimeService.Now.Ticks - keepAlive.DateTime.Ticks);
-            return (ts.TotalMinutes <=
-                   monitor.KeepAlive.MaxMinutesSinceKeepAlive);
+            return ts.TotalMinutes <=
+                   monitor.KeepAlive.MaxMinutesSinceKeepAlive;
         }
     }
 }

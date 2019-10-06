@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceState;
-using LanSensor.Repository.DeviceState.MySql;
+using LanSensor.Repository.DeviceState.MySqlDeviceState;
 using NLog;
 using Xunit;
 
@@ -56,7 +56,7 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
                 LastKeepAliveAlert = DateTime.Now,
                 LastKnownDataValue = "test value",
                 LastKnownDataValueDate = DateTime.Now,
-                LastKnownKeepAlive = DateTime.Now
+                LastKnownKeepAliveDate = DateTime.Now
             };
 
             var result = await repo.SetDeviceStateEntity(deviceEntity);

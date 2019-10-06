@@ -22,7 +22,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
             var dataStore = A.Fake<IDeviceLogRepository>();
             var alert = A.Fake<IAlert>();
             var stateCheckMonitor = A.Fake<ITimeIntervalMonitor>();
-            var keepAliveMonitor = A.Fake<IKeepaliveMonitor>();
+            var keepAliveMonitor = A.Fake<IKeepAliveMonitor>();
             var stateChange = A.Fake<IStateChangeMonitor>();
             var deviceStateRepository = A.Fake<IDeviceStateRepository>();
             var deviceLogRepository = A.Fake<IDeviceLogRepository>();
@@ -42,7 +42,6 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
 
             var monitor = new Services.Monitor.PollingMonitor(
                 config,
-                dataStore,
                 alert,
                 stateCheckMonitor,
                 keepAliveMonitor,

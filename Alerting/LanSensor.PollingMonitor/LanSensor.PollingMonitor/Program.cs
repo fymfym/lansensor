@@ -8,9 +8,9 @@ using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
 using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceLog.MySQL;
+using LanSensor.Repository.DeviceLog.MySqlDeviceLog;
 using LanSensor.Repository.DeviceState;
-using LanSensor.Repository.DeviceState.MySql;
+using LanSensor.Repository.DeviceState.MySqlDeviceState;
 using NLog.Web;
 
 namespace LanSensor.PollingMonitor
@@ -19,45 +19,47 @@ namespace LanSensor.PollingMonitor
     {
         public static void Main(string[] args)
         {
-            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-
-            IConfiguration configuration = new Configuration(null);
-
-            logger.Info(configuration.ApplicationConfiguration.MySqlConfiguration);
-
-            IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
-            IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration, logger);
-            IDateTimeService date = new DateTimeServiceService();
-            IAlert alerter = new SendSlackAlert(configuration, logger);
-            ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
-            IKeepaliveMonitor keepAlive = new KeepAliveMonitor(deviceLogRepository, date);
-            IStateChangeMonitor stateChange = new StateChangeMonitor();
-            IPauseService pauseService = new PauseService();
-
-            var retry = 10;
-            while (true)
+            var globalRetryCount = 10;
+            while (globalRetryCount > 0)
             {
+                var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
+                IConfiguration configuration = new Configuration();
+
                 try
                 {
+                    IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
+                    IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration, logger);
+                    IDateTimeService getDate = new DateTimeService();
+                    IAlert alerter = new SendSlackAlert(configuration, logger);
+                    ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
+                    IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitor(deviceLogRepository, getDate);
+                    IStateChangeMonitor stateChange = new StateChangeMonitor();
+                    IPauseService pauseService = new PauseService();
+
                     var monitor = new Services.Monitor.PollingMonitor(
                         configuration,
-                        deviceLogRepository,
                         alerter,
                         stateCheckComparer,
-                        keepAlive,
+                        keepAliveMonitor,
                         stateChange,
                         deviceStateRepository,
                         deviceLogRepository,
                         logger,
-                        pauseService);
+                        pauseService
+                    );
+
+                    monitor.RunInLoop();
+
+                    globalRetryCount = 10;
 
                     monitor.RunInLoop();
                 }
                 catch (Exception ex)
                 {
                     logger.Error(ex.Message);
-                    retry--;
-                    if (retry < 0)
+                    globalRetryCount--;
+                    if (globalRetryCount < 0)
                     {
                         break;
                     }

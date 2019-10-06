@@ -1,7 +1,7 @@
 ﻿
 namespace LanSensor.PollingMonitor.Services.DateTime
 {
-    public class DateTimeServiceService : IDateTimeService
+    public class DateTimeService : IDateTimeService
     {
         public System.DateTime Now => System.DateTime.Now;
     }

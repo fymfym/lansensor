@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceState;
-using System.Linq;
-using Dapper;
-using NLog;
 using MySql.Data.MySqlClient;
+using NLog;
 
-namespace LanSensor.Repository.DeviceState.MySql
+namespace LanSensor.Repository.DeviceState.MySqlDeviceState
 {
     public class MySqlDeviceStateRepository : IDeviceStateRepository
     {
@@ -104,7 +104,7 @@ namespace LanSensor.Repository.DeviceState.MySql
                     cmd.Parameters.AddWithValue("DeviceId", deviceStateEntity.DeviceId);
                     cmd.Parameters.AddWithValue("LastKnownDataValue", deviceStateEntity.LastKnownDataValue);
                     cmd.Parameters.AddWithValue("LastKnownDataValueDate", deviceStateEntity.LastKnownDataValueDate);
-                    cmd.Parameters.AddWithValue("LastKnownKeepAlive", deviceStateEntity.LastKnownKeepAlive);
+                    cmd.Parameters.AddWithValue("LastKnownKeepAlive", deviceStateEntity.LastKnownKeepAliveDate);
                     cmd.Parameters.AddWithValue("LastExecutedKeepAliveCheckDate", deviceStateEntity.LastExecutedKeepAliveCheckDate);
                     cmd.Parameters.AddWithValue("LastKeepAliveAlert", deviceStateEntity.LastKeepAliveAlert);
 

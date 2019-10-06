@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.IO;
 
 namespace LanSensor.Models.Configuration
 {
@@ -7,12 +7,21 @@ namespace LanSensor.Models.Configuration
     {
         public ApplicationConfiguration ApplicationConfiguration { get; set; }
 
+        public Configuration()
+        {
+            Init(null);
+        }
 
         /// <summary>
         /// Reads "polling.json" is no parameter is given
         /// </summary>
         /// <param name="alternateConfigFilename"></param>
         public Configuration(string alternateConfigFilename)
+        {
+            Init(alternateConfigFilename);
+        }
+
+        private void Init(string alternateConfigFilename)
         {
             string filename;
             if (alternateConfigFilename?.Length > 0)
@@ -21,11 +30,22 @@ namespace LanSensor.Models.Configuration
             }
             else
             {
-                var altFile = new FileInfo("polling_production.json");
+                var altFile = new FileInfo("polling_temp.json");
                 if (!altFile.Exists)
+                {
                     altFile = new FileInfo("polling_develop.json");
+                }
+
                 if (!altFile.Exists)
+                {
+                    altFile = new FileInfo("polling_develop.json");
+                }
+
+                if (!altFile.Exists)
+                {
                     altFile = new FileInfo("polling.json");
+                }
+
                 filename = altFile.Name;
             }
 
