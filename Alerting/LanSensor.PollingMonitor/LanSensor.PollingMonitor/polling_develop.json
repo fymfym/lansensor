@@ -11,9 +11,9 @@
             ]
         },
         {
-            "deviceGroupId": "group",
-            "deviceId": "device",
-            "dataType": "type",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "lawnmower",
+            "dataType": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -21,14 +21,14 @@
                     "message": "message part to slack"
                 }
             ],
-            "keepalive": {
-                "maxMinutesSinceKeepalive": 60,
-                "keepaliveDataType": "keepalive"
+            "keepAlive": {
+                "maxMinutesSinceKeepAlive": 60,
+                "keepAliveDataType": "keepalive"
             },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "",
-                "onEveryChange": ""
+                "onEveryChange": "true"
             },
             "timeInterval": [
                 {
@@ -61,7 +61,7 @@
         }
     ],
     "mysql": {
-        "connectionString": "Server=localhost;Database=default;User=root;Password=password"
+        "connectionString": "Server=127.0.01;Database=lansensor;User=fym;Password=password"
     },
     "slack": {
         "apiKey": "xoxb...."

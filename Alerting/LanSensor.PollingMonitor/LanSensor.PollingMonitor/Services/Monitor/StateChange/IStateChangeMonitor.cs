@@ -14,6 +14,5 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             DeviceStateEntity deviceState,
             DeviceLogEntity deviceLogEntity,
             Models.Configuration.StateChangeNotification stateChangeNotification);
-
     }
 }

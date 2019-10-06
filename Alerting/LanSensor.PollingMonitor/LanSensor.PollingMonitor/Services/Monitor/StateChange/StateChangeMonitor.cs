@@ -28,6 +28,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
         public StateChangeResult GetStateChangeFromToNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
             StateChangeNotification stateChangeNotification)
         {
+            if (stateChangeNotification == null) return null;
             var latestState = deviceState;
 
             var presence = deviceLogEntity;
@@ -41,7 +42,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             {
                 if (string.Equals(stateChangeNotification.OnDataValueChangeFrom, latestState.LastKnownDataValue))
                 {
-                    result = new StateChangeResult()
+                    result = new StateChangeResult
                     {
                         DataValue = stateChangeNotification.OnDataValueChangeFrom,
                         ChangedFromValue = true
@@ -49,16 +50,15 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
                 }
             }
 
-            if (!string.IsNullOrEmpty(stateChangeNotification.OnDataValueChangeTo))
+            if (string.IsNullOrEmpty(stateChangeNotification.OnDataValueChangeTo)) return result;
+
+            if (string.Equals(stateChangeNotification.OnDataValueChangeTo, presence.DataValue))
             {
-                if (string.Equals(stateChangeNotification.OnDataValueChangeTo, presence.DataValue))
+                result = new StateChangeResult
                 {
-                    result = new StateChangeResult()
-                    {
-                        DataValue = presence.DataValue,
-                        ChangedToValue = true
-                    };
-                }
+                    DataValue = presence.DataValue,
+                    ChangedToValue = true
+                };
             }
 
             return result;
