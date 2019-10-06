@@ -12,7 +12,7 @@ namespace LanSensor.Models.Configuration
         [JsonProperty("messageMediums")] public IEnumerable<MessageMedium> MessageMediums { get; set; }
         [JsonProperty("timeInterval")] public IEnumerable<TimeInterval> TimeIntervals { get; set; }
         [JsonProperty("dataValueToOld")] public DataValueToOld DataValueToOld { get; set; }
-        [JsonProperty("keepalive")] public Keepalive Keepalive { get; set; }
+        [JsonProperty("keepalive")] public KeepAlive KeepAlive { get; set; }
         [JsonProperty("stateChangeNotification")] public StateChangeNotification StateChangeNotification { get; set; }
     }
 }

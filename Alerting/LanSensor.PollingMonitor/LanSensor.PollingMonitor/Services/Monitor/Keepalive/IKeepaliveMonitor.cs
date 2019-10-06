@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using LanSensor.Models.Configuration;
 
-namespace LanSensor.PollingMonitor.Services.Monitor.Keepalive
+namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
 {
-    public interface IKeepaliveMonitor
+    public interface IKeepAliveMonitor
     {
-        Task<bool> IsKeepaliveWithinSpec(DeviceMonitor deviceMonitor);
+        Task<bool> IsKeepAliveWithinSpec(DeviceMonitor deviceMonitor);
     }
 }

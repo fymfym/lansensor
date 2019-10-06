@@ -11,14 +11,10 @@
 
   <ItemGroup>
     <None Remove="nlog.config" />
-    <None Remove="polling.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="nlog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="polling.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -48,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="polling_temp.json">
+    <None Update="polling_develop.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

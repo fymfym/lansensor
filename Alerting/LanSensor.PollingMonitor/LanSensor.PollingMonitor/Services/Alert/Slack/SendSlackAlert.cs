@@ -1,37 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceLog;
 using LanSensor.Models.DeviceState;
+using NLog;
 using SlackAPI;
 
 namespace LanSensor.PollingMonitor.Services.Alert.Slack
 {
     public class SendSlackAlert : IAlert
     {
+        private readonly ILogger _logger;
         private IList<Channel> _slackAlertChannels;
         private readonly SlackClient _slackClient;
 
         public SendSlackAlert(
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger logger)
         {
-            _slackClient = new SlackClient(configuration.ApplicationConfiguration.SlackConfiguration.ApiKey);
-            _slackClient.GetChannelList(SlackChannelListResponse);
-            int count = 1000;
-            while (true)
+            _logger = logger;
+            var apiKey = configuration.ApplicationConfiguration.SlackConfiguration.ApiKey;
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
-                if (_slackAlertChannels != null) break;
-                System.Threading.Thread.Sleep(200);
-                if (count-- < 0)
-                {
-                    throw new Exception("No connection to slack");
-                }
+                _logger.Warn("Slack not initialized");
             }
+
+            _slackClient = new SlackClient(apiKey);
+            _slackClient.GetChannelList(SlackChannelListResponse);
         }
+
 
         private void SlackChannelListResponse(ChannelListResponse obj)
         {
+            if (obj?.channels == null)
+            {
+                _logger.Warn("Slack channel list not obtainable");
+                return;
+            }
+
             _slackAlertChannels = obj.channels.ToList();
         }
 
@@ -43,11 +49,12 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
             return SendToSlack(deviceMonitor, msg);
         }
 
-        public bool SendKeepaliveMissingAlert(DeviceMonitor deviceMonitor)
+        public bool SendKeepAliveMissingAlert(DeviceMonitor deviceMonitor)
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"Keepalive missing for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+                $"KeepAlive missing for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+            _logger.Info($"Slack SendKeepAliveMissingAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }
 
@@ -56,15 +63,14 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
                 $"device {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId} is outside desired value of '{timeInterval.DataValue}' with message {deviceMonitorMessage}";
+            _logger.Info($"Slack SendTimerIntervalAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }
 
-        public bool SendDataValueToOld(DeviceLogEntity presenceRecord, DeviceMonitor deviceMonitor)
+        public bool SendTextMessage(DeviceMonitor deviceMonitor, string message)
         {
-            var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
-            var msg =
-                $"Device {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId} data value is old than {deviceMonitor.DataValueToOld.MaxAgeInMinutes} minutes - message {deviceMonitorMessage}";
-            return SendToSlack(deviceMonitor, msg);
+            _logger.Info($"Slack SendTextMessage:{message}");
+            return SendToSlack(deviceMonitor, message);
         }
 
         private bool SendToSlack(DeviceMonitor monitor, string message)
@@ -79,16 +85,20 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
         {
             var messageMedium = monitor.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower().Trim() == "slack");
             if (messageMedium == null) return null;
+            if (_slackAlertChannels == null)
+            {
+                _logger.Error("Slack not properly configured");
+                return null;
+            }
+
             var channel = _slackAlertChannels.FirstOrDefault(x => x.name == messageMedium.ReceiverId);
             return channel;
         }
 
-        private string GetMonitorMessage(DeviceMonitor monitor)
+        private static string GetMonitorMessage(DeviceMonitor monitor)
         {
             var messageMedium = monitor.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower().Trim() == "slack");
             return messageMedium?.Message;
         }
-
-
     }
 }

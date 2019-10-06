@@ -1,48 +1,59 @@
-﻿using System.Data.SqlClient;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceState;
+using MySql.Data.MySqlClient;
+using NLog;
 
 namespace LanSensor.Repository.DeviceState.MySqlDeviceState
 {
     public class MySqlDeviceStateRepository : IDeviceStateRepository
     {
-
         private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
+
         public MySqlDeviceStateRepository
         (
-            IConfiguration configuration
+            IConfiguration configuration,
+            ILogger logger
         )
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public Task<DeviceStateEntity> GetLatestDeviceStateEntity(string deviceGroupId, string deviceId)
         {
             DeviceStateEntity result;
-            string sql = "select DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAliveDate, LastExecutedKeepaliveCheckDate,LastKeepAliveAlert ";
+            var sql = "select DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAliveDate, LastExecutedKeepAliveCheckDate, LastKeepAliveAlert ";
             sql += " from devicestate where ";
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' ";
 
-            using (var mysql = new MySql.Data.MySqlClient.MySqlConnection())
+            try
             {
-                var strConnect = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
-                mysql.ConnectionString = strConnect;
-                mysql.Open();
+                using (var mysql =
+                    new MySqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+                {
+                    result = mysql.Query<DeviceStateEntity>(sql).FirstOrDefault();
+                }
 
-                result =  mysql.Query<DeviceStateEntity>(sql).FirstOrDefault();
+                return Task.Run(() => result);
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal($"InsertDeviceStateEntity Execution failes: {ex.Message}");
             }
 
-            return Task.Run(() => result);
+            return null;
         }
 
         public async Task<DeviceStateEntity> SetDeviceStateEntity(DeviceStateEntity deviceStateEntity)
         {
-            DeviceStateEntity result = await GetLatestDeviceStateEntity(deviceStateEntity.DeviceGroupId, deviceStateEntity.DeviceId);
+            var result = await GetLatestDeviceStateEntity(deviceStateEntity.DeviceGroupId, deviceStateEntity.DeviceId);
             if (result == null)
             {
                 await InsertDeviceStateEntity(deviceStateEntity);
@@ -57,30 +68,55 @@ namespace LanSensor.Repository.DeviceState.MySqlDeviceState
 
         private async Task<DeviceStateEntity> UpdateDeviceStateEntity(DeviceStateEntity deviceStateEntity)
         {
-            string sql = "update devicestate set LastKnownDataValue=@LastKnownDataValue, LastKnownDataValueDate=@LastKnownDataValueDate, LastKnownKeepAliveDate=@LastKnownKeepAliveDate, LastExecutedKeepaliveCheckDate=@LastExecutedKeepaliveCheckDate,LastKeepAliveAlert=@LastKeepAliveAlert ";
+            var sql = "update devicestate set LastKnownDataValue=@LastKnownDataValue, LastKnownDataValueDate=@LastKnownDataValueDate, LastKnownKeepAliveDate=@LastKnownKeepAlive, LastExecutedKeepAliveCheckDate=@LastExecutedKeepAliveCheckDate,LastKeepAliveAlert=@LastKeepAliveAlert ";
             sql += "where ";
 
             sql += "DeviceGroupId = '" + deviceStateEntity.DeviceGroupId + "' " +
                    "and DeviceId='" + deviceStateEntity.DeviceId + "' ";
 
-            using (var mysql = new SqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
-                await mysql.ExecuteAsync(sql,deviceStateEntity);
+            try
+            {
+                using (var mysql =
+                    new MySqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+                {
+                    await mysql.ExecuteAsync(sql, deviceStateEntity);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal($"UpdateDeviceStateEntity Execution failes: {ex.Message}");
+            }
 
             return deviceStateEntity;
         }
-        private async Task<DeviceStateEntity> InsertDeviceStateEntity(DeviceStateEntity deviceStateEntity)
+
+        private Task<DeviceStateEntity> InsertDeviceStateEntity(DeviceStateEntity deviceStateEntity)
         {
-            string sql = "insert devicestate into (DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAliveDate, LastExecutedKeepaliveCheckDate,LastKeepAliveAlert) value (@DeviceGroupId, @DeviceId, @LastKnownDataValue, @LastKnownDataValueDate, @LastKnownKeepAliveDate, @LastExecutedKeepaliveCheckDate, @LastKeepAliveAlert) ";
-            sql += "where ";
+            const string sql = "insert into devicestate (DeviceGroupId, DeviceId, LastKnownDataValue, LastKnownDataValueDate, LastKnownKeepAliveDate, LastExecutedKeepAliveCheckDate,LastKeepAliveAlert) value (@DeviceGroupId, @DeviceId, @LastKnownDataValue, @LastKnownDataValueDate, @LastKnownKeepAlive, @LastExecutedKeepAliveCheckDate, @LastKeepAliveAlert) ";
+            try
+            {
+                using (var mysql =
+                    new MySqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
+                {
+                    mysql.Open();
+                    var cmd = new MySqlCommand {CommandText = sql, Connection = mysql};
+                    cmd.Parameters.AddWithValue("DeviceGroupId", deviceStateEntity.DeviceGroupId);
+                    cmd.Parameters.AddWithValue("DeviceId", deviceStateEntity.DeviceId);
+                    cmd.Parameters.AddWithValue("LastKnownDataValue", deviceStateEntity.LastKnownDataValue);
+                    cmd.Parameters.AddWithValue("LastKnownDataValueDate", deviceStateEntity.LastKnownDataValueDate);
+                    cmd.Parameters.AddWithValue("LastKnownKeepAlive", deviceStateEntity.LastKnownKeepAliveDate);
+                    cmd.Parameters.AddWithValue("LastExecutedKeepAliveCheckDate", deviceStateEntity.LastExecutedKeepAliveCheckDate);
+                    cmd.Parameters.AddWithValue("LastKeepAliveAlert", deviceStateEntity.LastKeepAliveAlert);
 
-            sql += "DeviceGroupId = '" + deviceStateEntity.DeviceGroupId + "' " +
-                   "and DeviceId='" + deviceStateEntity.DeviceId + "' ";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal($"InsertDeviceStateEntity Execution failes: {ex.Message}");
+            }
 
-            using (var mysql = new SqlConnection(_configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString))
-                await mysql.ExecuteAsync(sql, deviceStateEntity);
-
-            return deviceStateEntity;
+            return Task.FromResult(deviceStateEntity);
         }
-
     }
 }

@@ -9,8 +9,7 @@ namespace LanSensor.Models.Configuration
 
         public long GetNumber()
         {
-            return (Hour * 60) + Minute;
+            return Hour * 60 + Minute;
         }
-
     }
 }

@@ -63,7 +63,7 @@ if ($deviceGroupid == "")
 
 if ($deviceId == "")
 {
-    $sql = "select distinct deviceid from devicelog";
+    $sql = "select distinct deviceid from devicelog where devicegroupid='". $deviceGroupid."'";
     $result = mysqli_query ($db_conn,$sql);
     print mysqli_error($db_conn);
     $numrows = mysqli_num_rows ($result);

@@ -10,6 +10,6 @@ namespace LanSensor.Models.DeviceState
         public DateTime LastKnownDataValueDate { get; set; }
         public DateTime LastKnownKeepAliveDate { get; set; }
         public DateTime LastKeepAliveAlert { get; set; }
-        public DateTime LastExecutedKeepaliveCheckDate { get; set; }
+        public DateTime LastExecutedKeepAliveCheckDate { get; set; }
     }
 }

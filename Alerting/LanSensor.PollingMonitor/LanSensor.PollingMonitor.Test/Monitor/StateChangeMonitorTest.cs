@@ -13,14 +13,12 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
         public StateChangeMonitorTest()
         {
-            _stateChangeNotification = new StateChangeNotification()
+            _stateChangeNotification = new StateChangeNotification
             {
                 OnDataValueChangeFrom = "changefrom",
                 OnDataValueChangeTo = "changeto"
             };
-
         }
-
 
         [Fact]
         public void GetStateChangeNotification_No_Change_Test()
@@ -103,17 +101,17 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         }
 
 
-        private DeviceLogEntity GetDeviceLog(string dataValue)
+        private static DeviceLogEntity GetDeviceLog(string dataValue)
         {
-            return new DeviceLogEntity()
+            return new DeviceLogEntity
             {
                 DataValue = dataValue
             };
         }
 
-        private DeviceStateEntity GetDeviceState(string lastKnownDataValue)
+        private static DeviceStateEntity GetDeviceState(string lastKnownDataValue)
         {
-            return  new DeviceStateEntity()
+            return new DeviceStateEntity
             {
                 LastKnownDataValue = lastKnownDataValue
             };

@@ -49,11 +49,11 @@ namespace LanSensor.Models.Configuration
                 filename = altFile.Name;
             }
 
-            using (StreamReader file = File.OpenText(filename))
+            using (var file = File.OpenText(filename))
             {
-                JsonSerializer serializer = new JsonSerializer();
+                var serializer = new JsonSerializer();
                 ApplicationConfiguration =
-                    (ApplicationConfiguration)serializer.Deserialize(file, typeof(ApplicationConfiguration));
+                    (ApplicationConfiguration) serializer.Deserialize(file, typeof(ApplicationConfiguration));
             }
         }
     }

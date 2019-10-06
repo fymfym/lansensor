@@ -4,34 +4,38 @@ using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.Repository.DeviceLog;
 
-namespace LanSensor.PollingMonitor.Services.Monitor.Keepalive
+namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
 {
-    public class KeepaliveMonitor : IKeepaliveMonitor
+    public class KeepAliveMonitor : IKeepAliveMonitor
     {
         private readonly IDeviceLogRepository _repository;
-        private readonly IGetDateTime _dateTime;
+        private readonly IDateTimeService _dateTimeService;
 
-        public KeepaliveMonitor
+        public KeepAliveMonitor
             (
                 IDeviceLogRepository repository,
-                IGetDateTime dateTime
+                IDateTimeService dateTimeService
             )
         {
             _repository = repository;
-            _dateTime = dateTime;
+            _dateTimeService = dateTimeService;
         }
 
-        public async Task<bool> IsKeepaliveWithinSpec(DeviceMonitor monitor)
+        public async Task<bool> IsKeepAliveWithinSpec(DeviceMonitor monitor)
         {
-            var latestKeepalive = await _repository.GetLatestPresence(monitor.DeviceGroupId, monitor.DeviceId,
-                monitor.Keepalive.KeepaliveDataType);
+            if (monitor?.DeviceGroupId == null || monitor.DeviceId == null || monitor.KeepAlive == null)
+            {
+                return true;
+            }
 
-            if (latestKeepalive == null)
+            var keepAlive = await _repository.GetLatestPresence(monitor.DeviceGroupId, monitor.DeviceId,
+                                monitor.KeepAlive.KeepAliveDataType);
+            if (keepAlive == null)
                 return false;
 
-            var ts = new TimeSpan(_dateTime.Now.Ticks - latestKeepalive.DateTime.Ticks);
-            return (ts.TotalMinutes <=
-                   monitor.Keepalive.MaxMinutesSinceKeepalive);
+            var ts = new TimeSpan(_dateTimeService.Now.Ticks - keepAlive.DateTime.Ticks);
+            return ts.TotalMinutes <=
+                   monitor.KeepAlive.MaxMinutesSinceKeepAlive;
         }
     }
 }

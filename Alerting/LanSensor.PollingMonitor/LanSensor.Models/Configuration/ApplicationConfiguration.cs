@@ -11,6 +11,5 @@ namespace LanSensor.Models.Configuration
         [JsonProperty("litedb")] public LiteDbConfiguration LiteDbConfiguration { get; set; }
         [JsonProperty("slack")] public SlackConfiguration SlackConfiguration { get; set; }
         [JsonProperty("monitor")] public MonitorConfiguration MonitorConfiguration { get; set; }
-
     }
 }

@@ -7,7 +7,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
     public class TimeIntervalComparer : ITimeIntervalMonitor
     {
         public Models.Configuration.TimeInterval GetFailedTimerInterval(
-            IEnumerable<Models.Configuration.TimeInterval> timeIntervals, 
+            IEnumerable<Models.Configuration.TimeInterval> timeIntervals,
             DeviceLogEntity presenceRecord)
         {
             if (timeIntervals == null) return null;
@@ -15,48 +15,44 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
 
             foreach (var interval in timeIntervals)
             {
-                if (presenceRecord.DataValue != null && !string.IsNullOrEmpty(interval?.DataValue))
-                {
-                    var weekDays = PresenceInConfiguredWeekdays(interval, presenceRecord);
-                    if (weekDays && interval.DataValue?.ToLower() != presenceRecord.DataValue.ToLower())
-                        return interval;
+                if (presenceRecord.DataValue == null || string.IsNullOrEmpty(interval?.DataValue)) continue;
 
-                    var times = PresenceTimeInConfiguredTimes(interval, presenceRecord);
-                    if (times && interval.DataValue?.ToLower() != presenceRecord.DataValue?.ToLower())
-                        return interval;
-                }
+                var weekDays = PresenceInConfiguredWeekdays(interval, presenceRecord);
+                if (weekDays && interval.DataValue?.ToLower() != presenceRecord.DataValue.ToLower())
+                    return interval;
+
+                var times = PresenceTimeInConfiguredTimes(interval, presenceRecord);
+                if (times && interval.DataValue?.ToLower() != presenceRecord.DataValue?.ToLower())
+                    return interval;
             }
-            
-            return  null;
+
+            return null;
         }
 
-        private bool PresenceInConfiguredWeekdays(
+        private static bool PresenceInConfiguredWeekdays(
             Models.Configuration.TimeInterval timeInterval,
-            DeviceLogEntity presenceRedocrd)
+            DeviceLogEntity presenceRecord)
         {
             if (timeInterval?.Weekdays == null) return true;
-            if (!timeInterval.Weekdays.Any()) return true;
-
-            return (timeInterval.Weekdays.Contains(presenceRedocrd.DateTime.DayOfWeek));
+            return !timeInterval.Weekdays.Any() || timeInterval.Weekdays.Contains(presenceRecord.DateTime.DayOfWeek);
         }
 
-        private bool PresenceTimeInConfiguredTimes(
+        private static bool PresenceTimeInConfiguredTimes(
             Models.Configuration.TimeInterval timeInterval,
-            DeviceLogEntity presenceRedocrd)
+            DeviceLogEntity presenceRecord)
         {
             if (timeInterval?.Times == null) return true;
             if (!timeInterval.Times.Any()) return true;
 
             var res = timeInterval.Times.Any(x =>
-                GetTimeNumber(presenceRedocrd.DateTime.Hour, presenceRedocrd.DateTime.Minute) >= x.From.GetNumber() &&
-                GetTimeNumber(presenceRedocrd.DateTime.Hour, presenceRedocrd.DateTime.Minute) <= x.To.GetNumber());
+                GetTimeNumber(presenceRecord.DateTime.Hour, presenceRecord.DateTime.Minute) >= x.From.GetNumber() &&
+                GetTimeNumber(presenceRecord.DateTime.Hour, presenceRecord.DateTime.Minute) <= x.To.GetNumber());
             return res;
         }
 
-        private long GetTimeNumber(int hour, int minute)
+        private static long GetTimeNumber(int hour, int minute)
         {
-            return (hour * 60) + minute;
+            return hour * 60 + minute;
         }
-
     }
 }

@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
-
+﻿
 namespace LanSensor.PollingMonitor.Services.Monitor
 {
     public interface IPollingMonitor
     {
-        bool StoppedIntentionaly { get; }
+        bool StoppedIntentionally { get; }
         void Stop();
-        Task<int> Run();
+        void RunThroughDeviceMonitors();
+        int RunInLoop();
     }
 }

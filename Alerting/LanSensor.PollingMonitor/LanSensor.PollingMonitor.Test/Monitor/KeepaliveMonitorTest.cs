@@ -1,145 +1,107 @@
-﻿using FakeItEasy;
+﻿using System;
+using System.Threading.Tasks;
+using FakeItEasy;
 using LanSensor.Models.Configuration;
-using LanSensor.PollingMonitor.Services.Alert;
+using LanSensor.Models.DeviceLog;
 using LanSensor.PollingMonitor.Services.DateTime;
-using LanSensor.PollingMonitor.Services.Monitor;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
+using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.Repository.DeviceLog;
-using System;
-using LanSensor.PollingMonitor.Services.Monitor.DataValueToOld;
-using LanSensor.Repository.DeviceState;
 using Xunit;
 
 namespace LanSensor.PollingMonitor.Test.Monitor
 {
-    public class KeepaliveMonitorTest
+    public class KeepAliveMonitorTest
     {
-        private readonly IStateChangeMonitor _fakedStatechange;
-        private readonly IDeviceStateRepository _fakedDeviceStage;
-        private readonly IGetDateTime _fakedGetDate;
-        private readonly IDataValueToOldMonitor _fakedDataToOldMonitor;
+        private readonly IDeviceLogRepository _fakedRepository;
 
-        public KeepaliveMonitorTest()
+        public KeepAliveMonitorTest()
         {
-            _fakedStatechange = A.Fake<IStateChangeMonitor>();
-            _fakedDeviceStage = A.Fake<IDeviceStateRepository>();
-            _fakedGetDate = A.Fake<IGetDateTime>();
-            _fakedDataToOldMonitor = A.Fake<IDataValueToOldMonitor>();
-        }
-
-
-        [Fact]
-        public void KeepalieWithinSpec()
-        {
-            var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
-
-            var testDateTime = A.Fake<IGetDateTime>();
-            A.CallTo(() => testDateTime.Now).Returns(testTime);
-
-            var config = A.Fake<IConfiguration>();
-            A.CallTo(() => config.ApplicationConfiguration).Returns(
-                new ApplicationConfiguration()
+            _fakedRepository = A.Fake<IDeviceLogRepository>();
+            A.CallTo(() => _fakedRepository.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
+                .Returns(Task.FromResult(new DeviceLogEntity
                 {
-                    DeviceMonitors = new[]
-                    {
-                        new DeviceMonitor()
-                        {
-                            DeviceGroupId = "dg",
-                            DeviceId = "di",
-                            Keepalive = new Keepalive()
-                            {
-                                KeepaliveDataType = "keepalive",
-                                MaxMinutesSinceKeepalive = 60
-                            }
-                        }
-                    }
-                });
-
-            var repository = A.Fake<IDeviceLogRepository>();
-            A.CallTo(() => repository.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored)).Returns(
-                new Models.DeviceLog.DeviceLogEntity()
-                {
-                    DataType = "keepalive",
-                    DeviceGroupId = "",
-                    DeviceId = "",
-                    DateTime = testTime
-                }
-            );
-
-            var alert = A.Fake<IAlert>();
-
-            var stateCheck = A.Fake<TimeIntervalComparer>();
-            var keepalive = new Services.Monitor.Keepalive.KeepaliveMonitor(repository, testDateTime);
-
-            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(
-                config, repository, alert, stateCheck, keepalive, 
-                _fakedStatechange, _fakedDeviceStage, _fakedGetDate, _fakedDataToOldMonitor);
-            pollingMonitor.Run();
-            pollingMonitor.Stop();
-
-            A.CallTo(() => alert.SendKeepaliveMissingAlert(A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
-
-            Assert.NotNull(pollingMonitor);
+                    DateTime = new DateTime(1, 1, 1, 1, 1, 10)
+                }));
         }
 
         [Fact]
-        public void KeepalieOutsideSpec()
+        public async Task KeepAliveMonitor_NoMonitor_ThrowsException()
         {
-            var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
-
-            var keepaliveDateTime = A.Fake<IGetDateTime>();
-            var nowDateTime = A.Fake<IGetDateTime>();
-            A.CallTo(() => keepaliveDateTime.Now).Returns(testTime);
-            A.CallTo(() => nowDateTime.Now).Returns(testTime.AddMinutes(61));
-
-            var config = A.Fake<IConfiguration>();
-            A.CallTo(() => config.ApplicationConfiguration).Returns(
-                new ApplicationConfiguration()
-                {
-                    DeviceMonitors = new[]
-                    {
-                        new DeviceMonitor()
-                        {
-                            DeviceGroupId = "dg",
-                            DeviceId = "di",
-                            Keepalive = new Keepalive()
-                            {
-                                KeepaliveDataType = "keepalive",
-                                MaxMinutesSinceKeepalive = 60
-                            }
-                        }
-                    }
-                });
-
             var repository = A.Fake<IDeviceLogRepository>();
-            A.CallTo(() => repository.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored)).Returns(
-                new Models.DeviceLog.DeviceLogEntity()
-                {
-                    DataType = "keepalive",
-                    DeviceGroupId = "",
-                    DeviceId = "",
-                    DateTime = testTime
-                }
-            );
+            var getDateTime = A.Fake<IDateTimeService>();
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime);
 
-            var alert = A.Fake<IAlert>();
-
-            var stateCheck = A.Fake<TimeIntervalComparer>();
-            var keepalive = new Services.Monitor.Keepalive.KeepaliveMonitor(repository, nowDateTime);
-
-            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(
-                config, repository, alert, 
-                stateCheck, keepalive, 
-                _fakedStatechange,_fakedDeviceStage, _fakedGetDate, _fakedDataToOldMonitor);
-            pollingMonitor.Run();
-            pollingMonitor.Stop();
-
-            A.CallTo(() => alert.SendKeepaliveMissingAlert(A<DeviceMonitor>.Ignored)).MustHaveHappened();
-
-            Assert.NotNull(pollingMonitor);
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(null);
+            Assert.True(result);
         }
 
+        [Fact]
+        public async Task KeepAliveMonitor_MonitorNoDeviceGroup_ThrowsException()
+        {
+            var repository = A.Fake<IDeviceLogRepository>();
+            var getDateTime = A.Fake<IDateTimeService>();
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime);
 
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor
+            {
+                DeviceId = ""
+            });
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task KeepAliveMonitor_MonitorNoDeviceId_ThrowsException()
+        {
+            var repository = A.Fake<IDeviceLogRepository>();
+            var getDateTime = A.Fake<IDateTimeService>();
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime);
+
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor
+            {
+                DeviceGroupId = ""
+            });
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task KeepAliveMonitor_MonitorDataOutOfSpec_ReturnsFalse()
+        {
+            var getDateTime = A.Fake<IDateTimeService>();
+            A.CallTo(() => getDateTime.Now).Returns(new DateTime(1, 1, 2, 1, 1, 1));
+
+            var keepAliveMonitor = new KeepAliveMonitor(_fakedRepository, getDateTime);
+
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(GetDeviceMonitor());
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task KeepAliveMonitor_MonitorDataOutOfSpec_ReturnsTrue()
+        {
+            var getDateTime = A.Fake<IDateTimeService>();
+            A.CallTo(() => getDateTime.Now).Returns(new DateTime(1, 1, 1, 1, 1, 1));
+
+            var keepAliveMonitor = new KeepAliveMonitor(_fakedRepository, getDateTime);
+
+            var result = await keepAliveMonitor.IsKeepAliveWithinSpec(GetDeviceMonitor());
+
+            Assert.True(result);
+        }
+
+        private static DeviceMonitor GetDeviceMonitor()
+        {
+            return new DeviceMonitor
+            {
+                DeviceGroupId = "",
+                DeviceId = "",
+                KeepAlive = new KeepAlive
+                {
+                    MaxMinutesSinceKeepAlive = 1
+                }
+            };
+        }
     }
 }
