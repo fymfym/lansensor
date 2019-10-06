@@ -21,9 +21,9 @@
                     "message": "message part to slack"
                 }
             ],
-            "keepalive": {
-                "maxMinutesSinceKeepalive": 60,
-                "keepaliveDataType": "keepalive"
+            "keepAlive": {
+                "maxMinutesSinceKeepAlive": 60,
+                "keepAliveDataType": "keepalive"
             },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",

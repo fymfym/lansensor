@@ -4,7 +4,7 @@ using FakeItEasy;
 using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceLog;
 using LanSensor.PollingMonitor.Services.DateTime;
-using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
+using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.Repository.DeviceLog;
 using Xunit;
 
@@ -28,8 +28,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public async Task KeepAliveMonitor_NoMonitor_ThrowsException()
         {
             var repository = A.Fake<IDeviceLogRepository>();
-            var getDateTime = A.Fake<IGetDateTime>();
-            var keepAliveMonitor = new KeepaliveMonitor(repository, getDateTime);
+            var getDateTime = A.Fake<IDateTimeService>();
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime);
 
             var result = await keepAliveMonitor.IsKeepAliveWithinSpec(null);
             Assert.True(result);
@@ -39,8 +39,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public async Task KeepAliveMonitor_MonitorNoDeviceGroup_ThrowsException()
         {
             var repository = A.Fake<IDeviceLogRepository>();
-            var getDateTime = A.Fake<IGetDateTime>();
-            var keepAliveMonitor = new KeepaliveMonitor(repository, getDateTime);
+            var getDateTime = A.Fake<IDateTimeService>();
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime);
 
             var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor
             {
@@ -54,8 +54,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public async Task KeepAliveMonitor_MonitorNoDeviceId_ThrowsException()
         {
             var repository = A.Fake<IDeviceLogRepository>();
-            var getDateTime = A.Fake<IGetDateTime>();
-            var keepAliveMonitor = new KeepaliveMonitor(repository, getDateTime);
+            var getDateTime = A.Fake<IDateTimeService>();
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime);
 
             var result = await keepAliveMonitor.IsKeepAliveWithinSpec(new DeviceMonitor
             {
@@ -68,10 +68,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public async Task KeepAliveMonitor_MonitorDataOutOfSpec_ReturnsFalse()
         {
-            var getDateTime = A.Fake<IGetDateTime>();
+            var getDateTime = A.Fake<IDateTimeService>();
             A.CallTo(() => getDateTime.Now).Returns(new DateTime(1, 1, 2, 1, 1, 1));
 
-            var keepAliveMonitor = new KeepaliveMonitor(_fakedRepository, getDateTime);
+            var keepAliveMonitor = new KeepAliveMonitor(_fakedRepository, getDateTime);
 
             var result = await keepAliveMonitor.IsKeepAliveWithinSpec(GetDeviceMonitor());
 
@@ -81,10 +81,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public async Task KeepAliveMonitor_MonitorDataOutOfSpec_ReturnsTrue()
         {
-            var getDateTime = A.Fake<IGetDateTime>();
+            var getDateTime = A.Fake<IDateTimeService>();
             A.CallTo(() => getDateTime.Now).Returns(new DateTime(1, 1, 1, 1, 1, 1));
 
-            var keepAliveMonitor = new KeepaliveMonitor(_fakedRepository, getDateTime);
+            var keepAliveMonitor = new KeepAliveMonitor(_fakedRepository, getDateTime);
 
             var result = await keepAliveMonitor.IsKeepAliveWithinSpec(GetDeviceMonitor());
 

@@ -95,7 +95,7 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
             return channel;
         }
 
-        private string GetMonitorMessage(DeviceMonitor monitor)
+        private static string GetMonitorMessage(DeviceMonitor monitor)
         {
             var messageMedium = monitor.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower().Trim() == "slack");
             return messageMedium?.Message;

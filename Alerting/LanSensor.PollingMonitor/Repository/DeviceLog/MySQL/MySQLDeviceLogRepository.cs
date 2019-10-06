@@ -22,7 +22,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
         public async Task<DeviceLogEntity> GetLatestKeepAlive(string deviceGroupId, string deviceId)
         {
-            string sql = "select DataValue, DataType, DateTime from devicelog where ";
+            var sql = "select DataValue, DataType, DateTime from devicelog where ";
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' " +
@@ -30,13 +30,13 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
             sql += "order by DateTime desc limit 1";
 
-            var resultRecord = new DeviceLogEntity()
+            var resultRecord = new DeviceLogEntity
             {
                 DeviceGroupId = deviceGroupId,
                 DeviceId = deviceId
             };
 
-            string mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
+            var mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
             using (var mysql = new MySql.Data.MySqlClient.MySqlConnection())
             {
                 var strConnect = mySqlConnectionString;
@@ -62,7 +62,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
         public async Task<DeviceLogEntity> GetLatestPresence(string deviceGroupId, string deviceId, string dataType)
         {
-            string sql = "select DataValue, DataType, DateTime from DeviceLog where ";
+            var sql = "select DataValue, DataType, DateTime from DeviceLog where ";
 
             sql += "DeviceGroupId = '" + deviceGroupId + "' " +
                    "and DeviceId='" + deviceId + "' ";
@@ -74,7 +74,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
 
             DeviceLogEntity resultRecord = null;
 
-            string mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
+            var mySqlConnectionString = _configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString;
             using (var mysql = new MySql.Data.MySqlClient.MySqlConnection())
             {
                 var strConnect = mySqlConnectionString;
@@ -87,7 +87,7 @@ namespace LanSensor.Repository.DeviceLog.MySQL
                     {
                         while (rdr.Read())
                         {
-                            resultRecord = new DeviceLogEntity()
+                            resultRecord = new DeviceLogEntity
                             {
                                 DeviceGroupId = deviceGroupId,
                                 DeviceId = deviceId,

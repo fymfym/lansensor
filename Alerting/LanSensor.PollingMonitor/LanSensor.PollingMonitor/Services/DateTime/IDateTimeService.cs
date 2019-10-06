@@ -1,6 +1,6 @@
 ﻿namespace LanSensor.PollingMonitor.Services.DateTime
 {
-    public interface IGetDateTime
+    public interface IDateTimeService
     {
         System.DateTime Now { get; }
     }

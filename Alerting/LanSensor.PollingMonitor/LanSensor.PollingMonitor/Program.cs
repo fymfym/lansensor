@@ -3,7 +3,7 @@ using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Alert.Slack;
 using LanSensor.PollingMonitor.Services.DateTime;
-using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
+using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
@@ -24,14 +24,13 @@ namespace LanSensor.PollingMonitor
             IConfiguration configuration = new Configuration(null);
 
             logger.Info(configuration.ApplicationConfiguration.MySqlConfiguration);
-            Console.WriteLine(configuration.ApplicationConfiguration.MySqlConfiguration.ConnectionString);
 
             IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
             IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration, logger);
-            IGetDateTime getDate = new GetDateTime();
+            IDateTimeService date = new DateTimeServiceService();
             IAlert alerter = new SendSlackAlert(configuration, logger);
             ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
-            IKeepaliveMonitor keepAlive = new KeepaliveMonitor(deviceLogRepository, getDate);
+            IKeepaliveMonitor keepAlive = new KeepAliveMonitor(deviceLogRepository, date);
             IStateChangeMonitor stateChange = new StateChangeMonitor();
             IPauseService pauseService = new PauseService();
 
@@ -57,7 +56,6 @@ namespace LanSensor.PollingMonitor
                 catch (Exception ex)
                 {
                     logger.Error(ex.Message);
-                    Console.WriteLine(ex.Message);
                     retry--;
                     if (retry < 0)
                     {

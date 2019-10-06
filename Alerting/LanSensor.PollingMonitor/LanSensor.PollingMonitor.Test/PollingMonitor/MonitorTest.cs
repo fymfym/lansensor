@@ -2,7 +2,7 @@
 using FakeItEasy;
 using LanSensor.Models.Configuration;
 using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.Monitor.Keepalive;
+using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;

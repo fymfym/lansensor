@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-
+﻿
 namespace LanSensor.PollingMonitor.Services.Monitor
 {
     public interface IPollingMonitor
