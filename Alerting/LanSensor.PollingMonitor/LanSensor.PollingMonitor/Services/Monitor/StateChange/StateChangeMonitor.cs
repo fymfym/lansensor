@@ -24,11 +24,12 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             return result;
         }
 
-        public StateChangeResult GetStateChangeFromToNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
+        public StateChangeResult GetStateChangeFromToNotification(
+            DeviceStateEntity deviceState,
+            DeviceLogEntity deviceLogEntity,
             StateChangeNotification stateChangeNotification)
         {
             if (stateChangeNotification == null) return null;
-            var latestState = deviceState;
 
             var presence = deviceLogEntity;
 
@@ -37,9 +38,17 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             if (presence == null)
                 return null;
 
-            if (!string.IsNullOrEmpty(stateChangeNotification.OnDataValueChangeFrom))
+            if (IsFromValueReached(stateChangeNotification.OnDataValueChangeTo, deviceState.LastKnownDataValue, deviceLogEntity.DataValue))
             {
-                if (string.Equals(stateChangeNotification.OnDataValueChangeFrom, latestState.LastKnownDataValue))
+                result = new StateChangeResult
+                {
+                    DataValue = stateChangeNotification.OnDataValueChangeTo,
+                    ChangedToValue = true
+                };
+            }
+            else
+            {
+                if (IsToValueReached(stateChangeNotification.OnDataValueChangeFrom, deviceState.LastKnownDataValue, deviceLogEntity.DataValue))
                 {
                     result = new StateChangeResult
                     {
@@ -49,18 +58,31 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
                 }
             }
 
-            if (string.IsNullOrEmpty(stateChangeNotification.OnDataValueChangeTo)) return result;
-
-            if (string.Equals(stateChangeNotification.OnDataValueChangeTo, presence.DataValue))
-            {
-                result = new StateChangeResult
-                {
-                    DataValue = presence.DataValue,
-                    ChangedToValue = true
-                };
-            }
-
             return result;
+        }
+
+        private static bool IsFromValueReached(string monitorChangeFrom, string deviceDataValue, string stateDataValue)
+        {
+            if (string.IsNullOrEmpty(stateDataValue)) return false;
+            if (string.IsNullOrEmpty(deviceDataValue)) return false;
+            if (string.IsNullOrEmpty(monitorChangeFrom)) return false;
+
+            if (string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            return !string.Equals(deviceDataValue, monitorChangeFrom, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static bool IsToValueReached(string monitorChangeTo, string deviceDataValue, string stateDataValue)
+        {
+            if (string.IsNullOrEmpty(stateDataValue)) return false;
+            if (string.IsNullOrEmpty(deviceDataValue)) return false;
+            if (string.IsNullOrEmpty(monitorChangeTo)) return false;
+
+            if (string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            return !string.Equals(deviceDataValue, monitorChangeTo, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

@@ -96,7 +96,6 @@ namespace LanSensor.Repository.DeviceState.MongoDb
 
         private async Task<TInfrastructureEntity> CreateInternalAsync(TInfrastructureEntity entity)
         {
-            entity.EntityId = Guid.NewGuid().ToString();
             var collection = GetCollection();
             await collection.InsertOneAsync(entity);
             return entity;
@@ -110,7 +109,7 @@ namespace LanSensor.Repository.DeviceState.MongoDb
             }
 
             var updateEntity = _mapper.Map<TInfrastructureEntity>(entity);
-            updateEntity.EntityId = entity.EntityId.ToString();
+            updateEntity.EntityId = entity.EntityId;
 
             var res = await UpdateInternalAsync(updateEntity);
             var updated = _mapper.Map<TDomainEntity>(res);
@@ -153,7 +152,7 @@ namespace LanSensor.Repository.DeviceState.MongoDb
 
         private static FilterDefinition<TInfrastructureEntity> GetIdFilter(string id)
         {
-            return Builders<TInfrastructureEntity>.Filter.Eq("applicationid", id);
+            return Builders<TInfrastructureEntity>.Filter.Eq("EntityId", id);
         }
 
         private static FilterDefinition<TInfrastructureEntity> GetEmptyFilter()

@@ -9,7 +9,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
     public class StateCheckTest
     {
         [Fact]
-        public void RunWeekdayIntervalsTest()
+        public void RunWeekdayIntervalsTest_OutsideNoDataValue_NoFailedInterval()
         {
             var deviceLog = new DeviceLogEntity
             {
@@ -18,11 +18,89 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 DataValue = ""
             };
 
-            var timeIntervals = new List<TimeInterval>
+            var timeIntervals = BuildTimeIntervals();
+
+            ITimeIntervalMonitor checker = new TimeIntervalComparer();
+            var result = checker.GetFailedTimerInterval(timeIntervals, deviceLog);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void RunWeekdayIntervalsTest_OutsideDataValue_NoFailedInterval()
+        {
+            var deviceLog = new DeviceLogEntity
+            {
+                DateTime = new DateTime(2019, 1, 1, 12, 0, 0),
+                DataType = "keepalive",
+                DataValue = "someValue"
+            };
+
+            var timeIntervals = BuildTimeIntervals();
+
+            ITimeIntervalMonitor checker = new TimeIntervalComparer();
+            var result = checker.GetFailedTimerInterval(timeIntervals, deviceLog);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void RunWeekdayIntervalsTest_InsideNoDataValue_FailedInterval()
+        {
+            var deviceLog = new DeviceLogEntity
+            {
+                DateTime = new DateTime(2019, 1, 3, 12, 0, 0),
+                DataType = "keepalive",
+                DataValue = ""
+            };
+
+            var timeIntervals = BuildTimeIntervals();
+
+            ITimeIntervalMonitor checker = new TimeIntervalComparer();
+            var result = checker.GetFailedTimerInterval(timeIntervals, deviceLog);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void RunWeekdayIntervalsTest_Inside_ReturnsOneInterval()
+        {
+            var deviceLog = new DeviceLogEntity
+            {
+                DateTime = new DateTime(2019, 1, 3, 12, 0, 0),
+                DataType = "keepalive",
+                DataValue = "someValue"
+            };
+
+            var timeIntervals = BuildTimeIntervals("someValue");
+
+            ITimeIntervalMonitor checker = new TimeIntervalComparer();
+            var result = checker.GetFailedTimerInterval(timeIntervals, deviceLog);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void RunWeekdayIntervalsTest_InsideWrongValue_ReturnsOneInterval()
+        {
+            var deviceLog = new DeviceLogEntity
+            {
+                DateTime = new DateTime(2019, 1, 3, 12, 0, 0),
+                DataType = "keepalive",
+                DataValue = "someValue"
+            };
+
+            var timeIntervals = BuildTimeIntervals("someOtherValue");
+
+            ITimeIntervalMonitor checker = new TimeIntervalComparer();
+            var result = checker.GetFailedTimerInterval(timeIntervals, deviceLog);
+            Assert.NotNull(result);
+        }
+
+        private static IEnumerable<TimeInterval> BuildTimeIntervals(string dataValue = null)
+        {
+            return new List<TimeInterval>
             {
                 new TimeInterval
                 {
                     Weekdays = new[] {DayOfWeek.Thursday},
+                    DataValue = dataValue,
                     Times = new List<TimeFromTo>
                     {
                         new TimeFromTo
@@ -41,9 +119,6 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                     }
                 }
             };
-
-            ITimeIntervalMonitor checker = new TimeIntervalComparer();
-            checker.GetFailedTimerInterval(timeIntervals, deviceLog);
         }
     }
 }

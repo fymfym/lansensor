@@ -1,5 +1,4 @@
 {
-
     "deviceMonitors": [
         {
             "deviceGroupId": "system",
@@ -19,7 +18,7 @@
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Lawnmover moving"
+                    "message": "Lawnmover not home in time"
                 }
             ],
             "keepAlive": {
@@ -76,21 +75,16 @@
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Frontdor lock/unlock "
+                    "message": "Frontdor unlocked outside hours"
                 }
             ],
             "keepAlive": {
                 "maxMinutesSinceKeepAlive": 60,
                 "keepAliveDataType": "keepalive"
             },
-            "stateChangeNotification": {
-                "onDataValueChangeFrom": "",
-                "onDataValueChangeTo": "",
-                "onEveryChange": "true"
-            },
             "timeInterval": [
                 {
-                    "dataValue": "Unlocked",
+                    "dataValue": "Locked",
                     "weekdays": [
                         "Monday",
                         "Tuesday",
@@ -143,7 +137,7 @@
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Frontdoor open/close "
+                    "message": "Frontdoor opened"
                 }
             ],
             "stateChangeNotification": {
@@ -160,7 +154,7 @@
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Lawnmover "
+                    "message": "Frontdoor closed"
                 }
             ],
             "stateChangeNotification": {

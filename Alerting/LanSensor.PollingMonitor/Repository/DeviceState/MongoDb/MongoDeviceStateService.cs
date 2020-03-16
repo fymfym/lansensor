@@ -1,15 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
-using LanSensor.Models.DeviceState;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 
 namespace LanSensor.Repository.DeviceState.MongoDb
 {
-    public partial class MongoDeviceStateService : IDeviceState
+    public class MongoDeviceStateService : IDeviceState
     {
-        private readonly IServiceConfiguration _applicationConfiguration;
         private readonly IMapper _mapper;
 
         private readonly IDeviceStateRepository _deviceStateRepository;
@@ -19,7 +16,6 @@ namespace LanSensor.Repository.DeviceState.MongoDb
             IMapper mapper
             )
         {
-            _applicationConfiguration = applicationConfiguration;
             _mapper = mapper;
             _deviceStateRepository = new MongoDeviceStateRepository("lansesnor", "deviceState", applicationConfiguration, mapper);
         }
@@ -28,7 +24,8 @@ namespace LanSensor.Repository.DeviceState.MongoDb
         {
             var task = _deviceStateRepository.GetByIdAsync(MakeKey(deviceGroupId, deviceId));
             Task.WaitAll(task);
-            return Task.FromResult(_mapper.Map<DeviceStateEntity>(task.Result));
+            var resValue = _mapper.Map<DeviceStateEntity>(task.Result);
+            return Task.FromResult(resValue);
         }
 
         public Task<DeviceStateEntity> SetDeviceStateEntity(DeviceStateEntity deviceStateEntity)
@@ -36,9 +33,7 @@ namespace LanSensor.Repository.DeviceState.MongoDb
             var task = _deviceStateRepository.GetByIdAsync(MakeKey(deviceStateEntity.DeviceGroupId, deviceStateEntity.DeviceId));
             Task.WaitAll(task);
             var res = _mapper.Map<DeviceStateEntity>(task.Result);
-
             deviceStateEntity.EntityId = MakeKey(deviceStateEntity.DeviceGroupId, deviceStateEntity.DeviceId);
-
             if (res == null)
             {
                 var task2 = _deviceStateRepository.CreateAsync(deviceStateEntity);
@@ -55,7 +50,7 @@ namespace LanSensor.Repository.DeviceState.MongoDb
 
         private static string MakeKey(string deviceGroupId, string deviceId)
         {
-            return $"{deviceGroupId}-{deviceId}";
+            return $"<{deviceGroupId}>-<{deviceId}>";
         }
     }
 }

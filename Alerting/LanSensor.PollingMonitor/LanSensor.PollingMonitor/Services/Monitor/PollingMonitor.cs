@@ -65,7 +65,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             {
                 if (deviceMonitor == null) continue;
 
-                _logger.Info($"Device monitor: {deviceMonitor.DeviceGroupId}, {deviceMonitor.DeviceId}");
+                _logger.Info($"Device monitor - DeviceGroupId:<{deviceMonitor.DeviceGroupId}>, DeviceId:<{deviceMonitor.DeviceId}>, DataType:<{deviceMonitor.DataType}>");
 
                 var presenceRecordTask = _deviceLogRepository.GetLatestPresence(
                     deviceMonitor.DeviceGroupId,
@@ -137,11 +137,14 @@ namespace LanSensor.PollingMonitor.Services.Monitor
                     _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
                 }
 
+                if (stateOnChange == null) continue;
+
                 latestState.DeviceGroupId = deviceMonitor.DeviceGroupId;
                 latestState.DeviceId = deviceMonitor.DeviceId;
                 latestState.LastKnownDataValue = deviceLog.DataValue;
                 latestState.LastExecutedKeepAliveCheckDate = System.DateTime.Now;
-                latestState.LastKnownDataValueDate = latestKeepAlive.DateTime;
+                latestState.LastKnownDataValueDate = deviceLog.DateTime;
+
                 if (latestKeepAlive.DateTime > latestState.LastKnownKeepAliveDate)
                 {
                     latestState.LastKnownKeepAliveDate = latestKeepAlive.DateTime;

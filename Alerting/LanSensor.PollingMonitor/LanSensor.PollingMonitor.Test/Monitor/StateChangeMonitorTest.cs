@@ -1,5 +1,4 @@
-﻿using LanSensor.Models.DeviceState;
-using LanSensor.PollingMonitor.Domain.Models;
+﻿using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using Xunit;
 
@@ -23,10 +22,9 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public void GetStateChangeNotification_No_Change_Test()
         {
             var deviceState = GetDeviceState("one");
-            var deviceLog = GetDeviceLog("two");
+            var deviceLog = GetDeviceLog("one");
 
             IStateChangeMonitor worker = new StateChangeMonitor();
-
 
             var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);
 
@@ -37,7 +35,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public void GetStateChangeNotification_From_Change_Test_Outside_Value()
         {
             var deviceState = GetDeviceState("one");
-            var deviceLog = GetDeviceLog("two");
+            var deviceLog = GetDeviceLog("one");
 
             IStateChangeMonitor worker = new StateChangeMonitor();
             var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);
@@ -48,8 +46,9 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetStateChangeNotification_From_Change_Test_Inside_Value()
         {
-            var deviceState = GetDeviceState(_stateChangeNotification.OnDataValueChangeFrom);
+            var deviceState = GetDeviceState("two");
             var deviceLog = GetDeviceLog("one");
+            _stateChangeNotification.OnDataValueChangeTo = null;
 
             IStateChangeMonitor worker = new StateChangeMonitor();
             var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);
@@ -60,10 +59,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         }
 
         [Fact]
-        public void GetStateChangeNotification_To_Change_Test_Inside_Value()
+        public void GetStateChangeNotification_ToChangeTestInsideValue_ReturnsNotNull()
         {
-            var deviceState = GetDeviceState("one");
-            var deviceLog = GetDeviceLog(_stateChangeNotification.OnDataValueChangeTo);
+            var deviceState = GetDeviceState("two");
+            var deviceLog = GetDeviceLog("four");
 
             IStateChangeMonitor worker = new StateChangeMonitor();
             var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);

@@ -30,7 +30,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         }
 
         [Fact]
-        public void GetFailedTimerIntervalWrongDayOfWeekValueWeekReturnsTimeInterval()
+        public void GetFailedTimerInterval_WrongDayOfWeek_ValueWeekReturnsNoTimeInterval()
         {
             ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
@@ -42,6 +42,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     Weekdays = new[] {DayOfWeek.Monday}
                 }
             };
+
             var log = new DeviceLogEntity
             {
                 DateTime = _testDateTime,
@@ -49,7 +50,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             };
 
             var result = interval.GetFailedTimerInterval(intervals, log);
-            Assert.NotNull(result);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -77,7 +78,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
 
         [Fact]
-        public void GetFailedTimerIntervalOtherDataValueWeekReturnsTimeInterval()
+        public void GetFailedTimerIntervalOtherDataValueWeekReturnsNull()
         {
             ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
@@ -96,11 +97,11 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             };
 
             var result = interval.GetFailedTimerInterval(intervals, log);
-            Assert.NotNull(result);
+            Assert.Null(result);
         }
 
         [Fact]
-        public void GetFailedTimerIntervalReturnsNull()
+        public void GetFailedTimeIntervalReturnsInterval()
         {
             ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
@@ -118,7 +119,30 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             };
 
             var result = interval.GetFailedTimerInterval(intervals, log);
-            Assert.Null(result);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void GetFailedTimeInterval_WithoutWeekday_ReturnsInterval()
+        {
+            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+
+            var intervals = new[]
+            {
+                new TimeInterval()
+                {
+                    DataValue = "Test"
+                }
+            };
+
+            var log = new DeviceLogEntity
+            {
+                DateTime = _testDateTime,
+                DataValue = DataType
+            };
+
+            var result = interval.GetFailedTimerInterval(intervals, log);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -160,7 +184,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         }
 
         [Fact]
-        public void GetFailedTimerIntervalInsideSpanWrongValueReturnsTimeInterval()
+        public void GetFailedTimerIntervalInsideSpanWrongValueReturnsNull()
         {
             ITimeIntervalMonitor interval = new TimeIntervalComparer();
 
@@ -169,6 +193,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 new TimeInterval
                 {
                     DataValue = DataType,
+                    Weekdays = new DayOfWeek[]
+                    {
+                        DayOfWeek.Monday
+                    },
                     Times = new[]
                     {
                         new TimeFromTo {
@@ -188,12 +216,11 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             };
             var log = new DeviceLogEntity
             {
-                DateTime = _testDateTime,
-                DataValue = "other"
+                DateTime = _testDateTime
             };
 
             var result = interval.GetFailedTimerInterval(intervals, log);
-            Assert.NotNull(result);
+            Assert.Null(result);
         }
 
         [Fact]

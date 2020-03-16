@@ -1,6 +1,4 @@
-﻿using System;
-using AutoMapper;
-using LanSensor.Models.DeviceState;
+﻿using AutoMapper;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.Repository.Models.MongoDb;
 

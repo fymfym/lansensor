@@ -45,7 +45,7 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"State changed for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+                $"State changed for *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}*, with message *{deviceMonitorMessage}*";
             return SendToSlack(deviceMonitor, msg);
         }
 
@@ -53,7 +53,7 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"KeepAlive missing for {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId}, with message '{deviceMonitorMessage}'";
+                $"KeepAlive missing for *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}*, with message *{deviceMonitorMessage}*";
             _logger.Info($"Slack SendKeepAliveMissingAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }
@@ -62,7 +62,7 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"device {deviceMonitor.DeviceGroupId} / {deviceMonitor.DeviceId} is outside desired value of '{timeInterval.DataValue}' with message {deviceMonitorMessage}";
+                $"Device *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}* is outside desired value of *{timeInterval.DataValue}* with message *{deviceMonitorMessage}*";
             _logger.Info($"Slack SendTimerIntervalAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
@@ -15,18 +17,21 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
 
             foreach (var interval in timeIntervals)
             {
-                if (presenceRecord.DataValue == null || string.IsNullOrEmpty(interval?.DataValue)) continue;
-
                 var weekDays = PresenceInConfiguredWeekdays(interval, presenceRecord);
-                if (weekDays && interval.DataValue?.ToLower() != presenceRecord.DataValue.ToLower())
-                    return interval;
+                if (!weekDays) return null;
 
                 var times = PresenceTimeInConfiguredTimes(interval, presenceRecord);
-                if (times && interval.DataValue?.ToLower() != presenceRecord.DataValue?.ToLower())
-                    return interval;
+                if (!times) return null;
+
+                if (FormatString(interval?.DataValue) != FormatString(presenceRecord.DataValue)) return interval;
             }
 
             return null;
+        }
+
+        private static string FormatString(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? "" : value.ToLower().Trim();
         }
 
         private static bool PresenceInConfiguredWeekdays(
@@ -34,7 +39,9 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
             DeviceLogEntity presenceRecord)
         {
             if (timeInterval?.Weekdays == null) return true;
-            return !timeInterval.Weekdays.Any() || timeInterval.Weekdays.Contains(presenceRecord.DateTime.DayOfWeek);
+            if (!timeInterval.Weekdays.Any()) return true;
+
+            return timeInterval.Weekdays.Contains(presenceRecord.DateTime.DayOfWeek);
         }
 
         private static bool PresenceTimeInConfiguredTimes(
