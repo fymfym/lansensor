@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
+using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.Repository.DeviceLog;

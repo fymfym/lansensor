@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
+using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using Xunit;
 

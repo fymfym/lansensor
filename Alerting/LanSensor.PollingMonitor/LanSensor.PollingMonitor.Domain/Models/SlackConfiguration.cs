@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LanSensor.Models.Configuration
+namespace LanSensor.PollingMonitor.Domain.Models
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class SlackConfiguration

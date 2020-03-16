@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LanSensor.Models.Configuration;
+using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.Repository.DeviceLog;
 

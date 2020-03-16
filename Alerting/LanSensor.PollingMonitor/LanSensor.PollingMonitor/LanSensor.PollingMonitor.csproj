@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LanSensor.Models\LanSensor.Models.csproj" />
+    <ProjectReference Include="..\LanSensor.PollingMonitor.Application\LanSensor.PollingMonitor.Application.csproj" />
     <ProjectReference Include="..\Repository\LanSensor.Repository.csproj" />
   </ItemGroup>
 

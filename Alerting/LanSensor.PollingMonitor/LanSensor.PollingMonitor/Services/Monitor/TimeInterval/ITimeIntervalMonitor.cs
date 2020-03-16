@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using LanSensor.Models.DeviceLog;
+using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
 {
     public interface ITimeIntervalMonitor
     {
-        Models.Configuration.TimeInterval GetFailedTimerInterval(IEnumerable<Models.Configuration.TimeInterval> timeIntervals, DeviceLogEntity presenceRecord);
+        Domain.Models.TimeInterval GetFailedTimerInterval(IEnumerable<Domain.Models.TimeInterval> timeIntervals, DeviceLogEntity presenceRecord);
     }
 }

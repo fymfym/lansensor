@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using LanSensor.Models.Configuration;
+using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
 {

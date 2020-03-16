@@ -1,4 +1,4 @@
-﻿namespace LanSensor.Models.Configuration
+﻿namespace LanSensor.PollingMonitor.Domain.Models
 {
     public class DataValueToOld
     {

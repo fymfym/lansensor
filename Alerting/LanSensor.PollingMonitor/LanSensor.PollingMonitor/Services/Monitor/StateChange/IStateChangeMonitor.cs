@@ -1,5 +1,5 @@
-﻿using LanSensor.Models.DeviceLog;
-using LanSensor.Models.DeviceState;
+﻿using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
 {
@@ -8,11 +8,11 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
         StateChangeResult GetStateChangeNotification(
             DeviceStateEntity deviceState,
             DeviceLogEntity deviceLogEntity,
-            Models.Configuration.StateChangeNotification stateChangeNotification);
+            StateChangeNotification stateChangeNotification);
 
         StateChangeResult GetStateChangeFromToNotification(
             DeviceStateEntity deviceState,
             DeviceLogEntity deviceLogEntity,
-            Models.Configuration.StateChangeNotification stateChangeNotification);
+            StateChangeNotification stateChangeNotification);
     }
 }

@@ -1,6 +1,5 @@
-﻿using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
-using LanSensor.Models.DeviceState;
+﻿using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Alert
 {

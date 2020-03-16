@@ -1,6 +1,5 @@
-﻿using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
-using LanSensor.Models.DeviceState;
+﻿using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using Xunit;
 

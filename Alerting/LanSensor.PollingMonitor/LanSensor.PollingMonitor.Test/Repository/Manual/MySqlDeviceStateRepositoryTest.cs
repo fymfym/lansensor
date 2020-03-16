@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.Repository.DeviceState.MySqlDeviceState;
 using NLog;
 using Xunit;
@@ -12,7 +13,7 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
     public class MySqlDeviceStateRepositoryTest
     {
         private readonly ILogger _loggerFaked;
-        private readonly IConfiguration _configurationFaked;
+        private readonly IServiceConfiguration _configurationFaked;
 
         public const string DeviceId = "deviceIdTest";
         public const string DeviceGroupId = "deviceGroupIdTest";
@@ -20,7 +21,7 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
         public MySqlDeviceStateRepositoryTest()
         {
             _loggerFaked = A.Fake<ILogger>();
-            _configurationFaked = A.Fake<IConfiguration>();
+            _configurationFaked = A.Fake<IServiceConfiguration>();
 
             A.CallTo(() => _configurationFaked.ApplicationConfiguration)
                 .Returns(

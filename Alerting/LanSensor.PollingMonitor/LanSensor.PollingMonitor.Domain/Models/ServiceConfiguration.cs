@@ -1,13 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System;
 using System.IO;
+using LanSensor.PollingMonitor.Domain.Repositories;
+using Newtonsoft.Json;
 
-namespace LanSensor.Models.Configuration
+namespace LanSensor.PollingMonitor.Domain.Models
 {
-    public class Configuration : IConfiguration
+    public class ServiceConfiguration : IServiceConfiguration
     {
         public ApplicationConfiguration ApplicationConfiguration { get; set; }
 
-        public Configuration()
+        public ServiceConfiguration()
         {
             Init(null);
         }
@@ -16,7 +18,7 @@ namespace LanSensor.Models.Configuration
         /// Reads "polling.json" is no parameter is given
         /// </summary>
         /// <param name="alternateConfigFilename"></param>
-        public Configuration(string alternateConfigFilename)
+        public ServiceConfiguration(string alternateConfigFilename)
         {
             Init(alternateConfigFilename);
         }
@@ -55,6 +57,26 @@ namespace LanSensor.Models.Configuration
                 ApplicationConfiguration =
                     (ApplicationConfiguration) serializer.Deserialize(file, typeof(ApplicationConfiguration));
             }
+
+            ApplicationConfiguration.MongoConfiguration = new MongoConfiguration()
+            {
+                ConnectionString = Environment.GetEnvironmentVariable("mongodbconnectionstring")
+            };
+
+            ApplicationConfiguration.SlackConfiguration = new SlackConfiguration()
+            {
+                ApiKey = Environment.GetEnvironmentVariable("slackapikey")
+            };
+
+            ApplicationConfiguration.RestServiceConfiguration = new RestServiceConfiguration()
+            {
+                DeviceRestApiBasePath = Environment.GetEnvironmentVariable("deviceRestApiBasePath")
+            };
+
+            ApplicationConfiguration.MySqlConfiguration = new MySqlConfiguration()
+            {
+                ConnectionString = Environment.GetEnvironmentVariable("MySqlConnectionString")
+            };
         }
     }
 }

@@ -1,40 +1,39 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
-using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
+using LanSensor.Repository;
 using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceState;
 using NLog;
 
 namespace LanSensor.PollingMonitor.Services.Monitor
 {
     public class PollingMonitor : IPollingMonitor
     {
-        private readonly IConfiguration _configuration;
+        private readonly IServiceConfiguration _configuration;
         private readonly IAlert _alert;
         private readonly ITimeIntervalMonitor _stateCheckMonitor;
         private readonly IKeepAliveMonitor _keepAliveMonitor;
         private readonly IStateChangeMonitor _stateChange;
-        private readonly IDeviceStateRepository _deviceStateRepository;
+        private readonly IDeviceState _deviceStateRepository;
         private readonly IDeviceLogRepository _deviceLogRepository;
         private readonly ILogger _logger;
         private readonly IPauseService _pauseService;
 
         public PollingMonitor
         (
-            IConfiguration configuration,
+            IServiceConfiguration configuration,
             IAlert alert,
             ITimeIntervalMonitor stateCheckMonitor,
             IKeepAliveMonitor keepAliveMonitor,
             IStateChangeMonitor stateChange,
-            IDeviceStateRepository deviceStateRepository,
+            IDeviceState deviceStateRepository,
             IDeviceLogRepository deviceLogRepository,
             ILogger logger,
             IPauseService pauseService

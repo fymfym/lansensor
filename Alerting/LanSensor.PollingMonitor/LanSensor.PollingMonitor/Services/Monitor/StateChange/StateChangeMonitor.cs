@@ -1,7 +1,6 @@
 ﻿using System;
 using LanSensor.Models.DeviceState;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
+using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
 {

@@ -6,7 +6,8 @@
             "messageMediums": [
                 {
                     "mediumType": "slack",
-                    "receiverId": "channel name"
+                    "receiverId": "maude",
+                    "message": "System message"
                 }
             ]
         },
@@ -17,8 +18,65 @@
             "messageMediums": [
                 {
                     "mediumType": "slack",
-                    "receiverId": "channel name",
-                    "message": "message part to slack"
+                    "receiverId": "maude",
+                    "message": "Lawnmover moving"
+                }
+            ],
+            "keepAlive": {
+                "maxMinutesSinceKeepAlive": 60,
+                "keepAliveDataType": "keepalive"
+            },
+            "stateChangeNotification": {
+                "onDataValueChangeFrom": "home",
+                "onDataValueChangeTo": "out",
+                "onEveryChange": "true"
+            },
+            "timeInterval": [
+                {
+                    "dataValue": "out",
+                    "weekdays": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                    ],
+                    "times": [
+                        {
+                            "from": {
+                                "hour": "22",
+                                "minute": "00"
+                            },
+                            "to": {
+                                "hour": "23",
+                                "minute": "59"
+                            }
+                        },
+                        {
+                            "from": {
+                                "hour": "00",
+                                "minute": "00"
+                            },
+                            "to": {
+                                "hour": "06",
+                                "minute": "00"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "frontdoor",
+            "dataType": "FrontdoorLock",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Frontdor lock/unlock "
                 }
             ],
             "keepAlive": {
@@ -32,8 +90,7 @@
             },
             "timeInterval": [
                 {
-                    "dataValue": "Closed",
-                    "messageMediums": [],
+                    "dataValue": "Unlocked",
                     "weekdays": [
                         "Monday",
                         "Tuesday",
@@ -50,25 +107,71 @@
                                 "minute": "00"
                             },
                             "to": {
+                                "hour": "07",
+                                "minute": "00"
+                            }
+                        },
+                        {
+                            "from": {
+                                "hour": "08",
+                                "minute": "00"
+                            },
+                            "to": {
+                                "hour": "13",
+                                "minute": "00"
+                            }
+                        },
+                        {
+                            "from": {
+                                "hour": "21",
+                                "minute": "00"
+                            },
+                            "to": {
                                 "hour": "23",
                                 "minute": "59"
                             }
-
                         }
                     ]
                 }
             ]
+        },
+        {
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "frontdoor",
+            "dataType": "FrontdoorOpen",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Frontdoor open/close "
+                }
+            ],
+            "stateChangeNotification": {
+                "onDataValueChangeFrom": "",
+                "onDataValueChangeTo": "Open",
+                "onEveryChange": "true"
+            }
+        },
+        {
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "frontdoor",
+            "dataType": "FrontdoorOpen",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Lawnmover "
+                }
+            ],
+            "stateChangeNotification": {
+                "onDataValueChangeFrom": "",
+                "onDataValueChangeTo": "Closed",
+                "onEveryChange": "true"
+            }
         }
-    ],
-    "mysql": {
-        "connectionString": "Server=127.0.01;Database=lansensor;User=fym;Password=password"
-    },
-    "slack": {
-        "apiKey": "xoxb...."
-    },
-    "monitor":
-    {
-        "pollingIntervalSeconds":  "20" 
-    }
 
+    ],
+    "monitor": {
+        "pollingIntervalSeconds": "20"
+    }
 }

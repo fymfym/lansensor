@@ -1,9 +1,9 @@
-﻿using LanSensor.Models.DeviceLog;
+﻿using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.DataValueToOld
 {
     public interface IDataValueToOldMonitor
     {
-        bool IsDataValueToOld(DeviceLogEntity deviceEntity, Models.Configuration.DataValueToOld dataValueToOld);
+        bool IsDataValueToOld(DeviceLogEntity deviceEntity, Domain.Models.DataValueToOld dataValueToOld);
     }
 }

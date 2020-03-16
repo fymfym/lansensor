@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 
 namespace LanSensor.Repository.DeviceLog.MySqlDeviceLog
 {
     public class MySqlDataStoreRepository : IDeviceLogRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly IServiceConfiguration _configuration;
 
-        public MySqlDataStoreRepository(IConfiguration configuration)
+        public MySqlDataStoreRepository(IServiceConfiguration configuration)
         {
             _configuration = configuration;
         }

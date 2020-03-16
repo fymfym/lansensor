@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
 
-namespace LanSensor.Repository.DeviceState
+namespace LanSensor.Repository
 {
-    public interface IDeviceStateRepository
+    public interface IDeviceState
     {
         Task<DeviceStateEntity> GetLatestDeviceStateEntity(string deviceGroupId, string deviceId);
         Task<DeviceStateEntity> SetDeviceStateEntity(DeviceStateEntity deviceStateEntity);

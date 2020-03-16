@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace LanSensor.Models.Configuration
+namespace LanSensor.PollingMonitor.Domain.Models
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class DeviceMonitor

@@ -2,21 +2,22 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using LanSensor.Models.Configuration;
 using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 using MySql.Data.MySqlClient;
 using NLog;
 
 namespace LanSensor.Repository.DeviceState.MySqlDeviceState
 {
-    public class MySqlDeviceStateRepository : IDeviceStateRepository
+    public class MySqlDeviceStateRepository : IDeviceState
     {
-        private readonly IConfiguration _configuration;
+        private readonly IServiceConfiguration _configuration;
         private readonly ILogger _logger;
 
         public MySqlDeviceStateRepository
         (
-            IConfiguration configuration,
+            IServiceConfiguration configuration,
             ILogger logger
         )
         {

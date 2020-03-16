@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
 using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 using NLog;
 using SlackAPI;
 
@@ -15,7 +15,7 @@ namespace LanSensor.PollingMonitor.Services.Alert.Slack
         private readonly SlackClient _slackClient;
 
         public SendSlackAlert(
-            IConfiguration configuration,
+            IServiceConfiguration configuration,
             ILogger logger)
         {
             _logger = logger;

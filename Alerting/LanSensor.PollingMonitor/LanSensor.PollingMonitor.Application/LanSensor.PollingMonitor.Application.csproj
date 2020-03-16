@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LanSensor.PollingMonitor.Domain\LanSensor.PollingMonitor.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

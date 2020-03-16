@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using FakeItEasy;
-using LanSensor.Models.Configuration;
-using LanSensor.Models.DeviceLog;
 using LanSensor.Models.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor;
 using LanSensor.PollingMonitor.Services.Monitor.StateChange;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
+using LanSensor.Repository;
 using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceState;
 using NLog;
@@ -38,7 +38,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
 
             var keepAliveDateTime = A.Fake<IDateTimeService>();
-            var deviceStateRepository = A.Fake<IDeviceStateRepository>();
+            var deviceStateRepository = A.Fake<IDeviceState>();
 
             A.CallTo(() => deviceStateRepository.GetLatestDeviceStateEntity(A<string>.Ignored, A<string>.Ignored)).Returns(
                 new DeviceStateEntity
@@ -53,7 +53,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             A.CallTo(() => keepAliveDateTime.Now).Returns(testTime);
             A.CallTo(() => nowDateTime.Now).Returns(testTime.AddMinutes(61));
 
-            var config = A.Fake<IConfiguration>();
+            var config = A.Fake<IServiceConfiguration>();
             A.CallTo(() => config.ApplicationConfiguration).Returns(
                 new ApplicationConfiguration
                 {
@@ -126,7 +126,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var testTime = new DateTime(2019, 1, 1, 0, 0, 0);
 
             var keepAliveDateTime = A.Fake<IDateTimeService>();
-            var deviceStateRepository = A.Fake<IDeviceStateRepository>();
+            var deviceStateRepository = A.Fake<IDeviceState>();
 
             A.CallTo(() => deviceStateRepository.GetLatestDeviceStateEntity(A<string>.Ignored, A<string>.Ignored)).Returns(
                 new DeviceStateEntity
@@ -141,7 +141,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             A.CallTo(() => keepAliveDateTime.Now).Returns(testTime);
             A.CallTo(() => nowDateTime.Now).Returns(testTime.AddMinutes(61));
 
-            var config = A.Fake<IConfiguration>();
+            var config = A.Fake<IServiceConfiguration>();
             A.CallTo(() => config.ApplicationConfiguration).Returns(
                 new ApplicationConfiguration
                 {

@@ -1,8 +1,9 @@
 ﻿using System;
+using LanSensor.PollingMonitor.Domain.Repositories;
 
-namespace LanSensor.Models.DeviceState
+namespace LanSensor.PollingMonitor.Domain.Models
 {
-    public class DeviceStateEntity
+    public class DeviceStateEntity : IEntity
     {
         public string DeviceGroupId { get; set; }
         public string DeviceId { get; set; }
@@ -11,5 +12,6 @@ namespace LanSensor.Models.DeviceState
         public DateTime LastKnownKeepAliveDate { get; set; }
         public DateTime LastKeepAliveAlert { get; set; }
         public DateTime LastExecutedKeepAliveCheckDate { get; set; }
+        public string EntityId { get; set; }
     }
 }

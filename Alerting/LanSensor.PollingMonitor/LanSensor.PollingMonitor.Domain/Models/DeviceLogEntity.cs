@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LanSensor.Models.DeviceLog
+namespace LanSensor.PollingMonitor.Domain.Models
 {
     public class DeviceLogEntity
     {
