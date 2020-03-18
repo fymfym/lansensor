@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.Repository.Repositories;
 using Newtonsoft.Json;
 
 namespace LanSensor.Repository.DeviceLog.RestService

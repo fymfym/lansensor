@@ -129,7 +129,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
             var intervals = new[]
             {
-                new TimeInterval()
+                new TimeInterval
                 {
                     DataValue = "Test"
                 }
@@ -193,7 +193,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 new TimeInterval
                 {
                     DataValue = DataType,
-                    Weekdays = new DayOfWeek[]
+                    Weekdays = new[]
                     {
                         DayOfWeek.Monday
                     },

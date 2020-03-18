@@ -1,20 +1,19 @@
 ﻿using System;
 using AutoMapper;
 using LanSensor.PollingMonitor.Application.Repositories;
+using LanSensor.PollingMonitor.Application.Services;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
 using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Alert.Slack;
 using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
-using LanSensor.Repository;
-using LanSensor.Repository.DeviceLog;
 using LanSensor.Repository.DeviceLog.RestService;
 using LanSensor.Repository.DeviceState.MongoDb;
 using LanSensor.Repository.MappingProfiles;
+using LanSensor.Repository.Repositories;
 using NLog.Web;
 
 namespace LanSensor.PollingMonitor
@@ -36,29 +35,30 @@ namespace LanSensor.PollingMonitor
 
                     var httpFactory = new HttpClientFactory(configuration);
                     IDeviceLogRepository deviceLogRepository = new RestDeviceLogRepository(httpFactory);
-                    //IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration, logger);
+                    IDeviceLogService deviceLogService = new DeviceLogService(deviceLogRepository);
+
                     var mapperConfig = new MapperConfiguration(cfg => {
                         cfg.AddProfile<InfrastructureAutoMapProfile>();
                     });
                     var mapper = mapperConfig.CreateMapper();
-                    IDeviceState deviceStateRepository = new MongoDeviceStateService(configuration, mapper);
+
+                    IDeviceStateService deviceStateService = new MongoDeviceStateService(configuration, mapper);
                     IDateTimeService getDate = new DateTimeService();
                     IAlert alerter = new SendSlackAlert(configuration, logger);
-                    ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
-                    IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitor(deviceLogRepository, getDate);
-                    IStateChangeMonitor stateChange = new StateChangeMonitor();
                     IPauseService pauseService = new PauseService();
+
+                    var monitorExecuterList = new IMonitorExecuter[]
+                    {
+                        new KeepAliveMonitor(deviceLogService, getDate, alerter)
+                    };
 
                     System.Threading.Thread.Sleep(5000);
 
                     var monitor = new Services.Monitor.PollingMonitor(
                         configuration,
                         alerter,
-                        stateCheckComparer,
-                        keepAliveMonitor,
-                        stateChange,
-                        deviceStateRepository,
-                        deviceLogRepository,
+                        deviceStateService,
+                        monitorExecuterList,
                         logger,
                         pauseService
                     );

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LanSensor.PollingMonitor.Domain\LanSensor.PollingMonitor.Domain.csproj" />
+    <ProjectReference Include="..\Repository\LanSensor.Repository.csproj" />
   </ItemGroup>
 
 </Project>

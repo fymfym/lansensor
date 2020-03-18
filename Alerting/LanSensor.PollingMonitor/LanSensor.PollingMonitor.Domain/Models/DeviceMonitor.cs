@@ -6,6 +6,7 @@ namespace LanSensor.PollingMonitor.Domain.Models
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class DeviceMonitor
     {
+        [JsonProperty("name")] public string Name { get; set; }
         [JsonProperty("deviceGroupId")] public string DeviceGroupId { get; set; }
         [JsonProperty("deviceId")] public string DeviceId { get; set; }
         [JsonProperty("dataType")] public string DataType { get; set; }

@@ -10,8 +10,8 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
 {
     public class MongoDeviceStateServiceTest
     {
-        private string _deviceGroupId = "deviceGroupIdTest";
-        private string _deviceId = "deviceIdTest";
+        private const string DeviceGroupId = "deviceGroupIdTest";
+        private const string DeviceId = "deviceIdTest";
 
         [Fact(Skip = "Manual")]
         public async Task GetDeviceState()
@@ -25,7 +25,7 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
 
             var service = new MongoDeviceStateService(appConfig, mapper);
 
-            var task = await service.GetLatestDeviceStateEntity(_deviceGroupId, _deviceId);
+            var task = await service.GetDeviceState(DeviceGroupId, DeviceId);
             Assert.NotNull(task);
         }
 
@@ -41,10 +41,10 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
 
             var service = new MongoDeviceStateService(appConfig, mapper);
 
-            var res = await service.SetDeviceStateEntity(new DeviceStateEntity()
+            var res = await service.SaveDeviceState(new DeviceStateEntity
             {
-                DeviceGroupId = _deviceGroupId,
-                DeviceId = _deviceId
+                DeviceGroupId = DeviceGroupId,
+                DeviceId = DeviceId
             });
 
             Assert.NotNull(res);

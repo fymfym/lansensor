@@ -1,8 +1,11 @@
-﻿namespace LanSensor.PollingMonitor.Domain.Models
+﻿using Newtonsoft.Json;
+
+namespace LanSensor.PollingMonitor.Domain.Models
 {
     public class DataValueToOld
     {
-        public string DataValue;
-        public long MaxAgeInMinutes;
+        [JsonProperty("dataValue")] public string DataValue;
+
+        [JsonProperty("maxAgeInMinutes")] public long MaxAgeInMinutes;
     }
 }

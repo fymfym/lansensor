@@ -8,11 +8,11 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
         StateChangeResult GetStateChangeNotification(
             DeviceStateEntity deviceState,
             DeviceLogEntity deviceLogEntity,
-            StateChangeNotification stateChangeNotification);
+            StateChangeNotification monitorChangeNotification);
 
         StateChangeResult GetStateChangeFromToNotification(
             DeviceStateEntity deviceState,
             DeviceLogEntity deviceLogEntity,
-            StateChangeNotification stateChangeNotification);
+            StateChangeNotification monitorChangeNotification);
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using LanSensor.PollingMonitor.Domain.Repositories;
 
 namespace LanSensor.PollingMonitor.Application.Repositories

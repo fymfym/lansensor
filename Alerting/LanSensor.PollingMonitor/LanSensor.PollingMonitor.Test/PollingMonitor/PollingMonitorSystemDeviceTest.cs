@@ -2,14 +2,9 @@
 using FakeItEasy;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
 using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
-using LanSensor.Repository;
-using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceState;
 using NLog;
 using Xunit;
 
@@ -22,11 +17,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         {
             var config = A.Fake<IServiceConfiguration>();
             var alert = A.Fake<IAlert>();
-            var stateCheckMonitor = A.Fake<ITimeIntervalMonitor>();
-            var keepAliveMonitor = A.Fake<IKeepAliveMonitor>();
-            var stateChange = A.Fake<IStateChangeMonitor>();
-            var deviceStateRepository = A.Fake<IDeviceState>();
-            var deviceLogRepository = A.Fake<IDeviceLogRepository>();
+            var deviceStateService = A.Fake<IDeviceStateService>();
             var logger = A.Fake<ILogger>();
             var pauseService = A.Fake<IPauseService>();
 
@@ -56,14 +47,14 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 }
                 );
 
+            var list = new List<IMonitorExecuter>();
+
+
             var monitor = new Services.Monitor.PollingMonitor(
                 config,
                 alert,
-                stateCheckMonitor,
-                keepAliveMonitor,
-                stateChange,
-                deviceStateRepository,
-                deviceLogRepository,
+                deviceStateService,
+                list,
                 logger,
                 pauseService
                 );

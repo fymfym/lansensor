@@ -2,10 +2,12 @@
 using AutoMapper;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
+using LanSensor.Repository.Repositories;
 
 namespace LanSensor.Repository.DeviceState.MongoDb
 {
-    public class MongoDeviceStateService : IDeviceState
+    public class MongoDeviceStateService : IDeviceStateService
     {
         private readonly IMapper _mapper;
 
@@ -20,7 +22,7 @@ namespace LanSensor.Repository.DeviceState.MongoDb
             _deviceStateRepository = new MongoDeviceStateRepository("lansesnor", "deviceState", applicationConfiguration, mapper);
         }
 
-        public Task<DeviceStateEntity> GetLatestDeviceStateEntity(string deviceGroupId, string deviceId)
+        public Task<DeviceStateEntity> GetDeviceState(string deviceGroupId, string deviceId)
         {
             var task = _deviceStateRepository.GetByIdAsync(MakeKey(deviceGroupId, deviceId));
             Task.WaitAll(task);
@@ -28,7 +30,7 @@ namespace LanSensor.Repository.DeviceState.MongoDb
             return Task.FromResult(resValue);
         }
 
-        public Task<DeviceStateEntity> SetDeviceStateEntity(DeviceStateEntity deviceStateEntity)
+        public Task<DeviceStateEntity> SaveDeviceState(DeviceStateEntity deviceStateEntity)
         {
             var task = _deviceStateRepository.GetByIdAsync(MakeKey(deviceStateEntity.DeviceGroupId, deviceStateEntity.DeviceId));
             Task.WaitAll(task);

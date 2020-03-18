@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 
-namespace LanSensor.Repository.DeviceLog
+namespace LanSensor.Repository.Repositories
 {
     public interface IDeviceLogRepository
     {

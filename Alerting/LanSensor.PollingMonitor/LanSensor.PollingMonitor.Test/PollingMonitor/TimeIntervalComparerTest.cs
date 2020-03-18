@@ -6,7 +6,7 @@ using Xunit;
 
 namespace LanSensor.PollingMonitor.Test.PollingMonitor
 {
-    public class StateCheckTest
+    public class TimeIntervalComparerTest
     {
         [Fact]
         public void RunWeekdayIntervalsTest_OutsideNoDataValue_NoFailedInterval()

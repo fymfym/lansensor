@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.Repository.Repositories;
 
 namespace LanSensor.Repository.DeviceLog.MySqlDeviceLog
 {

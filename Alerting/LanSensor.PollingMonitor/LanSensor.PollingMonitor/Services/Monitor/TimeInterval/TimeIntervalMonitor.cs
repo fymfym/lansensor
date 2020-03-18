@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
@@ -39,9 +37,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval
             DeviceLogEntity presenceRecord)
         {
             if (timeInterval?.Weekdays == null) return true;
-            if (!timeInterval.Weekdays.Any()) return true;
-
-            return timeInterval.Weekdays.Contains(presenceRecord.DateTime.DayOfWeek);
+            return !timeInterval.Weekdays.Any() || timeInterval.Weekdays.Contains(presenceRecord.DateTime.DayOfWeek);
         }
 
         private static bool PresenceTimeInConfiguredTimes(

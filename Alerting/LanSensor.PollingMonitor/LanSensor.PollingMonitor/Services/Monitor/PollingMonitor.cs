@@ -1,28 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
 using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
-using LanSensor.Repository;
-using LanSensor.Repository.DeviceLog;
 using NLog;
 
 namespace LanSensor.PollingMonitor.Services.Monitor
 {
     public class PollingMonitor : IPollingMonitor
     {
+        private readonly IEnumerable<IMonitorExecuter> _monitorExecuterList;
         private readonly IServiceConfiguration _configuration;
         private readonly IAlert _alert;
-        private readonly ITimeIntervalMonitor _stateCheckMonitor;
-        private readonly IKeepAliveMonitor _keepAliveMonitor;
-        private readonly IStateChangeMonitor _stateChange;
-        private readonly IDeviceState _deviceStateRepository;
-        private readonly IDeviceLogRepository _deviceLogRepository;
+        private readonly IDeviceStateService _deviceStateRepositoryService;
         private readonly ILogger _logger;
         private readonly IPauseService _pauseService;
 
@@ -30,24 +23,18 @@ namespace LanSensor.PollingMonitor.Services.Monitor
         (
             IServiceConfiguration configuration,
             IAlert alert,
-            ITimeIntervalMonitor stateCheckMonitor,
-            IKeepAliveMonitor keepAliveMonitor,
-            IStateChangeMonitor stateChange,
-            IDeviceState deviceStateRepository,
-            IDeviceLogRepository deviceLogRepository,
+            IDeviceStateService deviceStateRepositoryService,
+            IEnumerable<IMonitorExecuter> monitorExecuterList,
             ILogger logger,
             IPauseService pauseService
         )
         {
-            _deviceLogRepository = deviceLogRepository;
             _logger = logger;
             _pauseService = pauseService;
-            _deviceStateRepository = deviceStateRepository;
+            _deviceStateRepositoryService = deviceStateRepositoryService;
             _configuration = configuration ?? throw new Exception("Add configurtation");
             _alert = alert;
-            _stateCheckMonitor = stateCheckMonitor;
-            _keepAliveMonitor = keepAliveMonitor;
-            _stateChange = stateChange;
+            _monitorExecuterList = monitorExecuterList;
             StoppedIntentionally = false;
         }
 
@@ -65,92 +52,96 @@ namespace LanSensor.PollingMonitor.Services.Monitor
             {
                 if (deviceMonitor == null) continue;
 
-                _logger.Info($"Device monitor - DeviceGroupId:<{deviceMonitor.DeviceGroupId}>, DeviceId:<{deviceMonitor.DeviceId}>, DataType:<{deviceMonitor.DataType}>");
+                var deviceStateTask = _deviceStateRepositoryService.GetDeviceState(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                Task.WaitAll(deviceStateTask);
+                var deviceState = deviceStateTask.Result;
 
-                var presenceRecordTask = _deviceLogRepository.GetLatestPresence(
-                    deviceMonitor.DeviceGroupId,
-                    deviceMonitor.DeviceId,
-                    deviceMonitor.DataType);
-
-                var latestStateTask = _deviceStateRepository.GetLatestDeviceStateEntity(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                var deviceLogTask = _deviceLogRepository.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                var latestKeepAliveTask = _deviceLogRepository.GetLatestKeepAlive(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-
-                var keepAliveTask = _keepAliveMonitor.IsKeepAliveWithinSpec(deviceMonitor);
-
-                Task.WaitAll(presenceRecordTask, latestKeepAliveTask, deviceLogTask, latestStateTask);
-
-                var latestState = latestStateTask.Result ?? new DeviceStateEntity();
-
-                var deviceLog = deviceLogTask.Result ?? new DeviceLogEntity();
-
-                var latestKeepAlive = latestKeepAliveTask.Result;
-                if (latestKeepAlive == null)
+                foreach (var executer in _monitorExecuterList)
                 {
-                    continue;
-                }
-
-                var keepAlive = keepAliveTask.Result;
-                var presenceRecord = presenceRecordTask.Result;
-
-                if (!keepAlive && deviceMonitor.KeepAlive != null)
-                {
-                    var sendKeepAlive = true;
-                    if (deviceMonitor.KeepAlive.NotifyOnceOnly)
-                        sendKeepAlive = latestState.LastKeepAliveAlert < latestState.LastKnownKeepAliveDate;
-
-                    if (sendKeepAlive)
-                        _alert.SendKeepAliveMissingAlert(deviceMonitor);
-                }
-
-                if (deviceMonitor.TimeIntervals != null)
-                {
-                    var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
-                    if (failedTimeInterval != null)
+                    if (executer.CanMonitorRun(deviceMonitor))
                     {
-                        _logger.Info(
-                            $"SendTimerIntervalAlert {presenceRecord}, {failedTimeInterval}, {deviceMonitor}");
-                        _alert.SendTimerIntervalAlert(presenceRecord, failedTimeInterval, deviceMonitor);
+                        var task = executer.Run(deviceState, deviceMonitor);
                     }
                 }
 
-                if (deviceMonitor.StateChangeNotification == null) continue;
+                _deviceStateRepositoryService.SaveDeviceState(deviceState).Wait();
 
-                if (deviceMonitor.StateChangeNotification.OnEveryChange)
-                {
-                    _logger.Info("State change");
-                    var stateChange = _stateChange.GetStateChangeNotification(
-                        latestState, deviceLog,
-                        deviceMonitor.StateChangeNotification);
-                    if (stateChange != null)
-                    {
-                        _alert.SendStateChangeAlert(stateChange, deviceMonitor);
-                    }
-                }
+                //_logger.Info($"Device monitor - {deviceMonitor.Name} DeviceGroupId:<{deviceMonitor.DeviceGroupId}>, DeviceId:<{deviceMonitor.DeviceId}>, DataType:<{deviceMonitor.DataType}>");
 
-                var stateOnChange = _stateChange.GetStateChangeFromToNotification(
-                    latestState, deviceLog,
-                    deviceMonitor.StateChangeNotification);
-                if (stateOnChange != null)
-                {
-                    _logger.Info("_alert.SendStateChangeAlert");
-                    _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
-                }
+                //if (deviceMonitor.KeepAlive != null)
+                //{
+                //    deviceState = KeepAlive(deviceState, deviceMonitor);
+                //}
 
-                if (stateOnChange == null) continue;
+                //var presenceRecordTask = _deviceLogService.GetLatestPresence(
+                //    deviceMonitor.DeviceGroupId,
+                //    deviceMonitor.DeviceId,
+                //    deviceMonitor.DataType);
 
-                latestState.DeviceGroupId = deviceMonitor.DeviceGroupId;
-                latestState.DeviceId = deviceMonitor.DeviceId;
-                latestState.LastKnownDataValue = deviceLog.DataValue;
-                latestState.LastExecutedKeepAliveCheckDate = System.DateTime.Now;
-                latestState.LastKnownDataValueDate = deviceLog.DateTime;
+                //var deviceLogTask = _deviceLogService.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId, deviceMonitor.DataType);
 
-                if (latestKeepAlive.DateTime > latestState.LastKnownKeepAliveDate)
-                {
-                    latestState.LastKnownKeepAliveDate = latestKeepAlive.DateTime;
-                }
+                //var keepAliveTask = _keepAliveMonitor.IsKeepAliveWithinSpec(deviceMonitor);
 
-                _deviceStateRepository.SetDeviceStateEntity(latestState).Wait();
+                //Task.WaitAll(presenceRecordTask, latestKeepAliveTask, deviceLogTask, latestStateTask);
+
+                //if (deviceMonitor.DataType == "FrontDoorOpen")
+                //{
+                //    _logger.Debug("FrontDoor");
+                //}
+
+
+                //var deviceLog = deviceLogTask.Result ?? new DeviceLogEntity();
+
+
+                //var keepAlive = keepAliveTask.Result;
+                //var presenceRecord = presenceRecordTask.Result;
+
+
+                //if (deviceMonitor.TimeIntervals != null)
+                //{
+                //    var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
+                //    if (failedTimeInterval != null)
+                //    {
+                //        _logger.Info(
+                //            $"SendTimerIntervalAlert {presenceRecord}, {failedTimeInterval}, {deviceMonitor}");
+                //        _alert.SendTimerIntervalAlert(presenceRecord, failedTimeInterval, deviceMonitor);
+                //    }
+                //}
+
+                //if (deviceMonitor.DataValueToOld != null)
+                //{
+                //    _dataValueToOldMonitor.IsDataValueToOld()
+                //}
+
+                //if (deviceMonitor.StateChangeNotification != null)
+                //{
+                //    if (deviceMonitor.StateChangeNotification.OnEveryChange)
+                //    {
+                //        _logger.Info("State change");
+                //        var stateChange = _stateChange.GetStateChangeNotification(
+                //            latestState, deviceLog,
+                //            deviceMonitor.StateChangeNotification);
+                //        if (stateChange != null)
+                //        {
+                //            _alert.SendStateChangeAlert(stateChange, deviceMonitor);
+                //        }
+                //    }
+
+                //    var stateOnChange = _stateChange.GetStateChangeFromToNotification(
+                //        latestState, deviceLog,
+                //        deviceMonitor.StateChangeNotification);
+                //    if (stateOnChange != null)
+                //    {
+                //        _logger.Info("_alert.SendStateChangeAlert");
+                //        _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
+                //    }
+                //}
+
+                //latestState.DeviceGroupId = deviceMonitor.DeviceGroupId;
+                //latestState.DeviceId = deviceMonitor.DeviceId;
+                //latestState.LastKnownDataValue = deviceLog.DataValue;
+                //latestState.LastExecutedKeepAliveCheckDate = System.DateTime.Now;
+                //latestState.LastKnownDataValueDate = deviceLog.DateTime;
             }
 
             var count = _configuration.ApplicationConfiguration.MonitorConfiguration.PollingIntervalSeconds;

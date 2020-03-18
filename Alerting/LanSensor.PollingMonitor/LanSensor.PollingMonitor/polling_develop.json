@@ -1,16 +1,24 @@
 {
     "deviceMonitors": [
         {
-            "deviceGroupId": "system",
+            "name": "System is alive",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "System message"
+                    "message": "Lawnmover not home in time"
                 }
-            ]
+            ],
+            "keepAlive": {
+                "maxMinutesSinceKeepAlive": 60,
+                "keepAliveDataType": "keepalive",
+                "notifyOnceOnly": "true"
+            }
         },
         {
+            "name": "LawnmoverStateChange",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
             "dataType": "lawnmower",
@@ -21,10 +29,6 @@
                     "message": "Lawnmover not home in time"
                 }
             ],
-            "keepAlive": {
-                "maxMinutesSinceKeepAlive": 60,
-                "keepAliveDataType": "keepalive"
-            },
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "home",
                 "onDataValueChangeTo": "out",
@@ -68,6 +72,105 @@
             ]
         },
         {
+            "name": "Lawnmover is Home within 120 minutes",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "lawnmower",
+            "dataType": "lawnmower",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Lawnmover not home in time"
+                }
+            ],
+            "dataValueToOld": {
+                "dataValue": "home",
+                "maxAgeInMinutes": "120"
+            },
+            "timeInterval": [
+                {
+                    "weekdays": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday"
+                    ],
+                    "times": [
+                        {
+                            "from": {
+                                "hour": "08",
+                                "minute": "00"
+                            },
+                            "to": {
+                                "hour": "21",
+                                "minute": "00"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lawnmover is Out within 120 minutes",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "lawnmower",
+            "dataType": "lawnmower",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Lawnmover not home in time"
+                }
+            ],
+            "dataValueToOld": {
+                "dataValue": "out",
+                "maxAgeInMinutes": "120"
+            },
+            "timeInterval": [
+                {
+                    "weekdays": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday"
+                    ],
+                    "times": [
+                        {
+                            "from": {
+                                "hour": "08",
+                                "minute": "00"
+                            },
+                            "to": {
+                                "hour": "21",
+                                "minute": "00"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "name": "Frontdoor keepalive",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "frontdoor",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Frontdor unlocked outside hours"
+                }
+            ],
+            "keepAlive": {
+                "maxMinutesSinceKeepAlive": 60,
+                "keepAliveDataType": "keepalive",
+                "notifyOnceOnly": "true"
+            }
+        },
+        {
+            "name": "Frontdoor unlocked outside hours",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
             "dataType": "FrontdoorLock",
@@ -78,10 +181,6 @@
                     "message": "Frontdor unlocked outside hours"
                 }
             ],
-            "keepAlive": {
-                "maxMinutesSinceKeepAlive": 60,
-                "keepAliveDataType": "keepalive"
-            },
             "timeInterval": [
                 {
                     "dataValue": "Locked",
@@ -130,6 +229,7 @@
             ]
         },
         {
+            "name": "Frontdoor opened",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
             "dataType": "FrontdoorOpen",
@@ -147,6 +247,7 @@
             }
         },
         {
+            "name": "Frontdoor closed",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
             "dataType": "FrontdoorOpen",

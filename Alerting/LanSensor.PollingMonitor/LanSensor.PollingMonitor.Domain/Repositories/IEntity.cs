@@ -1,4 +1,3 @@
-using System;
 
 namespace LanSensor.PollingMonitor.Domain.Repositories
 {

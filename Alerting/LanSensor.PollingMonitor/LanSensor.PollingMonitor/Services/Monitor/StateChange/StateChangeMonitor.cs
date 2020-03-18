@@ -6,8 +6,10 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
 {
     public class StateChangeMonitor : IStateChangeMonitor
     {
-        public StateChangeResult GetStateChangeNotification(DeviceStateEntity deviceState, DeviceLogEntity deviceLogEntity,
-            StateChangeNotification stateChangeNotification)
+        public StateChangeResult GetStateChangeNotification(
+            DeviceStateEntity deviceState,
+            DeviceLogEntity deviceLogEntity,
+            StateChangeNotification monitorChangeNotification)
         {
             StateChangeResult result = null;
 
@@ -27,9 +29,9 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
         public StateChangeResult GetStateChangeFromToNotification(
             DeviceStateEntity deviceState,
             DeviceLogEntity deviceLogEntity,
-            StateChangeNotification stateChangeNotification)
+            StateChangeNotification monitorChangeNotification)
         {
-            if (stateChangeNotification == null) return null;
+            if (monitorChangeNotification == null) return null;
 
             var presence = deviceLogEntity;
 
@@ -38,21 +40,27 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             if (presence == null)
                 return null;
 
-            if (IsFromValueReached(stateChangeNotification.OnDataValueChangeTo, deviceState.LastKnownDataValue, deviceLogEntity.DataValue))
+            if (IsValueReached(
+                deviceState.LastKnownDataValue,
+                deviceLogEntity.DataValue,
+                monitorChangeNotification.OnDataValueChangeTo))
             {
                 result = new StateChangeResult
                 {
-                    DataValue = stateChangeNotification.OnDataValueChangeTo,
+                    DataValue = monitorChangeNotification.OnDataValueChangeTo,
                     ChangedToValue = true
                 };
             }
             else
             {
-                if (IsToValueReached(stateChangeNotification.OnDataValueChangeFrom, deviceState.LastKnownDataValue, deviceLogEntity.DataValue))
+                if (IsValueReached(
+                    deviceLogEntity.DataValue,
+                    deviceState.LastKnownDataValue,
+                    monitorChangeNotification.OnDataValueChangeFrom))
                 {
                     result = new StateChangeResult
                     {
-                        DataValue = stateChangeNotification.OnDataValueChangeFrom,
+                        DataValue = monitorChangeNotification.OnDataValueChangeFrom,
                         ChangedFromValue = true
                     };
                 }
@@ -61,28 +69,16 @@ namespace LanSensor.PollingMonitor.Services.Monitor.StateChange
             return result;
         }
 
-        private static bool IsFromValueReached(string monitorChangeFrom, string deviceDataValue, string stateDataValue)
+        private static bool IsValueReached(string stateDataValue, string deviceDataValue, string wantedDataValue)
         {
             if (string.IsNullOrEmpty(stateDataValue)) return false;
             if (string.IsNullOrEmpty(deviceDataValue)) return false;
-            if (string.IsNullOrEmpty(monitorChangeFrom)) return false;
+            if (string.IsNullOrEmpty(wantedDataValue)) return false;
 
             if (string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            return !string.Equals(deviceDataValue, monitorChangeFrom, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private static bool IsToValueReached(string monitorChangeTo, string deviceDataValue, string stateDataValue)
-        {
-            if (string.IsNullOrEmpty(stateDataValue)) return false;
-            if (string.IsNullOrEmpty(deviceDataValue)) return false;
-            if (string.IsNullOrEmpty(monitorChangeTo)) return false;
-
-            if (string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase))
-                return false;
-
-            return !string.Equals(deviceDataValue, monitorChangeTo, StringComparison.InvariantCultureIgnoreCase);
+            return !string.Equals(deviceDataValue, wantedDataValue, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
