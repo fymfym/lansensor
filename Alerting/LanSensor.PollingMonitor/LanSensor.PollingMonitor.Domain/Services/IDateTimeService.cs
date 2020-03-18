@@ -1,4 +1,4 @@
-﻿namespace LanSensor.PollingMonitor.Services.DateTime
+﻿namespace LanSensor.PollingMonitor.Domain.Services
 {
     public interface IDateTimeService
     {

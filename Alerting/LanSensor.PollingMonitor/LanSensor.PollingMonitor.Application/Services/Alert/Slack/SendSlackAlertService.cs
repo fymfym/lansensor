@@ -3,18 +3,19 @@ using System.Linq;
 using LanSensor.Models.DeviceState;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
 using NLog;
 using SlackAPI;
 
-namespace LanSensor.PollingMonitor.Services.Alert.Slack
+namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
 {
-    public class SendSlackAlert : IAlert
+    public class SendSlackAlertService : IAlertService
     {
         private readonly ILogger _logger;
         private IList<Channel> _slackAlertChannels;
         private readonly SlackClient _slackClient;
 
-        public SendSlackAlert(
+        public SendSlackAlertService(
             IServiceConfiguration configuration,
             ILogger logger)
         {

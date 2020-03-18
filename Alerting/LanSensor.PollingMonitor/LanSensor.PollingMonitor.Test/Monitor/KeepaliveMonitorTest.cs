@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FakeItEasy;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.KeepAlive;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.DateTime;
-using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using Xunit;
 
 namespace LanSensor.PollingMonitor.Test.Monitor
@@ -29,7 +27,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         {
             var repository = A.Fake<IDeviceLogService>();
             var getDateTime = A.Fake<IDateTimeService>();
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
 
             var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, alert);
 
@@ -51,7 +49,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         {
             var repository = A.Fake<IDeviceLogService>();
             var getDateTime = A.Fake<IDateTimeService>();
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
 
             var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, alert);
 
@@ -75,7 +73,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         {
             var repository = A.Fake<IDeviceLogService>();
             var getDateTime = A.Fake<IDateTimeService>();
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
 
             var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, alert);
 
@@ -93,7 +91,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public void KeepAliveMonitor_MonitorRunWithNotOldData_MustNotCallAlert()
         {
             var getDateTime = A.Fake<IDateTimeService>();
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
             A.CallTo(() => getDateTime.Now).Returns(new DateTime(1, 1, 1, 1, 20, 1));
 
             var keepAliveMonitor = new KeepAliveMonitor(_fakedService, getDateTime, alert);
@@ -116,7 +114,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         public void KeepAliveMonitor_MonitorRunWithOldData_MustCallAlert()
         {
             var fakedTimeService = A.Fake<IDateTimeService>();
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
             A.CallTo(() => fakedTimeService.Now).Returns(new DateTime(1, 1, 2, 1, 1, 1));
 
             var keepAliveMonitor = new KeepAliveMonitor(_fakedService, fakedTimeService, alert);

@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SlackAPI" Version="1.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LanSensor.PollingMonitor.Domain\LanSensor.PollingMonitor.Domain.csproj" />
     <ProjectReference Include="..\Repository\LanSensor.Repository.csproj" />
   </ItemGroup>

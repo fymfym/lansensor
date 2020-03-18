@@ -3,7 +3,6 @@ using FakeItEasy;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Alert;
 using LanSensor.PollingMonitor.Services.Pause;
 using NLog;
 using Xunit;
@@ -16,7 +15,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         public void Monitor_StoppedBeforeRun_PauseIsNotCalled()
         {
             var config = A.Fake<IServiceConfiguration>();
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
             var deviceStateService = A.Fake<IDeviceStateService>();
             var logger = A.Fake<ILogger>();
             var pauseService = A.Fake<IPauseService>();
@@ -34,7 +33,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
 
             var list = new List<IMonitorExecuter>();
 
-            var monitor = new Services.Monitor.PollingMonitor(
+            var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,
                 alert,
                 deviceStateService,

@@ -1,5 +1,7 @@
 ﻿
-namespace LanSensor.PollingMonitor.Services.DateTime
+using LanSensor.PollingMonitor.Domain.Services;
+
+namespace LanSensor.PollingMonitor.Application.Services
 {
     public class DateTimeService : IDateTimeService
     {

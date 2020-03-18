@@ -2,13 +2,12 @@
 using AutoMapper;
 using LanSensor.PollingMonitor.Application.Repositories;
 using LanSensor.PollingMonitor.Application.Services;
+using LanSensor.PollingMonitor.Application.Services.Alert.Slack;
+using LanSensor.PollingMonitor.Application.Services.Pause;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.KeepAlive;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.Alert.Slack;
-using LanSensor.PollingMonitor.Services.DateTime;
-using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
 using LanSensor.PollingMonitor.Services.Pause;
 using LanSensor.Repository.DeviceLog.RestService;
 using LanSensor.Repository.DeviceState.MongoDb;
@@ -44,7 +43,7 @@ namespace LanSensor.PollingMonitor
 
                     IDeviceStateService deviceStateService = new MongoDeviceStateService(configuration, mapper);
                     IDateTimeService getDate = new DateTimeService();
-                    IAlert alerter = new SendSlackAlert(configuration, logger);
+                    IAlertService alerter = new SendSlackAlertService(configuration, logger);
                     IPauseService pauseService = new PauseService();
 
                     var monitorExecuterList = new IMonitorExecuter[]
@@ -54,7 +53,7 @@ namespace LanSensor.PollingMonitor
 
                     System.Threading.Thread.Sleep(5000);
 
-                    var monitor = new Services.Monitor.PollingMonitor(
+                    var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                         configuration,
                         alerter,
                         deviceStateService,

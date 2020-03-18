@@ -4,17 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Alert;
+using LanSensor.PollingMonitor.Services.Monitor;
 using LanSensor.PollingMonitor.Services.Pause;
 using NLog;
 
-namespace LanSensor.PollingMonitor.Services.Monitor
+namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
 {
     public class PollingMonitor : IPollingMonitor
     {
         private readonly IEnumerable<IMonitorExecuter> _monitorExecuterList;
         private readonly IServiceConfiguration _configuration;
-        private readonly IAlert _alert;
+        private readonly IAlertService _alert;
         private readonly IDeviceStateService _deviceStateRepositoryService;
         private readonly ILogger _logger;
         private readonly IPauseService _pauseService;
@@ -22,7 +22,7 @@ namespace LanSensor.PollingMonitor.Services.Monitor
         public PollingMonitor
         (
             IServiceConfiguration configuration,
-            IAlert alert,
+            IAlertService alert,
             IDeviceStateService deviceStateRepositoryService,
             IEnumerable<IMonitorExecuter> monitorExecuterList,
             ILogger logger,

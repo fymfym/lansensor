@@ -1,4 +1,5 @@
 ﻿using System;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.TimeInterval;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using Xunit;

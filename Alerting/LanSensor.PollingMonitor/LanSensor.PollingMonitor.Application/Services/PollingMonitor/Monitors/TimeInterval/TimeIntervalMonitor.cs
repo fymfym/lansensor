@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.TimeInterval;
 using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Services.Monitor.TimeInterval

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using FakeItEasy;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.TimeInterval;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.DateTime;
 using LanSensor.PollingMonitor.Services.Monitor;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using LanSensor.PollingMonitor.Services.Pause;
 using LanSensor.Repository.Repositories;
 using NLog;
@@ -18,17 +15,16 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 {
     public class PollingMonitorKeepAliveTest
     {
-        private readonly IStateChangeMonitor _fakedStateChange;
         private readonly ILogger _fakedLogger;
         private readonly ITimeIntervalMonitor _fakedTimeIntervalMonitor;
         private readonly IPauseService _fakedPauseService;
 
         public PollingMonitorKeepAliveTest()
         {
-            _fakedStateChange = A.Fake<IStateChangeMonitor>();
-            _fakedLogger = A.Fake<ILogger>();
-            _fakedTimeIntervalMonitor = A.Fake<ITimeIntervalMonitor>();
-            _fakedPauseService = A.Fake<IPauseService>();
+            //_fakedStateChange = A.Fake<IStateChangeMonitor>();
+            //_fakedLogger = A.Fake<ILogger>();
+            //_fakedTimeIntervalMonitor = A.Fake<ITimeIntervalMonitor>();
+            //_fakedPauseService = A.Fake<IPauseService>();
         }
 
         [Fact]
@@ -96,10 +92,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 }
                 );
 
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
             var list = new List<IMonitorExecuter>();
 
-            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(
+            IPollingMonitor pollingMonitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,
                 alert,
                 deviceStateService,
@@ -180,10 +176,10 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 }
                 );
 
-            var alert = A.Fake<IAlert>();
+            var alert = A.Fake<IAlertService>();
             var list = new List<IMonitorExecuter>();
 
-            IPollingMonitor pollingMonitor = new Services.Monitor.PollingMonitor(
+            IPollingMonitor pollingMonitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,
                 alert,
                 deviceStateRepository,

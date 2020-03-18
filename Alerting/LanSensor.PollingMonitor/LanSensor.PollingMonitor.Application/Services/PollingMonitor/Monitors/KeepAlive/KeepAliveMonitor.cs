@@ -2,22 +2,20 @@
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.DateTime;
 
-namespace LanSensor.PollingMonitor.Services.Monitor.KeepAlive
+namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.KeepAlive
 {
     public class KeepAliveMonitor : IMonitorExecuter
     {
         private readonly IDeviceLogService _deviceLogService;
         private readonly IDateTimeService _dateTimeService;
-        private readonly IAlert _alert;
+        private readonly IAlertService _alert;
 
         public KeepAliveMonitor
             (
                 IDeviceLogService deviceLogService,
                 IDateTimeService dateTimeService,
-                IAlert alert
+                IAlertService alert
             )
         {
             _deviceLogService = deviceLogService;
