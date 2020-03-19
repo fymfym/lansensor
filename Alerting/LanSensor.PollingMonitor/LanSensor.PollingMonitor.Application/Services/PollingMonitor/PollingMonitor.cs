@@ -60,7 +60,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
                 {
                     if (executer.CanMonitorRun(deviceMonitor))
                     {
-                        var task = executer.Run(deviceState, deviceMonitor);
+                        deviceState = executer.Run(deviceState, deviceMonitor);
                     }
                 }
 

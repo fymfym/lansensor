@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using FakeItEasy;
-using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.TimeInterval;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
 using Xunit;
 
 namespace LanSensor.PollingMonitor.Application.Test.Services
@@ -83,7 +79,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             };
 
             var result = _tools.IsInsideTimeInterval(timeIntervals, dateTimeValue);
-            Assert.True(result);
+            Assert.False(result);
         }
 
         /// <summary>
