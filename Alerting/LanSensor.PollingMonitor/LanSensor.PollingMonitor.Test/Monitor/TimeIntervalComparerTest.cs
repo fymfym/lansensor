@@ -14,7 +14,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalWithEmptyDataReturnsNull()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new TimeInterval[]
             {
@@ -33,7 +33,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerInterval_WrongDayOfWeek_ValueWeekReturnsNoTimeInterval()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -57,7 +57,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalRightDataValueWrongDayOfWeekReturnsNoTimeInterval()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -81,7 +81,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalOtherDataValueWeekReturnsNull()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -104,7 +104,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimeIntervalReturnsInterval()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -126,7 +126,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimeInterval_WithoutWeekday_ReturnsInterval()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -149,7 +149,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalInsideSpanRightValueReturnsTimeInterval()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -187,7 +187,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalInsideSpanWrongValueReturnsNull()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {
@@ -227,7 +227,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetFailedTimerIntervalOutsideSpanReturnsTimeInterval()
         {
-            ITimeIntervalMonitor interval = new TimeIntervalComparer();
+            var interval = new TimeIntervalComparer();
 
             var intervals = new[]
             {

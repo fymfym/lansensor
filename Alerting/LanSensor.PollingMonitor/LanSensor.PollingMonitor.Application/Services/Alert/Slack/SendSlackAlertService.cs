@@ -59,11 +59,11 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
             return SendToSlack(deviceMonitor, msg);
         }
 
-        public bool SendTimerIntervalAlert(DeviceLogEntity presenceRecord, TimeInterval timeInterval, DeviceMonitor deviceMonitor)
+        public bool SendTimerIntervalAlert(DeviceLogEntity presenceRecord, DeviceMonitor deviceMonitor)
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"Device *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}* is outside desired value of *{timeInterval.DataValue}* with message *{deviceMonitorMessage}*";
+                $"Device *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}* is outside desired vlaue, message *{deviceMonitorMessage}*";
             _logger.Info($"Slack SendTimerIntervalAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }

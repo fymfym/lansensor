@@ -4,7 +4,10 @@ using LanSensor.PollingMonitor.Application.Repositories;
 using LanSensor.PollingMonitor.Application.Services;
 using LanSensor.PollingMonitor.Application.Services.Alert.Slack;
 using LanSensor.PollingMonitor.Application.Services.Pause;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.DataValueToOld;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.KeepAlive;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.StateChange;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
@@ -42,20 +45,23 @@ namespace LanSensor.PollingMonitor
                     var mapper = mapperConfig.CreateMapper();
 
                     IDeviceStateService deviceStateService = new MongoDeviceStateService(configuration, mapper);
-                    IDateTimeService getDate = new DateTimeService();
-                    IAlertService alerter = new SendSlackAlertService(configuration, logger);
+                    IDateTimeService dateTimeService = new DateTimeService();
+                    IAlertService alertService = new SendSlackAlertService(configuration, logger);
                     IPauseService pauseService = new PauseService();
+                    IMonitorTools monitorTools = new MonitorTools();
 
                     var monitorExecuterList = new IMonitorExecuter[]
                     {
-                        new KeepAliveMonitor(deviceLogService, getDate, alerter)
+                        new KeepAliveMonitor(deviceLogService, dateTimeService, alertService, monitorTools),
+                        new StateChangeMonitor(deviceLogService, alertService, monitorTools),
+                        new DataValueToOldMonitor(deviceLogService, alertService, dateTimeService)
                     };
 
                     System.Threading.Thread.Sleep(5000);
 
                     var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                         configuration,
-                        alerter,
+                        alertService,
                         deviceStateService,
                         monitorExecuterList,
                         logger,
