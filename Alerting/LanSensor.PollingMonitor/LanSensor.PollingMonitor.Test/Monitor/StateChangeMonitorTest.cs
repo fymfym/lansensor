@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using LanSensor.Models.DeviceState;
-using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.StateChange;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
 using Xunit;
@@ -26,14 +24,12 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         [Fact]
         public void GetStateChangeNotification_No_Change_Test()
         {
-            var deviceState = GetDeviceState("one");
             var deviceLogList = new List<DeviceLogEntity>
             {
                 GetDeviceLog("one")
             };
 
             var fakedDeviceLogService = A.Fake<IDeviceLogService>();
-            var fakedAlertService = A.Fake<IAlertService>();
 
             A.CallTo(() => fakedDeviceLogService.GetPresenceListSince(
                 A<string>.Ignored,

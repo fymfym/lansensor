@@ -1,4 +1,4 @@
-﻿namespace LanSensor.PollingMonitor.Services.Pause
+﻿namespace LanSensor.PollingMonitor.Domain.Services
 {
     public interface IPauseService
     {

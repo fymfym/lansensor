@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Monitor;
-using LanSensor.PollingMonitor.Services.Pause;
 using NLog;
 
 namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
@@ -18,6 +16,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
         private readonly IDeviceStateService _deviceStateRepositoryService;
         private readonly ILogger _logger;
         private readonly IPauseService _pauseService;
+        private readonly IMonitorTools _monitorTools;
+        private readonly IDateTimeService _dateTimeService;
 
         public PollingMonitor
         (
@@ -26,11 +26,15 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
             IDeviceStateService deviceStateRepositoryService,
             IEnumerable<IMonitorExecuter> monitorExecuterList,
             ILogger logger,
-            IPauseService pauseService
+            IPauseService pauseService,
+            IMonitorTools monitorTools,
+            IDateTimeService dateTimeService
         )
         {
             _logger = logger;
             _pauseService = pauseService;
+            _monitorTools = monitorTools;
+            _dateTimeService = dateTimeService;
             _deviceStateRepositoryService = deviceStateRepositoryService;
             _configuration = configuration ?? throw new Exception("Add configurtation");
             _alert = alert;
@@ -52,96 +56,20 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
             {
                 if (deviceMonitor == null) continue;
 
-                var deviceStateTask = _deviceStateRepositoryService.GetDeviceState(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
-                Task.WaitAll(deviceStateTask);
-                var deviceState = deviceStateTask.Result;
-
-                foreach (var executer in _monitorExecuterList)
+                if (!_monitorTools.IsInsideTimeInterval(deviceMonitor.TimeIntervals, _dateTimeService.Now))
                 {
-                    if (executer.CanMonitorRun(deviceMonitor))
-                    {
-                        deviceState = executer.Run(deviceState, deviceMonitor);
-                    }
+                    continue;
                 }
 
+                var deviceStateTask = _deviceStateRepositoryService.GetDeviceState(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId);
+                Task.WaitAll(deviceStateTask);
+                var deviceState = _monitorExecuterList
+                    .Where(executer => executer
+                        .CanMonitorRun(deviceMonitor))
+                    .Aggregate(deviceStateTask.Result, (current, executer) => executer
+                        .Run(current, deviceMonitor));
+
                 _deviceStateRepositoryService.SaveDeviceState(deviceState).Wait();
-
-                //_logger.Info($"Device monitor - {deviceMonitor.Name} DeviceGroupId:<{deviceMonitor.DeviceGroupId}>, DeviceId:<{deviceMonitor.DeviceId}>, DataType:<{deviceMonitor.DataType}>");
-
-                //if (deviceMonitor.KeepAlive != null)
-                //{
-                //    deviceState = KeepAlive(deviceState, deviceMonitor);
-                //}
-
-                //var presenceRecordTask = _deviceLogService.GetLatestPresence(
-                //    deviceMonitor.DeviceGroupId,
-                //    deviceMonitor.DeviceId,
-                //    deviceMonitor.DataType);
-
-                //var deviceLogTask = _deviceLogService.GetLatestPresence(deviceMonitor.DeviceGroupId, deviceMonitor.DeviceId, deviceMonitor.DataType);
-
-                //var keepAliveTask = _keepAliveMonitor.IsKeepAliveWithinSpec(deviceMonitor);
-
-                //Task.WaitAll(presenceRecordTask, latestKeepAliveTask, deviceLogTask, latestStateTask);
-
-                //if (deviceMonitor.DataType == "FrontDoorOpen")
-                //{
-                //    _logger.Debug("FrontDoor");
-                //}
-
-
-                //var deviceLog = deviceLogTask.Result ?? new DeviceLogEntity();
-
-
-                //var keepAlive = keepAliveTask.Result;
-                //var presenceRecord = presenceRecordTask.Result;
-
-
-                //if (deviceMonitor.TimeIntervals != null)
-                //{
-                //    var failedTimeInterval = _stateCheckMonitor.GetFailedTimerInterval(deviceMonitor.TimeIntervals, presenceRecord);
-                //    if (failedTimeInterval != null)
-                //    {
-                //        _logger.Info(
-                //            $"SendTimerIntervalAlert {presenceRecord}, {failedTimeInterval}, {deviceMonitor}");
-                //        _alert.SendTimerIntervalAlert(presenceRecord, failedTimeInterval, deviceMonitor);
-                //    }
-                //}
-
-                //if (deviceMonitor.DataValueToOld != null)
-                //{
-                //    _dataValueToOldMonitor.IsDataValueToOld()
-                //}
-
-                //if (deviceMonitor.StateChangeNotification != null)
-                //{
-                //    if (deviceMonitor.StateChangeNotification.OnEveryChange)
-                //    {
-                //        _logger.Info("State change");
-                //        var stateChange = _stateChange.GetStateChangeNotification(
-                //            latestState, deviceLog,
-                //            deviceMonitor.StateChangeNotification);
-                //        if (stateChange != null)
-                //        {
-                //            _alert.SendStateChangeAlert(stateChange, deviceMonitor);
-                //        }
-                //    }
-
-                //    var stateOnChange = _stateChange.GetStateChangeFromToNotification(
-                //        latestState, deviceLog,
-                //        deviceMonitor.StateChangeNotification);
-                //    if (stateOnChange != null)
-                //    {
-                //        _logger.Info("_alert.SendStateChangeAlert");
-                //        _alert.SendStateChangeAlert(stateOnChange, deviceMonitor);
-                //    }
-                //}
-
-                //latestState.DeviceGroupId = deviceMonitor.DeviceGroupId;
-                //latestState.DeviceId = deviceMonitor.DeviceId;
-                //latestState.LastKnownDataValue = deviceLog.DataValue;
-                //latestState.LastExecutedKeepAliveCheckDate = System.DateTime.Now;
-                //latestState.LastKnownDataValueDate = deviceLog.DateTime;
             }
 
             var count = _configuration.ApplicationConfiguration.MonitorConfiguration.PollingIntervalSeconds;

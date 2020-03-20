@@ -9,7 +9,6 @@ namespace LanSensor.PollingMonitor.Domain.Models
         [JsonProperty("name")] public string Name { get; set; }
         [JsonProperty("deviceGroupId")] public string DeviceGroupId { get; set; }
         [JsonProperty("deviceId")] public string DeviceId { get; set; }
-        [JsonProperty("dataType")] public string DataType { get; set; }
         [JsonProperty("messageMediums")] public IEnumerable<MessageMedium> MessageMediums { get; set; }
         [JsonProperty("timeInterval")] public IEnumerable<TimeInterval> TimeIntervals { get; set; }
         [JsonProperty("dataValueToOld")] public DataValueToOld DataValueToOld { get; set; }

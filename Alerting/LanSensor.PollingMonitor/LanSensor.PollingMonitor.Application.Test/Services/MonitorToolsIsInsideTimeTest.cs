@@ -92,7 +92,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             {
                 new TimeInterval
                 {
-                    Weekdays = new[] {weekDay},
+                    Weekdays = new[] {weekDay}
                 }
             };
 
@@ -104,7 +104,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             return res;
         }
 
-        private static List<TimeFromTo> BuildTimeFromTo()
+        private static IEnumerable<TimeFromTo> BuildTimeFromTo()
         {
             return new List<TimeFromTo>
             {

@@ -10,20 +10,17 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
         private readonly IDeviceLogService _deviceLogService;
         private readonly IDateTimeService _dateTimeService;
         private readonly IAlertService _alert;
-        private readonly IMonitorTools _monitorTools;
 
         public KeepAliveMonitor
             (
                 IDeviceLogService deviceLogService,
                 IDateTimeService dateTimeService,
-                IAlertService alert,
-                IMonitorTools monitorTools
+                IAlertService alert
             )
         {
             _deviceLogService = deviceLogService;
             _dateTimeService = dateTimeService;
             _alert = alert;
-            _monitorTools = monitorTools;
         }
 
         public bool CanMonitorRun(DeviceMonitor monitor)
@@ -37,8 +34,6 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
         public DeviceStateEntity Run(DeviceStateEntity state, DeviceMonitor monitor)
         {
             if (!CanMonitorRun(monitor)) throw new Exception("Can not run om this monitor");
-
-            if (!_monitorTools.IsInsideTimeInterval(monitor.TimeIntervals, _dateTimeService.Now)) return state;
 
             var keepAliveTask = _deviceLogService.GetLatestPresence(
                 monitor.DeviceGroupId, monitor.DeviceId,

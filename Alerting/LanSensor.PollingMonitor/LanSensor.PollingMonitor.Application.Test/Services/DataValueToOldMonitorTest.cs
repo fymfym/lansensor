@@ -66,9 +66,9 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
                     DateTime = _testDateTime
                 });
 
-            A.CallTo(() => _fakedDateTimeService.Now).Returns(_testDateTime.AddMinutes(1));
+            A.CallTo(() => _fakedDateTimeService.Now).Returns(_testDateTime.AddMinutes(11));
 
-            var res = monitor.Run(new DeviceStateEntity(), new DeviceMonitor());
+            monitor.Run(new DeviceStateEntity(), BuildDeviceMonitor());
 
             A.CallTo(() => _fakedAlertService.SendTimerIntervalAlert(A<DeviceLogEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
         }
@@ -78,7 +78,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         {
             var monitor = new DataValueToOldMonitor(_fakedDeviceLogService, _fakedAlertService, _fakedDateTimeService);
 
-            var res = monitor.Run(new DeviceStateEntity(), new DeviceMonitor());
+            monitor.Run(new DeviceStateEntity(), BuildDeviceMonitor());
 
             A.CallTo(() => _fakedAlertService.SendTimerIntervalAlert(A<DeviceLogEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustHaveHappened();
         }

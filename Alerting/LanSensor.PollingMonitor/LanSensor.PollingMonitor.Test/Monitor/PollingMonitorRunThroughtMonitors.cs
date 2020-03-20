@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FakeItEasy;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Monitor;
-using LanSensor.PollingMonitor.Services.Pause;
 using NLog;
 using Xunit;
 
@@ -18,6 +18,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         private IMonitorExecuter _fakedMonitor2;
         private readonly IDeviceStateService _fakedDeviceStateService;
         private readonly IAlertService _fakedAlertService;
+        private readonly IMonitorTools _fakedMonitorTools;
+        private readonly IDateTimeService _fakedDateTimeService;
 
         public PollingMonitorRunThroughMonitors()
         {
@@ -27,6 +29,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             _fakedMonitor1 = A.Fake<IMonitorExecuter>();
             _fakedMonitor2 = A.Fake<IMonitorExecuter>();
             _fakedAlertService = A.Fake<IAlertService>();
+            _fakedMonitorTools = A.Fake<IMonitorTools>();
+            _fakedDateTimeService = A.Fake<IDateTimeService>();
         }
 
         [Fact]
@@ -42,10 +46,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
             A.CallTo(() => _fakedAlertService.SendKeepAliveMissingAlert(A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
 
-            A.CallTo(() => _fakedDeviceStateService.GetDeviceState(A<string>.Ignored, A<string>.Ignored)).MustHaveHappened();
-            A.CallTo(() => _fakedDeviceStateService.SaveDeviceState(A<DeviceStateEntity>.Ignored)).MustHaveHappened();
-            A.CallTo(() => _fakedMonitor1.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustHaveHappened();
-            A.CallTo(() => _fakedMonitor2.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustHaveHappened();
+            A.CallTo(() => _fakedMonitor1.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => _fakedMonitor2.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => _fakedMonitor1.Run(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => _fakedMonitor2.Run(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
         }
@@ -56,6 +58,13 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             IPollingMonitor pollingMonitor = CreatePollingMonitor();
 
             A.CallTo(() => _fakedMonitor1.CanMonitorRun(A<DeviceMonitor>.Ignored)).Returns(true);
+            A.CallTo(() =>
+                    _fakedMonitorTools.IsInsideTimeInterval(A<IEnumerable<TimeInterval>>.Ignored, A<DateTime>.Ignored))
+                .Returns(true);
+
+            A.CallTo(() =>
+                    _fakedMonitorTools.IsInsideTimeInterval(A<IEnumerable<TimeInterval>>.Ignored, A<DateTime>.Ignored))
+                .Returns(true);
 
             pollingMonitor.RunThroughDeviceMonitors();
             pollingMonitor.Stop();
@@ -65,6 +74,27 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             A.CallTo(() => _fakedMonitor1.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustHaveHappened();
             A.CallTo(() => _fakedMonitor2.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustHaveHappened();
             A.CallTo(() => _fakedMonitor1.Run(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustHaveHappened();
+            A.CallTo(() => _fakedMonitor2.Run(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void PollingMonitorRun_TwoMonitors_OutsideTimeInterval()
+        {
+            IPollingMonitor pollingMonitor = CreatePollingMonitor();
+
+            A.CallTo(() => _fakedMonitor1.CanMonitorRun(A<DeviceMonitor>.Ignored)).Returns(false);
+            A.CallTo(() =>
+                    _fakedMonitorTools.IsInsideTimeInterval(A<IEnumerable<TimeInterval>>.Ignored, A<DateTime>.Ignored))
+                .Returns(true);
+
+            pollingMonitor.RunThroughDeviceMonitors();
+            pollingMonitor.Stop();
+
+            A.CallTo(() => _fakedDeviceStateService.GetDeviceState(A<string>.Ignored, A<string>.Ignored)).MustHaveHappened();
+            A.CallTo(() => _fakedDeviceStateService.SaveDeviceState(A<DeviceStateEntity>.Ignored)).MustHaveHappened();
+            A.CallTo(() => _fakedMonitor1.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustHaveHappened();
+            A.CallTo(() => _fakedMonitor2.CanMonitorRun(A<DeviceMonitor>.Ignored)).MustHaveHappened();
+            A.CallTo(() => _fakedMonitor1.Run(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => _fakedMonitor2.Run(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
         }
 
@@ -80,7 +110,9 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 _fakedDeviceStateService,
                 GetMonitorList(),
                 _fakedLogger,
-                _fakedPauseService);
+                _fakedPauseService,
+                _fakedMonitorTools,
+                _fakedDateTimeService);
         }
 
         private IEnumerable<IMonitorExecuter> GetMonitorList()
@@ -104,8 +136,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                     new DeviceMonitor
                     {
                         DeviceGroupId = "dg",
-                        DeviceId = "di",
-                    },
+                        DeviceId = "di"
+                    }
                 },
                 MonitorConfiguration = new MonitorConfiguration
                 {

@@ -11,7 +11,6 @@ using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Pause;
 using LanSensor.Repository.DeviceLog.RestService;
 using LanSensor.Repository.DeviceState.MongoDb;
 using LanSensor.Repository.MappingProfiles;
@@ -52,8 +51,8 @@ namespace LanSensor.PollingMonitor
 
                     var monitorExecuterList = new IMonitorExecuter[]
                     {
-                        new KeepAliveMonitor(deviceLogService, dateTimeService, alertService, monitorTools),
-                        new StateChangeMonitor(deviceLogService, alertService, monitorTools),
+                        new KeepAliveMonitor(deviceLogService, dateTimeService, alertService),
+                        new StateChangeMonitor(deviceLogService, alertService),
                         new DataValueToOldMonitor(deviceLogService, alertService, dateTimeService)
                     };
 
@@ -65,7 +64,9 @@ namespace LanSensor.PollingMonitor
                         deviceStateService,
                         monitorExecuterList,
                         logger,
-                        pauseService
+                        pauseService,
+                        monitorTools,
+                        dateTimeService
                     );
 
                     monitor.RunInLoop();

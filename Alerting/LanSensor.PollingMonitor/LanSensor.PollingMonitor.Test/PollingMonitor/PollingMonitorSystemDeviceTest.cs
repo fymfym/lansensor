@@ -3,7 +3,6 @@ using FakeItEasy;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Pause;
 using NLog;
 using Xunit;
 
@@ -19,6 +18,8 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
             var deviceStateService = A.Fake<IDeviceStateService>();
             var logger = A.Fake<ILogger>();
             var pauseService = A.Fake<IPauseService>();
+            var fakedMonitorTools = A.Fake<IMonitorTools>();
+            var fakedDateTimeService = A.Fake<IDateTimeService>();
 
             A.CallTo(() => config.ApplicationConfiguration).Returns(
                 new ApplicationConfiguration
@@ -46,16 +47,15 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 }
                 );
 
-            var list = new List<IMonitorExecuter>();
-
-
             var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,
                 alert,
                 deviceStateService,
-                list,
+                new List<IMonitorExecuter>(),
                 logger,
-                pauseService
+                pauseService,
+                fakedMonitorTools,
+                fakedDateTimeService
                 );
 
             monitor.RunThroughDeviceMonitors();

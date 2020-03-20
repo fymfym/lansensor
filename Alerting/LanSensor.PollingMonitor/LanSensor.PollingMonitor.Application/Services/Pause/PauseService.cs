@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using LanSensor.PollingMonitor.Services.Pause;
+using LanSensor.PollingMonitor.Domain.Services;
 
 namespace LanSensor.PollingMonitor.Application.Services.Pause
 {

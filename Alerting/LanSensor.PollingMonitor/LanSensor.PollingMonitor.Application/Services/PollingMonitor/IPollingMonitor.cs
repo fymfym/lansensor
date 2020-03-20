@@ -1,5 +1,4 @@
-﻿
-namespace LanSensor.PollingMonitor.Services.Monitor
+﻿namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
 {
     public interface IPollingMonitor
     {

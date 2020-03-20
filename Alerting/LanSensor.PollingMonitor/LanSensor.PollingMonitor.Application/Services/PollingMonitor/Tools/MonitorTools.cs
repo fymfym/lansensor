@@ -14,7 +14,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools
 
             if (!timeIntervals.Any()) return true;
 
-            bool insideAnyGivenTime = false;
+            var insideAnyGivenTime = false;
 
             foreach (var time in timeIntervals)
             {
@@ -22,23 +22,21 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools
                 {
                     foreach (var timeWeekday in time.Weekdays)
                     {
-                        if (timeWeekday == deviceLogDateValue.DayOfWeek)
+                        if (timeWeekday != deviceLogDateValue.DayOfWeek) continue;
+
+                        if (IsInsideTimeInterval(time, deviceLogDateValue))
                         {
-                            if (IsInsideTimeInterval(time, deviceLogDateValue))
-                            {
-                                insideAnyGivenTime = true;
-                            }
+                            insideAnyGivenTime = true;
                         }
                     }
                 }
                 else
                 {
-                    if (time.Times != null && time.Times.Any())
+                    if (time.Times == null || !time.Times.Any()) continue;
+
+                    if (time.Times.Any(onlyTime => IsInsideTimeFromTo(onlyTime, deviceLogDateValue)))
                     {
-                        foreach (var onlyTime in time.Times)
-                        {
-                            if (IsInsideTimeFromTo(onlyTime, deviceLogDateValue)) return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -47,25 +45,18 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools
             return insideAnyGivenTime;
         }
 
-        private bool IsInsideTimeInterval(TimeInterval interval, DateTime deviceLogDateValue)
+        private static bool IsInsideTimeInterval(TimeInterval interval, DateTime deviceLogDateValue)
         {
-            if (!interval.Times.Any()) return true;
-
-            foreach (var time in interval.Times)
-            {
-                if (IsInsideTimeFromTo(time, deviceLogDateValue)) return true;
-            }
-
-            return true;
+            return !interval.Times.Any() || interval.Times.Any(time => IsInsideTimeFromTo(time, deviceLogDateValue));
         }
 
-        private bool IsInsideTimeFromTo(TimeFromTo timeFromTo, DateTime deviceLogDateValue)
+        private static bool IsInsideTimeFromTo(TimeFromTo timeFromTo, DateTime deviceLogDateValue)
         {
             return timeFromTo.From.GetNumber() < GetTimeNumber(deviceLogDateValue) &&
                    timeFromTo.To.GetNumber() > GetTimeNumber(deviceLogDateValue);
         }
 
-        private long GetTimeNumber(DateTime time)
+        private static long GetTimeNumber(DateTime time)
         {
             return time.Hour * 60 + time.Minute;
         }

@@ -8,15 +8,13 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
 {
     public class StateChangeMonitorTest
     {
-        private IDeviceLogService _fakedDeviceLogService;
-        private IAlertService _fakedAlertService;
-        private IMonitorTools _fakedMonitorTools;
+        private readonly IDeviceLogService _fakedDeviceLogService;
+        private readonly IAlertService _fakedAlertService;
 
         public StateChangeMonitorTest()
         {
             _fakedDeviceLogService = A.Fake<IDeviceLogService>();
             _fakedAlertService = A.Fake<IAlertService>();
-            _fakedMonitorTools = A.Fake<IMonitorTools>();
         }
 
         [Fact]
@@ -24,8 +22,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         {
             var monitor = new StateChangeMonitor(
                 _fakedDeviceLogService,
-                _fakedAlertService,
-                _fakedMonitorTools);
+                _fakedAlertService);
 
             var result = monitor.CanMonitorRun(null);
 
@@ -37,8 +34,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         {
             var monitor = new StateChangeMonitor(
                 _fakedDeviceLogService,
-                _fakedAlertService,
-                _fakedMonitorTools);
+                _fakedAlertService);
 
             var result = monitor.CanMonitorRun(new DeviceMonitor
             {
@@ -56,8 +52,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         {
             var monitor = new StateChangeMonitor(
                 _fakedDeviceLogService,
-                _fakedAlertService,
-                _fakedMonitorTools);
+                _fakedAlertService);
 
             var result = monitor.CanMonitorRun(new DeviceMonitor
             {
@@ -75,8 +70,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         {
             var monitor = new StateChangeMonitor(
                 _fakedDeviceLogService,
-                _fakedAlertService,
-                _fakedMonitorTools);
+                _fakedAlertService);
 
             var result = monitor.CanMonitorRun(new DeviceMonitor
             {

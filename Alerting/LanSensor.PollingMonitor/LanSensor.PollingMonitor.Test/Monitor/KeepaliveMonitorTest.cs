@@ -11,13 +11,11 @@ namespace LanSensor.PollingMonitor.Test.Monitor
     public class KeepAliveMonitorTest
     {
         private readonly IDeviceLogService _fakedService;
-        private readonly IMonitorTools _fakedMonitorTools;
         private readonly IAlertService _fakedAlertService;
 
         public KeepAliveMonitorTest()
         {
             _fakedService = A.Fake<IDeviceLogService>();
-            _fakedMonitorTools = A.Fake<IMonitorTools>();
             _fakedAlertService = A.Fake<IAlertService>();
 
             A.CallTo(() => _fakedService.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
@@ -33,7 +31,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var repository = A.Fake<IDeviceLogService>();
             var getDateTime = A.Fake<IDateTimeService>();
 
-            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService, _fakedMonitorTools);
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService);
 
             var result = keepAliveMonitor.CanMonitorRun(
                 new DeviceMonitor
@@ -55,7 +53,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var getDateTime = A.Fake<IDateTimeService>();
             var alert = A.Fake<IAlertService>();
 
-            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, alert, _fakedMonitorTools);
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, alert);
 
             var result = keepAliveMonitor.CanMonitorRun(
                 new DeviceMonitor
@@ -78,7 +76,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var repository = A.Fake<IDeviceLogService>();
             var getDateTime = A.Fake<IDateTimeService>();
 
-            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService, _fakedMonitorTools);
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService);
 
             var result = keepAliveMonitor.CanMonitorRun(
                 new DeviceMonitor
@@ -96,13 +94,13 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var getDateTime = A.Fake<IDateTimeService>();
             A.CallTo(() => getDateTime.Now).Returns(new DateTime(1, 1, 1, 1, 20, 1));
 
-            var keepAliveMonitor = new KeepAliveMonitor(_fakedService, getDateTime, _fakedAlertService, _fakedMonitorTools);
+            var keepAliveMonitor = new KeepAliveMonitor(_fakedService, getDateTime, _fakedAlertService);
 
             A.CallTo(() => _fakedService.GetLatestKeepAlive(
                 A<string>.Ignored,
                 A<string>.Ignored)).Returns(new DeviceLogEntity());
 
-            var result = keepAliveMonitor.Run(
+            keepAliveMonitor.Run(
                 new DeviceStateEntity
                 {
                     LastKeepAliveAlert = new DateTime(1, 1, 1, 1, 15, 0)
@@ -118,9 +116,9 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var fakedTimeService = A.Fake<IDateTimeService>();
             A.CallTo(() => fakedTimeService.Now).Returns(new DateTime(1, 1, 2, 1, 1, 1));
 
-            var keepAliveMonitor = new KeepAliveMonitor(_fakedService, fakedTimeService, _fakedAlertService, _fakedMonitorTools);
+            var keepAliveMonitor = new KeepAliveMonitor(_fakedService, fakedTimeService, _fakedAlertService);
 
-            var result = keepAliveMonitor.Run(new DeviceStateEntity(), GetDeviceMonitor());
+            keepAliveMonitor.Run(new DeviceStateEntity(), GetDeviceMonitor());
 
             A.CallTo(() => _fakedAlertService.SendKeepAliveMissingAlert(A<DeviceMonitor>.Ignored)).MustHaveHappened();
         }

@@ -25,7 +25,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
         public bool CanMonitorRun(DeviceMonitor monitor)
         {
             if (monitor?.DeviceGroupId == null || monitor.DeviceId == null) return false;
-            return monitor.DataValueToOld?.MaxAgeInMinutes > 0 && monitor.DataType != null;
+            return monitor.DataValueToOld?.MaxAgeInMinutes > 0 && monitor.DataValueToOld?.DataValue != null;
         }
 
         public DeviceStateEntity Run(DeviceStateEntity state, DeviceMonitor monitor)
@@ -34,8 +34,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
             var deviceLogEntityTask = _deviceLogService.GetLatestPresence(
                     monitor.DeviceGroupId,
-                    monitor.DeviceId, 
-                    monitor.DataType);
+                    monitor.DeviceId,
+                    monitor.DataValueToOld.DataValue);
 
             Task.WaitAll(deviceLogEntityTask);
 

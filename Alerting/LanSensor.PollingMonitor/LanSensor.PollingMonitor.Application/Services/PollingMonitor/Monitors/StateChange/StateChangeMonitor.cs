@@ -10,17 +10,14 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
     {
         private readonly IDeviceLogService _deviceLogService;
         private readonly IAlertService _alert;
-        private readonly IMonitorTools _monitorTools;
 
         public StateChangeMonitor(
             IDeviceLogService deviceLogService,
-            IAlertService alert,
-            IMonitorTools monitorTools
+            IAlertService alert
             )
         {
             _deviceLogService = deviceLogService;
             _alert = alert;
-            _monitorTools = monitorTools;
         }
 
         public bool CanMonitorRun(DeviceMonitor monitor)
@@ -43,11 +40,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
             var deviceLogEntity = presenceListTask.Result.FirstOrDefault();
 
-
             if (deviceLogEntity == null)
                 return state;
-
-            if (!_monitorTools.IsInsideTimeInterval(monitor.TimeIntervals, deviceLogEntity.DateTime)) return state;
 
             if (IsValueReached(
                     state.LastKnownDataValue,
@@ -64,20 +58,19 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
             }
             else
             {
-                if (IsValueReached(
+                if (!IsValueReached(
                     deviceLogEntity.DataValue,
                     deviceLogEntity.DataValue,
-                    monitor.StateChangeNotification.OnDataValueChangeFrom))
-                {
-                    _alert.SendStateChangeAlert(new StateChangeResult
-                    {
-                        DataValue = deviceLogEntity.DataValue,
-                        ChangedFromValue = true
-                    }, monitor);
+                    monitor.StateChangeNotification.OnDataValueChangeFrom)) return state;
 
-                    state.LastKnownDataValue = deviceLogEntity.DataValue;
-                    state.LastKnownDataValueDate = deviceLogEntity.DateTime;
-                }
+                _alert.SendStateChangeAlert(new StateChangeResult
+                {
+                    DataValue = deviceLogEntity.DataValue,
+                    ChangedFromValue = true
+                }, monitor);
+
+                state.LastKnownDataValue = deviceLogEntity.DataValue;
+                state.LastKnownDataValueDate = deviceLogEntity.DateTime;
             }
 
             return state;

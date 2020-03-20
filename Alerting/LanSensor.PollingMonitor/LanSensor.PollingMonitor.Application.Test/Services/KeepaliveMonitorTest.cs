@@ -29,7 +29,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         [Fact]
         public void KeepAliveMonitor_NulParameter_ReturnFalse()
         {
-            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _monitorTools);
+            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
 
             var res = monitor.CanMonitorRun(null);
 
@@ -39,7 +39,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         [Fact]
         public void KeepAliveMonitor_UseInvalidParameters_ReturnFalse()
         {
-            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _monitorTools);
+            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
 
             var res = monitor.CanMonitorRun(new DeviceMonitor());
 
@@ -49,7 +49,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         [Fact]
         public void KeepAliveMonitor_UseValidParameters_ReturnTrue()
         {
-            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _monitorTools);
+            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
 
             var res = monitor.CanMonitorRun(BuildDeviceMonitor());
 
@@ -73,7 +73,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
 
             A.CallTo(() => _fakedDateTimeService.Now).Returns(_testDateTime.AddMinutes(1));
 
-            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _monitorTools);
+            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
 
             monitor.Run(new DeviceStateEntity(), BuildDeviceMonitor());
 
@@ -99,7 +99,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
                         DateTime = _testDateTime.AddDays(-1)
                     });
 
-            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _monitorTools);
+            var monitor = new KeepAliveMonitor(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
 
             var deviceAlert = BuildDeviceMonitor();
             deviceAlert.KeepAlive.MaxMinutesSinceKeepAlive = 1;

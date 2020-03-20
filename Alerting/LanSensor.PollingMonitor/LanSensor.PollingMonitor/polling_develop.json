@@ -21,7 +21,6 @@
             "name": "LawnmoverStateChange",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "dataType": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -32,7 +31,8 @@
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "home",
                 "onDataValueChangeTo": "out",
-                "onEveryChange": "true"
+                "onEveryChange": "true",
+                "dataType": "lawnmower"
             },
             "timeInterval": [
                 {
@@ -75,7 +75,6 @@
             "name": "Lawnmover is Home within 120 minutes",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "dataType": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -85,7 +84,8 @@
             ],
             "dataValueToOld": {
                 "dataValue": "home",
-                "maxAgeInMinutes": "120"
+                "maxAgeInMinutes": "120",
+                "dataType": "lawnmower"
             },
             "timeInterval": [
                 {
@@ -115,7 +115,6 @@
             "name": "Lawnmover is Out within 120 minutes",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "dataType": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -125,7 +124,8 @@
             ],
             "dataValueToOld": {
                 "dataValue": "out",
-                "maxAgeInMinutes": "120"
+                "maxAgeInMinutes": "120",
+                "dataType": "lawnmower"
             },
             "timeInterval": [
                 {
@@ -173,7 +173,6 @@
             "name": "Frontdoor unlocked outside hours",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
-            "dataType": "FrontdoorLock",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -181,6 +180,12 @@
                     "message": "Frontdor unlocked outside hours"
                 }
             ],
+            "stateChangeNotification": {
+                "onDataValueChangeFrom": "",
+                "onDataValueChangeTo": "Open",
+                "onEveryChange": "true",
+                "dataType": "FrontdoorLock"
+            },
             "timeInterval": [
                 {
                     "dataValue": "Locked",
@@ -232,7 +237,6 @@
             "name": "Frontdoor opened",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
-            "dataType": "FrontdoorOpen",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -243,14 +247,14 @@
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "Open",
-                "onEveryChange": "true"
+                "onEveryChange": "true",
+                "dataType": "FrontdoorOpen"
             }
         },
         {
             "name": "Frontdoor closed",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
-            "dataType": "FrontdoorOpen",
             "messageMediums": [
                 {
                     "mediumType": "slack",
@@ -261,7 +265,8 @@
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "Closed",
-                "onEveryChange": "true"
+                "onEveryChange": "true",
+                "dataType": "FrontdoorOpen"
             }
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FakeItEasy;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.PollingMonitor.Services.Pause;
 using NLog;
 using Xunit;
 
@@ -16,6 +15,8 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         private readonly ILogger _fakedLogger;
         private readonly IDeviceStateService _fakedDeviceStateService;
         private readonly IEnumerable<IMonitorExecuter> _fakedMonitorExecuterList;
+        private readonly IMonitorTools _fakedMonitorTools;
+        private readonly IDateTimeService _fakedDateTimeService;
 
         public PollingMonitorTest()
         {
@@ -24,6 +25,8 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
             _fakedLogger = A.Fake<ILogger>();
             _fakedMonitorExecuterList = A.Fake<IEnumerable<IMonitorExecuter>>();
             _fakedPauseService = A.Fake<IPauseService>();
+            _fakedMonitorTools = A.Fake<IMonitorTools>();
+            _fakedDateTimeService = A.Fake<IDateTimeService>();
         }
 
 
@@ -36,7 +39,9 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 _fakedDeviceStateService,
                 _fakedMonitorExecuterList,
                 _fakedLogger,
-                _fakedPauseService));
+                _fakedPauseService,
+                _fakedMonitorTools,
+                _fakedDateTimeService));
         }
 
         [Fact]
@@ -49,7 +54,9 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 _fakedDeviceStateService,
                 _fakedMonitorExecuterList,
                 _fakedLogger,
-                _fakedPauseService)
+                _fakedPauseService,
+                _fakedMonitorTools,
+                _fakedDateTimeService)
                 );
         }
 
@@ -63,7 +70,10 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 _fakedDeviceStateService,
                 _fakedMonitorExecuterList,
                 _fakedLogger,
-                _fakedPauseService);
+                _fakedPauseService,
+                _fakedMonitorTools,
+                _fakedDateTimeService
+                );
             Assert.NotNull(monitor);
         }
 
@@ -78,7 +88,10 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 _fakedDeviceStateService,
                 _fakedMonitorExecuterList,
                 _fakedLogger,
-                _fakedPauseService);
+                _fakedPauseService,
+                _fakedMonitorTools,
+                _fakedDateTimeService
+                );
             monitor.Stop();
 
             Assert.NotNull(monitor);
