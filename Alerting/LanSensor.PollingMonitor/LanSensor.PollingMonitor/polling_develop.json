@@ -268,8 +268,32 @@
                 "onEveryChange": "true",
                 "dataType": "FrontdoorOpen"
             }
-        }
+        },
+        {
+            "name": "Average temperature",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "Weather",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Average Temperatur"
+                }
+            ],
+            "averageOverHours": {
+                "hours": "12",
+                "dataType": "OutdoorTemperature"
+            },
+            "timeInterval": [
+                {
+                    "atTime": {
+                        "hour": "07",
+                        "minute": "00"
 
+                    }
+                }
+            ]
+        }
     ],
     "monitor": {
         "pollingIntervalSeconds": "20"

@@ -37,5 +37,10 @@ namespace LanSensor.PollingMonitor.Application.Services
         {
             return _deviceLogRepository.GetPresenceListSince(deviceGroupId, deviceId, lastKnownPresence);
         }
+
+        public Task<IEnumerable<DeviceLogEntity>> GetPresenceListSince(string deviceGroupId, string deviceId, string dataType, DateTime lastKnownPresence)
+        {
+            return _deviceLogRepository.GetPresenceListSince(deviceGroupId, deviceId, dataType, lastKnownPresence);
+        }
     }
 }

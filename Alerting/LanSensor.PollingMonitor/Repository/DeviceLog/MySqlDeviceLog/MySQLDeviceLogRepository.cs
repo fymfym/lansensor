@@ -108,5 +108,10 @@ namespace LanSensor.Repository.DeviceLog.MySqlDeviceLog
         {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<DeviceLogEntity>> GetPresenceListSince(string deviceGroupId, string deviceId, string dataType, DateTime lastKnownPresence)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

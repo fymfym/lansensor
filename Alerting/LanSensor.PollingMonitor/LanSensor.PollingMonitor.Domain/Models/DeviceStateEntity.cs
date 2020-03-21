@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LanSensor.PollingMonitor.Domain.Repositories;
 
 namespace LanSensor.PollingMonitor.Domain.Models

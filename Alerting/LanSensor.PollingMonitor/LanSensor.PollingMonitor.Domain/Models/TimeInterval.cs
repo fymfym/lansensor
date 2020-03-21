@@ -9,6 +9,6 @@ namespace LanSensor.PollingMonitor.Domain.Models
     {
         [JsonProperty("weekdays")] public IEnumerable<DayOfWeek> Weekdays { get; set; }
         [JsonProperty("times")] public IEnumerable<TimeFromTo> Times { get; set; }
-        [JsonProperty("dataValue")] public string DataValue { get; set; }
+        [JsonProperty("atTime")] public SingleTime SpecificTime { get; set; }
     }
 }

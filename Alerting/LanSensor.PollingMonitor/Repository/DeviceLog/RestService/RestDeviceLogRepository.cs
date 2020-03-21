@@ -63,5 +63,16 @@ namespace LanSensor.Repository.DeviceLog.RestService
             var res = JsonConvert.DeserializeObject<IEnumerable<DeviceLogEntity>>(str);
             return res;
         }
+
+        public async Task<IEnumerable<DeviceLogEntity>> GetPresenceListSince(string deviceGroupId, string deviceId, string dataType, DateTime lastKnownPresence)
+        {
+            var client = _httpClientFactory.Build();
+            var response =
+                await client.GetAsync(
+                    $"sensors/api/?devicegroupid={deviceGroupId}&deviceid={deviceId}&dataType={dataType}");
+            var str = await response.Content.ReadAsStringAsync();
+            var res = JsonConvert.DeserializeObject<IEnumerable<DeviceLogEntity>>(str);
+            return res;
+        }
     }
 }
