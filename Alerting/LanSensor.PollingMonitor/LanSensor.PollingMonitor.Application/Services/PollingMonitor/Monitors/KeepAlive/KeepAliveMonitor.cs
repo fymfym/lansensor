@@ -47,7 +47,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
             var sendKeepAlive = ts.TotalMinutes > monitor.KeepAlive.MaxMinutesSinceKeepAlive;
 
-            if (monitor.KeepAlive.NotifyOnceOnly)
+            if (sendKeepAlive && monitor.KeepAlive.NotifyOnceOnly)
                 sendKeepAlive = state.LastKeepAliveAlert < state.LastKnownKeepAliveDate;
 
             if (sendKeepAlive)

@@ -10,6 +10,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools
     {
         public bool IsInsideTimeInterval(IEnumerable<TimeInterval> times, DateTime deviceLogDateValue)
         {
+            if (times == null) return true;
+
             var timeIntervals = times as TimeInterval[] ?? times.ToArray();
 
             if (!timeIntervals.Any()) return true;
@@ -43,6 +45,33 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools
 
 
             return insideAnyGivenTime;
+        }
+
+        public MonitorState GetMonitorState(DeviceStateEntity deviceStateEntity, DeviceMonitor monitor)
+        {
+            if (deviceStateEntity.MonitorStates == null) return new MonitorState()
+            {
+                MonitorName = monitor.Name
+            };
+
+            return deviceStateEntity.MonitorStates.FirstOrDefault(x => x.MonitorName == monitor.Name);
+        }
+
+        public void SetMonitorState(DeviceStateEntity deviceStateEntity, DeviceMonitor monitor, MonitorState monitorState)
+        {
+            if (deviceStateEntity.MonitorStates == null) deviceStateEntity.MonitorStates = new List<MonitorState>();
+
+            var state = deviceStateEntity.MonitorStates.FirstOrDefault(x => x.MonitorName == monitor.Name);
+            monitorState.MonitorName = monitor.Name;
+
+            if (state == null)
+            {
+                deviceStateEntity.MonitorStates.Add(monitorState);
+            }
+            else
+            {
+                deviceStateEntity.MonitorStates[deviceStateEntity.MonitorStates.IndexOf(state)] = monitorState;
+            }
         }
 
         private static bool IsInsideTimeInterval(TimeInterval interval, DateTime deviceLogDateValue)

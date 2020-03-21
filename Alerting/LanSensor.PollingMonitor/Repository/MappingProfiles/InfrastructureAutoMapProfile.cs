@@ -10,6 +10,9 @@ namespace LanSensor.Repository.MappingProfiles
         {
             CreateMap<DeviceStateEntityMongoDb, DeviceStateEntity>();
             CreateMap<DeviceStateEntity, DeviceStateEntityMongoDb>();
+
+            CreateMap<MonitorStateMongoDb, MonitorState>();
+            CreateMap<MonitorState, MonitorStateMongoDb>();
         }
     }
 }

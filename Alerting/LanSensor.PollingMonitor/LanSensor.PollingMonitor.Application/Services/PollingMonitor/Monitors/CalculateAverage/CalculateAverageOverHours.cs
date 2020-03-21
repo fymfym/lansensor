@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
-using NLog.Targets.Wrappers;
 
 namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.CalculateAverage
 {
@@ -15,16 +12,19 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
         private readonly IDeviceLogService _deviceLogService;
         private readonly IDateTimeService _dateTimeService;
         private readonly IAlertService _alertService;
+        private readonly IMonitorTools _monitorTools;
 
         public CalculateAverageOverHours(
             IDeviceLogService deviceLogService,
             IDateTimeService dateTimeService,
-            IAlertService alertService
+            IAlertService alertService,
+            IMonitorTools monitorTools
             )
         {
             _deviceLogService = deviceLogService;
             _dateTimeService = dateTimeService;
             _alertService = alertService;
+            _monitorTools = monitorTools;
         }
 
         public bool CanMonitorRun(DeviceMonitor monitor)
@@ -44,23 +44,49 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
             Task.WaitAll(deviceTask);
 
+            var monitorState = _monitorTools.GetMonitorState(state, monitor);
+            if (monitorState?.Value != null)
+            {
+                DateTime.TryParse(monitorState.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var lastRun);
+                if (lastRun > DateTime.MinValue)
+                {
+                    var ts = new TimeSpan(_dateTimeService.Now.Ticks - lastRun.Ticks);
+                    if (ts.TotalMinutes < 5) return state;
+                }
+            }
+
             var avg = deviceTask.Result.Average(x => double.Parse(x.DataValue, NumberStyles.Number));
+
+            if (!monitor.AverageOverHour.AlertBelow.HasValue && !monitor.AverageOverHour.AlertAbove.HasValue)
+            {
+                _alertService.SendTextMessage(monitor, $"Average is {avg}");
+                _monitorTools.SetMonitorState(state, monitor, new MonitorState
+                {
+                    Value = _dateTimeService.Now.ToString(CultureInfo.InvariantCulture)
+                });
+            }
 
             if (monitor.AverageOverHour.AlertBelow.HasValue)
             {
                 if (avg < monitor.AverageOverHour.AlertBelow)
                 {
                     _alertService.SendTextMessage(monitor, $"Value below {monitor.AverageOverHour.AlertBelow}");
+                    _monitorTools.SetMonitorState(state, monitor, new MonitorState
+                    {
+                        Value = _dateTimeService.Now.ToString(CultureInfo.InvariantCulture)
+                    });
                 }
             }
 
-            if (monitor.AverageOverHour.AlertAbove.HasValue)
+            if (!monitor.AverageOverHour.AlertAbove.HasValue) return state;
+
+            if (avg <= monitor.AverageOverHour.AlertAbove) return state;
+
+            _alertService.SendTextMessage(monitor, $"Value above {monitor.AverageOverHour.AlertAbove}");
+            _monitorTools.SetMonitorState(state, monitor, new MonitorState
             {
-                if (avg > monitor.AverageOverHour.AlertAbove)
-                {
-                    _alertService.SendTextMessage(monitor, $"Value above {monitor.AverageOverHour.AlertAbove}");
-                }
-            }
+                Value = _dateTimeService.Now.ToString(CultureInfo.InvariantCulture)
+            });
 
             return state;
         }

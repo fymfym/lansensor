@@ -1,18 +1,49 @@
 {
     "deviceMonitors": [
         {
-            "name": "System is alive",
+            "name": "Average temperature",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "Weather",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Average Temperatur"
+                }
+            ],
+            "averageOverHours": {
+                "hours": "12",
+                "dataType": "OutdoorTemperature"
+            },
+            "timeInterval": [
+                {
+                    "atTime": {
+                        "hour": "07",
+                        "minute": "00"
+                    }
+                }
+            ],
+            "weekdays": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        {
+            "name": "Lawnmover keepalive",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Lawnmover not home in time"
+                    "message": "Lawnmover keepalive missing"
                 }
             ],
             "keepAlive": {
-                "maxMinutesSinceKeepAlive": 60,
+                "maxMinutesSinceKeepAlive": 120,
                 "keepAliveDataType": "keepalive",
                 "notifyOnceOnly": "true"
             }
@@ -160,11 +191,11 @@
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Frontdor unlocked outside hours"
+                    "message": "Frontdor keepalive missing"
                 }
             ],
             "keepAlive": {
-                "maxMinutesSinceKeepAlive": 60,
+                "maxMinutesSinceKeepAlive": 120,
                 "keepAliveDataType": "keepalive",
                 "notifyOnceOnly": "true"
             }
@@ -268,31 +299,6 @@
                 "onEveryChange": "true",
                 "dataType": "FrontdoorOpen"
             }
-        },
-        {
-            "name": "Average temperature",
-            "deviceGroupId": "FYMEA23",
-            "deviceId": "Weather",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Average Temperatur"
-                }
-            ],
-            "averageOverHours": {
-                "hours": "12",
-                "dataType": "OutdoorTemperature"
-            },
-            "timeInterval": [
-                {
-                    "atTime": {
-                        "hour": "07",
-                        "minute": "00"
-
-                    }
-                }
-            ]
         }
     ],
     "monitor": {

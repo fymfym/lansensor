@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using MongoDB.Bson;
 
@@ -15,5 +16,6 @@ namespace LanSensor.Repository.Models.MongoDb
         public DateTime LastExecutedKeepAliveCheckDate { get; set; }
         public ObjectId Id { get; set; }
         public string EntityId { get; set; }
+        public List<MonitorStateMongoDb> MonitorState { get; set; }
     }
 }

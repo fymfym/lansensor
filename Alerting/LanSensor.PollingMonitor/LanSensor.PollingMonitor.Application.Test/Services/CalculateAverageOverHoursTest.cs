@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using FakeItEasy;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.CalculateAverage;
 using LanSensor.PollingMonitor.Domain.Models;
@@ -13,6 +14,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         private readonly IDeviceLogService _fakedDeviceLogService;
         private readonly IAlertService _fakedAlertService;
         private readonly IDateTimeService _fakedDateTimeService;
+        private readonly IMonitorTools _fakedMonitorTools;
         private readonly DateTime _testDateTime;
 
         public CalculateAverageOverHoursTest()
@@ -20,6 +22,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             _fakedDeviceLogService = A.Fake<IDeviceLogService>();
             _fakedAlertService = A.Fake<IAlertService>();
             _fakedDateTimeService = A.Fake<IDateTimeService>();
+            _fakedMonitorTools = A.Fake<IMonitorTools>();
 
             _testDateTime = new DateTime(2019, 1, 1, 0, 0, 0);
 
@@ -29,7 +32,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         [Fact]
         public void CalculateAverageOverHoursTestCanMonitorRun_MissingParameter_ReturnFalse()
         {
-            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
             var res = monitor.CanMonitorRun(new DeviceMonitor());
             Assert.False(res);
         }
@@ -37,7 +40,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         [Fact]
         public void CalculateAverageOverHoursTestCanMonitorRun_ValidParameter_ReturnTrue()
         {
-            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
             var res = monitor.CanMonitorRun(BuildDeviceMonitor());
             Assert.True(res);
         }
@@ -48,7 +51,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(A<string>.Ignored, A<string>.Ignored,
                 A<string>.Ignored, A<DateTime>.Ignored)).Returns(BuildDeviceLogEntityList());
 
-            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
             monitor.Run(new DeviceStateEntity(), BuildDeviceMonitor(12, null));
 
             A.CallTo(() => _fakedAlertService.SendTextMessage(A<DeviceMonitor>.Ignored, A<string>.Ignored))
@@ -61,7 +64,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(A<string>.Ignored, A<string>.Ignored,
                 A<string>.Ignored, A<DateTime>.Ignored)).Returns(BuildDeviceLogEntityList());
 
-            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
             monitor.Run(new DeviceStateEntity(), BuildDeviceMonitor(null, 5));
 
             A.CallTo(() => _fakedAlertService.SendTextMessage(A<DeviceMonitor>.Ignored, A<string>.Ignored))
@@ -75,13 +78,73 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(A<string>.Ignored, A<string>.Ignored,
                 A<string>.Ignored, A<DateTime>.Ignored)).Returns(BuildDeviceLogEntityList());
 
-            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService);
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
             monitor.Run(new DeviceStateEntity(), BuildDeviceMonitor(1, 15));
 
             A.CallTo(() => _fakedAlertService.SendTextMessage(A<DeviceMonitor>.Ignored, A<string>.Ignored))
                 .MustNotHaveHappened();
         }
 
+        [Fact]
+        public void CalculateAverageOverHoursTestRun_CalculateCheckForRepeatExecuteTooClose_NoAlert()
+        {
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(A<string>.Ignored, A<string>.Ignored,
+                A<string>.Ignored, A<DateTime>.Ignored)).Returns(BuildDeviceLogEntityList());
+
+            var monitorEntity = BuildDeviceMonitor();
+
+            A.CallTo(() => _fakedMonitorTools
+                    .GetMonitorState(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored))
+                .Returns(new MonitorState
+                {
+                    MonitorName = monitorEntity.Name,
+                    Value = _fakedDateTimeService.Now.ToString(CultureInfo.InvariantCulture)
+                });
+
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
+            monitor.Run(new DeviceStateEntity(), monitorEntity);
+
+            A.CallTo(() => _fakedAlertService.SendTextMessage(A<DeviceMonitor>.Ignored, A<string>.Ignored))
+                .MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void CalculateAverageOverHoursTestRun_CalculateCheckForRepeatExecuteTooFar_ExecuteAlert()
+        {
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(A<string>.Ignored, A<string>.Ignored,
+                A<string>.Ignored, A<DateTime>.Ignored)).Returns(BuildDeviceLogEntityList());
+
+            var monitorEntity = BuildDeviceMonitor();
+
+            A.CallTo(() => _fakedMonitorTools
+                    .GetMonitorState(A<DeviceStateEntity>.Ignored, A<DeviceMonitor>.Ignored))
+                .Returns(new MonitorState
+                {
+                    MonitorName = monitorEntity.Name,
+                    Value = _fakedDateTimeService.Now.AddHours(-1).ToString(CultureInfo.InvariantCulture)
+                });
+
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
+            monitor.Run(new DeviceStateEntity(), monitorEntity);
+
+            A.CallTo(() => _fakedAlertService.SendTextMessage(A<DeviceMonitor>.Ignored, A<string>.Ignored))
+                .MustHaveHappened();
+        }
+
+        [Fact]
+        public void CalculateAverageOverHoursTestRun_CalculateAverageWithoutAlert_ExecuteAlert()
+        {
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(A<string>.Ignored, A<string>.Ignored,
+                A<string>.Ignored, A<DateTime>.Ignored)).Returns(BuildDeviceLogEntityList());
+
+            var monitorEntity = BuildDeviceMonitor(null, null);
+
+            var monitor = new CalculateAverageOverHours(_fakedDeviceLogService, _fakedDateTimeService, _fakedAlertService, _fakedMonitorTools);
+            monitor.Run(new DeviceStateEntity(), monitorEntity);
+
+            A.CallTo(() => _fakedAlertService.SendTextMessage(A<DeviceMonitor>.Ignored, A<string>.Ignored))
+                .MustHaveHappened();
+        }
 
         private static DeviceMonitor BuildDeviceMonitor(double? alertBelow = 5, double? alertAbove = 10)
         {

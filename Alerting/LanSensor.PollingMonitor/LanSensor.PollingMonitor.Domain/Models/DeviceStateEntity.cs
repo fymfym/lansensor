@@ -14,5 +14,6 @@ namespace LanSensor.PollingMonitor.Domain.Models
         public DateTime LastKeepAliveAlert { get; set; }
         public DateTime LastExecutedKeepAliveCheckDate { get; set; }
         public string EntityId { get; set; }
+        public List<MonitorState> MonitorStates { get; set; }
     }
 }
