@@ -6,7 +6,7 @@ using AutoMapper;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using MongoDB.Driver;
 
-namespace LanSensor.Repository.DeviceState.MongoDb
+namespace LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb
 {
     public abstract class MongoDbRepository<TDomainEntity, TInfrastructureEntity> : IRepository<TDomainEntity, TInfrastructureEntity>
         where TDomainEntity : class, IEntity

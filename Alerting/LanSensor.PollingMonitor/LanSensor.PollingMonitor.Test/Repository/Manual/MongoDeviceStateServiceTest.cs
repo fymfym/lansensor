@@ -2,8 +2,8 @@
 using AutoMapper;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
-using LanSensor.Repository.DeviceState.MongoDb;
-using LanSensor.Repository.MappingProfiles;
+using LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb;
+using LanSensor.PollingMonitor.Infrastructure.MappingProfiles;
 using Xunit;
 
 namespace LanSensor.PollingMonitor.Test.Repository.Manual

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using MongoDB.Bson;
 
-namespace LanSensor.Repository.Models.MongoDb
+namespace LanSensor.PollingMonitor.Infrastructure.Models.MongoDb
 {
     public class DeviceStateEntityMongoDb : IInfrastructureEntity
     {

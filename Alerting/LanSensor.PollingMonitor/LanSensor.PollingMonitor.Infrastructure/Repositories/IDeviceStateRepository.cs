@@ -1,8 +1,8 @@
 ﻿using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
-using LanSensor.Repository.Models.MongoDb;
+using LanSensor.PollingMonitor.Infrastructure.Models.MongoDb;
 
-namespace LanSensor.Repository.Repositories
+namespace LanSensor.PollingMonitor.Infrastructure.Repositories
 {
     public interface IDeviceStateRepository : IRepository<DeviceStateEntity, DeviceStateEntityMongoDb>
     {

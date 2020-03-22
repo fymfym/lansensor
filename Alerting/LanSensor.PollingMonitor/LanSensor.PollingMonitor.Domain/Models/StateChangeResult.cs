@@ -1,4 +1,4 @@
-﻿namespace LanSensor.Models.DeviceState
+﻿namespace LanSensor.PollingMonitor.Domain.Models
 {
     public class StateChangeResult
     {

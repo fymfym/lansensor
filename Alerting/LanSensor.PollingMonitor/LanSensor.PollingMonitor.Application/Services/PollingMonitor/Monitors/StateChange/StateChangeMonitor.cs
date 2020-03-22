@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using LanSensor.Models.DeviceState;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
-using LanSensor.Repository.Repositories;
+using LanSensor.PollingMonitor.Infrastructure.Repositories;
 
-namespace LanSensor.Repository.DeviceLog.MySqlDeviceLog
+namespace LanSensor.PollingMonitor.Infrastructure.DeviceLog.MySqlDeviceLog
 {
     public class MySqlDataStoreRepository : IDeviceLogRepository
     {

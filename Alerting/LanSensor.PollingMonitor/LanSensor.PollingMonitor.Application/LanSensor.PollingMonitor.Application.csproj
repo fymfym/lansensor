@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LanSensor.PollingMonitor.Domain\LanSensor.PollingMonitor.Domain.csproj" />
-    <ProjectReference Include="..\Repository\LanSensor.Repository.csproj" />
+    <ProjectReference Include="..\LanSensor.PollingMonitor.Infrastructure\LanSensor.PollingMonitor.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -13,10 +13,10 @@ using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
-using LanSensor.Repository.DeviceLog.RestService;
-using LanSensor.Repository.DeviceState.MongoDb;
-using LanSensor.Repository.MappingProfiles;
-using LanSensor.Repository.Repositories;
+using LanSensor.PollingMonitor.Infrastructure.DeviceLog.RestService;
+using LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb;
+using LanSensor.PollingMonitor.Infrastructure.MappingProfiles;
+using LanSensor.PollingMonitor.Infrastructure.Repositories;
 using NLog.Web;
 
 namespace LanSensor.PollingMonitor

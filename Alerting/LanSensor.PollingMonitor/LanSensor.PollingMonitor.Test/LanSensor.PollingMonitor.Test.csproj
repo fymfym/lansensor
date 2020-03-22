@@ -1,20 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <ProjectGuid>{AD62454E-BAA7-4696-BFF9-A696AF49BB1D}</ProjectGuid>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="FakeItEasy" Version="4.9.2" />
-    <PackageReference Include="NLog" Version="4.6.7" />
+    <PackageReference Include="FakeItEasy" Version="6.0.0" />
+    <PackageReference Include="NLog" Version="4.7.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\LanSensor.Models\LanSensor.Models.csproj" />
     <ProjectReference Include="..\LanSensor.PollingMonitor\LanSensor.PollingMonitor.csproj" />
-    <ProjectReference Include="..\Repository\LanSensor.Repository.csproj" />
   </ItemGroup>
-
 </Project>

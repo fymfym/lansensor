@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
-using LanSensor.Repository.Repositories;
+using LanSensor.PollingMonitor.Infrastructure.Repositories;
 using Newtonsoft.Json;
 
-namespace LanSensor.Repository.DeviceLog.RestService
+namespace LanSensor.PollingMonitor.Infrastructure.DeviceLog.RestService
 {
     public class RestDeviceLogRepository : IDeviceLogRepository
     {

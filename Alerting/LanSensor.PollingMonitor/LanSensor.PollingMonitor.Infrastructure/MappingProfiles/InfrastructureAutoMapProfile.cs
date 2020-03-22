@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using LanSensor.PollingMonitor.Domain.Models;
-using LanSensor.Repository.Models.MongoDb;
+using LanSensor.PollingMonitor.Infrastructure.Models.MongoDb;
 
-namespace LanSensor.Repository.MappingProfiles
+namespace LanSensor.PollingMonitor.Infrastructure.MappingProfiles
 {
     public class InfrastructureAutoMapProfile : Profile
     {

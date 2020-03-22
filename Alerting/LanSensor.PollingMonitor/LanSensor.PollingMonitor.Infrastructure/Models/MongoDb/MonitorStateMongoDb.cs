@@ -1,4 +1,4 @@
-﻿namespace LanSensor.Repository.Models.MongoDb
+﻿namespace LanSensor.PollingMonitor.Infrastructure.Models.MongoDb
 {
     public class MonitorStateMongoDb
     {

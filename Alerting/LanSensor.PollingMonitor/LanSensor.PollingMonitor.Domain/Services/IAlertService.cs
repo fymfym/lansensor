@@ -1,5 +1,4 @@
-﻿using LanSensor.Models.DeviceState;
-using LanSensor.PollingMonitor.Domain.Models;
+﻿using LanSensor.PollingMonitor.Domain.Models;
 
 namespace LanSensor.PollingMonitor.Domain.Services
 {
