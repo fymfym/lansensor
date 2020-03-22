@@ -1,13 +1,8 @@
 ﻿using System.Collections.Generic;
 using FakeItEasy;
-using LanSensor.Models.Configuration;
-using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
-using LanSensor.PollingMonitor.Services.Pause;
-using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceState;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
 using NLog;
 using Xunit;
 
@@ -18,15 +13,13 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         [Fact]
         public void Monitor_StoppedBeforeRun_PauseIsNotCalled()
         {
-            var config = A.Fake<IConfiguration>();
-            var alert = A.Fake<IAlert>();
-            var stateCheckMonitor = A.Fake<ITimeIntervalMonitor>();
-            var keepAliveMonitor = A.Fake<IKeepAliveMonitor>();
-            var stateChange = A.Fake<IStateChangeMonitor>();
-            var deviceStateRepository = A.Fake<IDeviceStateRepository>();
-            var deviceLogRepository = A.Fake<IDeviceLogRepository>();
+            var config = A.Fake<IServiceConfiguration>();
+            var alert = A.Fake<IAlertService>();
+            var deviceStateService = A.Fake<IDeviceStateService>();
             var logger = A.Fake<ILogger>();
             var pauseService = A.Fake<IPauseService>();
+            var fakedMonitorTools = A.Fake<IMonitorTools>();
+            var fakedDateTimeService = A.Fake<IDateTimeService>();
 
             A.CallTo(() => config.ApplicationConfiguration).Returns(
                 new ApplicationConfiguration
@@ -54,16 +47,15 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                 }
                 );
 
-            var monitor = new Services.Monitor.PollingMonitor(
+            var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,
                 alert,
-                stateCheckMonitor,
-                keepAliveMonitor,
-                stateChange,
-                deviceStateRepository,
-                deviceLogRepository,
+                deviceStateService,
+                new List<IMonitorExecuter>(),
                 logger,
-                pauseService
+                pauseService,
+                fakedMonitorTools,
+                fakedDateTimeService
                 );
 
             monitor.RunThroughDeviceMonitors();

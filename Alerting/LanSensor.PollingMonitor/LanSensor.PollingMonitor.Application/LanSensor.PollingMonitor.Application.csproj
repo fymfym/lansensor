@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SlackAPI" Version="1.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LanSensor.PollingMonitor.Domain\LanSensor.PollingMonitor.Domain.csproj" />
+    <ProjectReference Include="..\LanSensor.PollingMonitor.Infrastructure\LanSensor.PollingMonitor.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

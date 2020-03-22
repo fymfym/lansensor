@@ -1,16 +1,22 @@
 ﻿using System;
-using LanSensor.Models.Configuration;
-using LanSensor.PollingMonitor.Services.Alert;
-using LanSensor.PollingMonitor.Services.Alert.Slack;
-using LanSensor.PollingMonitor.Services.DateTime;
-using LanSensor.PollingMonitor.Services.Monitor.KeepAlive;
-using LanSensor.PollingMonitor.Services.Monitor.StateChange;
-using LanSensor.PollingMonitor.Services.Monitor.TimeInterval;
-using LanSensor.PollingMonitor.Services.Pause;
-using LanSensor.Repository.DeviceLog;
-using LanSensor.Repository.DeviceLog.MySqlDeviceLog;
-using LanSensor.Repository.DeviceState;
-using LanSensor.Repository.DeviceState.MySqlDeviceState;
+using AutoMapper;
+using LanSensor.PollingMonitor.Application.Repositories;
+using LanSensor.PollingMonitor.Application.Services;
+using LanSensor.PollingMonitor.Application.Services.Alert.Slack;
+using LanSensor.PollingMonitor.Application.Services.Pause;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.CalculateAverage;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.DataValueToOld;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.KeepAlive;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.MonitorAliveMessage;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.StateChange;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools;
+using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
+using LanSensor.PollingMonitor.Infrastructure.DeviceLog.RestService;
+using LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb;
+using LanSensor.PollingMonitor.Infrastructure.MappingProfiles;
+using LanSensor.PollingMonitor.Infrastructure.Repositories;
 using NLog.Web;
 
 namespace LanSensor.PollingMonitor
@@ -24,29 +30,47 @@ namespace LanSensor.PollingMonitor
             {
                 var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
-                IConfiguration configuration = new Configuration();
+                IServiceConfiguration configuration = new ServiceConfiguration();
 
                 try
                 {
-                    IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
-                    IDeviceStateRepository deviceStateRepository = new MySqlDeviceStateRepository(configuration, logger);
-                    IDateTimeService getDate = new DateTimeService();
-                    IAlert alerter = new SendSlackAlert(configuration, logger);
-                    ITimeIntervalMonitor stateCheckComparer = new TimeIntervalComparer();
-                    IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitor(deviceLogRepository, getDate);
-                    IStateChangeMonitor stateChange = new StateChangeMonitor();
-                    IPauseService pauseService = new PauseService();
+                    // IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
 
-                    var monitor = new Services.Monitor.PollingMonitor(
+                    var httpFactory = new HttpClientFactory(configuration);
+                    IDeviceLogRepository deviceLogRepository = new RestDeviceLogRepository(httpFactory);
+                    IDeviceLogService deviceLogService = new DeviceLogService(deviceLogRepository);
+
+                    var mapperConfig = new MapperConfiguration(cfg => {
+                        cfg.AddProfile<InfrastructureAutoMapProfile>();
+                    });
+                    var mapper = mapperConfig.CreateMapper();
+
+                    IDeviceStateService deviceStateService = new MongoDeviceStateService(configuration, mapper);
+                    IDateTimeService dateTimeService = new DateTimeService();
+                    IAlertService alertService = new SendSlackAlertService(configuration, logger);
+                    IPauseService pauseService = new PauseService();
+                    IMonitorTools monitorTools = new MonitorTools();
+
+                    var monitorExecuterList = new IMonitorExecuter[]
+                    {
+                        new KeepAliveMonitor(deviceLogService, dateTimeService, alertService),
+                        new StateChangeMonitor(deviceLogService, alertService),
+                        new DataValueToOldMonitor(deviceLogService, alertService, dateTimeService),
+                        new CalculateAverageOverHoursMonitor(deviceLogService, dateTimeService, alertService, monitorTools),
+                        new MonitorAliveMessageMonitor(dateTimeService, alertService, monitorTools)
+                    };
+
+                    System.Threading.Thread.Sleep(5000);
+
+                    var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                         configuration,
-                        alerter,
-                        stateCheckComparer,
-                        keepAliveMonitor,
-                        stateChange,
-                        deviceStateRepository,
-                        deviceLogRepository,
+                        alertService,
+                        deviceStateService,
+                        monitorExecuterList,
                         logger,
-                        pauseService
+                        pauseService,
+                        monitorTools,
+                        dateTimeService
                     );
 
                     monitor.RunInLoop();

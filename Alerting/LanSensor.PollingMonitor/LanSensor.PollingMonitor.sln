@@ -1,15 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor", "LanSensor.PollingMonitor\LanSensor.PollingMonitor.csproj", "{94FBEEEE-9C47-4ABD-BC66-90799128D94B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.Repository", "Repository\LanSensor.Repository.csproj", "{E0E8BB43-A2F5-4325-93F7-FA96C2CEA1C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Infrastructure", "LanSensor.PollingMonitor.Infrastructure\LanSensor.PollingMonitor.Infrastructure.csproj", "{E0E8BB43-A2F5-4325-93F7-FA96C2CEA1C4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.Models", "LanSensor.Models\LanSensor.Models.csproj", "{C71DC377-92D1-4C8A-9675-A774EAA4BA3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Domain", "LanSensor.PollingMonitor.Domain\LanSensor.PollingMonitor.Domain.csproj", "{70048B61-A3F7-4155-A03F-A4E522C5A7C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanSensor.PollingMonitor.Test", "LanSensor.PollingMonitor.Test\LanSensor.PollingMonitor.Test.csproj", "{6C8311CC-53E3-4855-BA54-AAED1D60DD46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Application", "LanSensor.PollingMonitor.Application\LanSensor.PollingMonitor.Application.csproj", "{9E97A044-7FD7-4E20-BB6D-DCE4420803E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{2AE650D6-7E6E-4C9A-9E37-027B20C8A004}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Test", "LanSensor.PollingMonitor.Test\LanSensor.PollingMonitor.Test.csproj", "{AD62454E-BAA7-4696-BFF9-A696AF49BB1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +33,18 @@ Global
 		{E0E8BB43-A2F5-4325-93F7-FA96C2CEA1C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0E8BB43-A2F5-4325-93F7-FA96C2CEA1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0E8BB43-A2F5-4325-93F7-FA96C2CEA1C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C71DC377-92D1-4C8A-9675-A774EAA4BA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C71DC377-92D1-4C8A-9675-A774EAA4BA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C71DC377-92D1-4C8A-9675-A774EAA4BA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C71DC377-92D1-4C8A-9675-A774EAA4BA3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C8311CC-53E3-4855-BA54-AAED1D60DD46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C8311CC-53E3-4855-BA54-AAED1D60DD46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C8311CC-53E3-4855-BA54-AAED1D60DD46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C8311CC-53E3-4855-BA54-AAED1D60DD46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70048B61-A3F7-4155-A03F-A4E522C5A7C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70048B61-A3F7-4155-A03F-A4E522C5A7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70048B61-A3F7-4155-A03F-A4E522C5A7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70048B61-A3F7-4155-A03F-A4E522C5A7C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E97A044-7FD7-4E20-BB6D-DCE4420803E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E97A044-7FD7-4E20-BB6D-DCE4420803E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E97A044-7FD7-4E20-BB6D-DCE4420803E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E97A044-7FD7-4E20-BB6D-DCE4420803E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD62454E-BAA7-4696-BFF9-A696AF49BB1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD62454E-BAA7-4696-BFF9-A696AF49BB1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD62454E-BAA7-4696-BFF9-A696AF49BB1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD62454E-BAA7-4696-BFF9-A696AF49BB1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
