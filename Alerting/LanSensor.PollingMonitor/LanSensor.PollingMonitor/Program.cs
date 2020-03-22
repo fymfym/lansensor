@@ -4,8 +4,10 @@ using LanSensor.PollingMonitor.Application.Repositories;
 using LanSensor.PollingMonitor.Application.Services;
 using LanSensor.PollingMonitor.Application.Services.Alert.Slack;
 using LanSensor.PollingMonitor.Application.Services.Pause;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.CalculateAverage;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.DataValueToOld;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.KeepAlive;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.MonitorAliveMessage;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.StateChange;
 using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools;
 using LanSensor.PollingMonitor.Domain.Models;
@@ -53,7 +55,9 @@ namespace LanSensor.PollingMonitor
                     {
                         new KeepAliveMonitor(deviceLogService, dateTimeService, alertService),
                         new StateChangeMonitor(deviceLogService, alertService),
-                        new DataValueToOldMonitor(deviceLogService, alertService, dateTimeService)
+                        new DataValueToOldMonitor(deviceLogService, alertService, dateTimeService),
+                        new CalculateAverageOverHoursMonitor(deviceLogService, dateTimeService, alertService, monitorTools),
+                        new MonitorAliveMessageMonitor(dateTimeService, alertService, monitorTools)
                     };
 
                     System.Threading.Thread.Sleep(5000);
