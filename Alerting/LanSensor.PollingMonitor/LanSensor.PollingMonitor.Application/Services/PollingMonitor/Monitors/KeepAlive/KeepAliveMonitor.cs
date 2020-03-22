@@ -33,7 +33,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
         public DeviceStateEntity Run(DeviceStateEntity state, DeviceMonitor monitor)
         {
-            if (!CanMonitorRun(monitor)) throw new Exception("Can not run om this monitor");
+            if (!CanMonitorRun(monitor)) throw new Exception("Can not run on this monitor");
 
             var keepAliveTask = _deviceLogService.GetLatestPresence(
                 monitor.DeviceGroupId, monitor.DeviceId,

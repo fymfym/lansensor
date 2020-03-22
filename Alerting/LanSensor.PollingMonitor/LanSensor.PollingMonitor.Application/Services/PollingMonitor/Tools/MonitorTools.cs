@@ -49,7 +49,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Tools
 
         public MonitorState GetMonitorState(DeviceStateEntity deviceStateEntity, DeviceMonitor monitor)
         {
-            if (deviceStateEntity.MonitorStates == null) return new MonitorState()
+            if (deviceStateEntity.MonitorStates == null) return new MonitorState
             {
                 MonitorName = monitor.Name
             };

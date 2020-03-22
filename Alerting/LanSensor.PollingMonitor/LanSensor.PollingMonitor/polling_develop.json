@@ -11,6 +11,36 @@
                     "message": "Average Temperatur"
                 }
             ],
+            "iAmAlive": {
+                "message": "I'm alive!!!",
+            },
+            "timeInterval": [
+                {
+                    "atTime": {
+                        "hour": "07",
+                        "minute": "00"
+                    }
+                }
+            ],
+            "weekdays": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        {
+            "name": "Average temperature",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "Weather",
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "receiverId": "maude",
+                    "message": "Average Temperatur"
+                }
+            ],
             "averageOverHours": {
                 "hours": "12",
                 "dataType": "OutdoorTemperature"

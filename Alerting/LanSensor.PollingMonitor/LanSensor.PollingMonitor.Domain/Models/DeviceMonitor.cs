@@ -15,5 +15,6 @@ namespace LanSensor.PollingMonitor.Domain.Models
         [JsonProperty("keepalive")] public KeepAlive KeepAlive { get; set; }
         [JsonProperty("stateChangeNotification")] public StateChangeNotification StateChangeNotification { get; set; }
         [JsonProperty("averageOverHour")] public AverageOverHour AverageOverHour { get; set; }
+        [JsonProperty("monitorAliveMessage")] public MonitorAliveMessage MonitorAliveMessage { get; set; }
     }
 }

@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Do
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Application", "LanSensor.PollingMonitor.Application\LanSensor.PollingMonitor.Application.csproj", "{9E97A044-7FD7-4E20-BB6D-DCE4420803E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanSensor.PollingMonitor.Application.Test", "LanSensor.PollingMonitor.Application.Test\LanSensor.PollingMonitor.Application.Test.csproj", "{2262F8DE-22D6-4008-80F7-678691352452}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanSensor.PollingMonitor.Application.Test", "LanSensor.PollingMonitor.Application.Test\LanSensor.PollingMonitor.Application.Test.csproj", "{2262F8DE-22D6-4008-80F7-678691352452}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{2AE650D6-7E6E-4C9A-9E37-027B20C8A004}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

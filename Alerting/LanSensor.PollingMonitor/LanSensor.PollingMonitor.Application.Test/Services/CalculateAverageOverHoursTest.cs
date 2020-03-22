@@ -152,7 +152,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             {
                 DeviceGroupId = "",
                 DeviceId = "",
-                AverageOverHour = new AverageOverHour()
+                AverageOverHour = new AverageOverHour
                 {
                     DataValue = "",
                     Hours = 12,
@@ -166,12 +166,12 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         {
             return new List<DeviceLogEntity>
             {
-                new DeviceLogEntity()
+                new DeviceLogEntity
                 {
                     DateTime = _testDateTime.AddHours(-1),
                     DataValue = "6"
                 },
-                new DeviceLogEntity()
+                new DeviceLogEntity
                 {
                     DateTime = _testDateTime.AddHours(-1),
                     DataValue = "15"

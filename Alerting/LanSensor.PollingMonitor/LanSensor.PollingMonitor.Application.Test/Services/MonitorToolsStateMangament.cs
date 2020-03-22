@@ -50,7 +50,7 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             Assert.NotEmpty(state.MonitorStates.Where(x => x.MonitorName == MonitorName && x.Value == "test2"));
         }
 
-        private DeviceStateEntity BuildDeviceStateEntity(MonitorState monitorPresent = null)
+        private static DeviceStateEntity BuildDeviceStateEntity(MonitorState monitorPresent = null)
         {
             var res = new DeviceStateEntity();
 
@@ -62,9 +62,9 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
             return res;
         }
 
-        private DeviceMonitor BuildDeviceMonitor()
+        private static DeviceMonitor BuildDeviceMonitor()
         {
-            var res = new DeviceMonitor()
+            var res = new DeviceMonitor
             {
                 Name = MonitorName
             };
@@ -73,9 +73,9 @@ namespace LanSensor.PollingMonitor.Application.Test.Services
         }
 
 
-        private MonitorState BuildMonitorState(string value = null)
+        private static MonitorState BuildMonitorState(string value = null)
         {
-            var res = new MonitorState()
+            var res = new MonitorState
             {
                 MonitorName = MonitorName
             };
