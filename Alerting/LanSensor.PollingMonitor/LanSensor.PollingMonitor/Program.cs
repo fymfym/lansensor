@@ -86,12 +86,11 @@ namespace LanSensor.PollingMonitor
                     monitor.RunInLoop();
 
                     globalRetryCount = 10;
-
-                    monitor.RunInLoop();
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.Message);
+                    logger.Fatal($"globalRetryCount:{globalRetryCount}");
+                    logger.Fatal(ex.ToString());
                     globalRetryCount--;
                     if (globalRetryCount < 0)
                     {
