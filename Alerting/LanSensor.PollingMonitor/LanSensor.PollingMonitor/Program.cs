@@ -36,21 +36,29 @@ namespace LanSensor.PollingMonitor
                 {
                     // IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
 
+                    logger.Info("Instanciating http client factory");
                     var httpFactory = new HttpClientFactory(configuration);
+
+                    logger.Info("Instanciating IDeviceLogRepository");
                     IDeviceLogRepository deviceLogRepository = new RestDeviceLogRepository(httpFactory);
+
+                    logger.Info("Instanciating IDeviceLogService");
                     IDeviceLogService deviceLogService = new DeviceLogService(deviceLogRepository);
 
+                    logger.Info("Instanciating MapperConfiguration");
                     var mapperConfig = new MapperConfiguration(cfg => {
                         cfg.AddProfile<InfrastructureAutoMapProfile>();
                     });
                     var mapper = mapperConfig.CreateMapper();
 
+                    logger.Info("Instanciating the rest of the stuff");
                     IDeviceStateService deviceStateService = new MongoDeviceStateService(configuration, mapper);
                     IDateTimeService dateTimeService = new DateTimeService();
                     IAlertService alertService = new SendSlackAlertService(configuration, logger);
                     IPauseService pauseService = new PauseService();
                     IMonitorTools monitorTools = new MonitorTools();
 
+                    logger.Info("Instanciating IMonitorExecuter list and executers");
                     var monitorExecuterList = new IMonitorExecuter[]
                     {
                         new KeepAliveMonitor(deviceLogService, dateTimeService, alertService),
@@ -62,6 +70,7 @@ namespace LanSensor.PollingMonitor
 
                     System.Threading.Thread.Sleep(5000);
 
+                    logger.Info("Instanciating PollingMonitor");
                     var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                         configuration,
                         alertService,
@@ -73,6 +82,7 @@ namespace LanSensor.PollingMonitor
                         dateTimeService
                     );
 
+                    logger.Info("Run in loop");
                     monitor.RunInLoop();
 
                     globalRetryCount = 10;

@@ -60,7 +60,7 @@ namespace LanSensor.PollingMonitor.Domain.Models
 
             ApplicationConfiguration.MongoConfiguration = new MongoConfiguration
             {
-                ConnectionString = Environment.GetEnvironmentVariable("connectionString")
+                ConnectionString = Environment.GetEnvironmentVariable("mongoDbConnectionString")
             };
 
             ApplicationConfiguration.SlackConfiguration = new SlackConfiguration

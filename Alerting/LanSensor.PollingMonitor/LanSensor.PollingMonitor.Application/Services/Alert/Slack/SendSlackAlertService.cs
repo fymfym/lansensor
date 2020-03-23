@@ -21,10 +21,11 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
             _logger = logger;
             _logger.Info("SendSlackAlertService construct");
 
-            var apiKey = configuration.ApplicationConfiguration.SlackConfiguration.ApiKey;
+            var apiKey = configuration?.ApplicationConfiguration?.SlackConfiguration?.ApiKey;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                _logger.Warn("Slack not initialized");
+                _logger.Warn($"Slack not initialized - API key: {configuration?.ApplicationConfiguration?.SlackConfiguration?.ApiKey}");
+                return;
             }
 
             _slackClient = new SlackClient(apiKey);
