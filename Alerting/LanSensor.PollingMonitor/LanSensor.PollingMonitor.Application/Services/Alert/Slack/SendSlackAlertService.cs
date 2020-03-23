@@ -19,6 +19,8 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
             ILogger logger)
         {
             _logger = logger;
+            _logger.Info("SendSlackAlertService construct");
+
             var apiKey = configuration.ApplicationConfiguration.SlackConfiguration.ApiKey;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
@@ -26,15 +28,15 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
             }
 
             _slackClient = new SlackClient(apiKey);
+            _logger.Info("GetChannelList");
             _slackClient.GetChannelList(SlackChannelListResponse);
         }
-
 
         private void SlackChannelListResponse(ChannelListResponse obj)
         {
             if (obj?.channels == null)
             {
-                _logger.Warn("Slack channel list not obtainable");
+                _logger.Warn($"Slack channel list not obtainable - error: {obj?.error}");
                 return;
             }
 

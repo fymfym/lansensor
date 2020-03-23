@@ -52,6 +52,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
 
         public void RunThroughDeviceMonitors()
         {
+            _logger.Info("RunThroughDeviceMonitors");
+
             foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
             {
                 if (deviceMonitor == null) continue;
