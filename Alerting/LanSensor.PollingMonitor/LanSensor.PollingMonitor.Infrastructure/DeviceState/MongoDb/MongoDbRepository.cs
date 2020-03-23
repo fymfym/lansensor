@@ -27,7 +27,7 @@ namespace LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb
             _databaseId = databaseId ?? throw new ArgumentNullException(nameof(databaseId));
             _collectionName = collectionName;
             _mapper = mapper;
-            _client = new MongoClient(apiConfiguration.ApplicationConfiguration.MongoConfiguration.ConnectionString);
+            _client = new MongoClient(apiConfiguration.ApplicationConfiguration.MongoDbConfiguration.ConnectionString);
         }
 
         public async Task<TDomainEntity> GetByIdAsync(string id)

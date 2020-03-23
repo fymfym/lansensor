@@ -9,17 +9,13 @@ namespace LanSensor.PollingMonitor.Domain.Models
         [JsonProperty("deviceMonitors")] public IEnumerable<DeviceMonitor> DeviceMonitors { get; set; }
         [JsonProperty("monitor")] public MonitorConfiguration MonitorConfiguration { get; set; }
 
-        // Data stored in environment variables
-        //[JsonProperty("mysql")]
+        //Data stored in environment variables
         public MySqlConfiguration MySqlConfiguration { get; set; }
 
-        // [JsonProperty("restService")]
         public RestServiceConfiguration RestServiceConfiguration { get; set; }
 
-        //[JsonProperty("mongodb")]
-        public MongoConfiguration MongoConfiguration { get; set; }
+        public MongoDbConfiguration MongoDbConfiguration { get; set; }
 
-        //[JsonProperty("slack")]
         public SlackConfiguration SlackConfiguration { get; set; }
     }
 }

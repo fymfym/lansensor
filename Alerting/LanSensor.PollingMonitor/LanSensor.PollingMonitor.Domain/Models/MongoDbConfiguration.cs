@@ -3,8 +3,8 @@
 namespace LanSensor.PollingMonitor.Domain.Models
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class MongoConfiguration
+    public class MongoDbConfiguration
     {
-        [JsonProperty("connectionString")] public string ConnectionString { get; set; }
+        [JsonProperty("mongoDbConnectionString")] public string ConnectionString { get; set; }
     }
 }

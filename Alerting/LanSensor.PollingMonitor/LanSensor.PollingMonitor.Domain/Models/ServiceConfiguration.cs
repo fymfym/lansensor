@@ -58,14 +58,14 @@ namespace LanSensor.PollingMonitor.Domain.Models
                     (ApplicationConfiguration) serializer.Deserialize(file, typeof(ApplicationConfiguration));
             }
 
-            ApplicationConfiguration.MongoConfiguration = new MongoConfiguration
+            ApplicationConfiguration.MongoDbConfiguration = new MongoDbConfiguration
             {
                 ConnectionString = Environment.GetEnvironmentVariable("mongoDbConnectionString")
             };
 
             ApplicationConfiguration.SlackConfiguration = new SlackConfiguration
             {
-                ApiKey = Environment.GetEnvironmentVariable("slackapikey")
+                ApiKey = Environment.GetEnvironmentVariable("slackApiKey")
             };
 
             ApplicationConfiguration.RestServiceConfiguration = new RestServiceConfiguration
@@ -75,7 +75,7 @@ namespace LanSensor.PollingMonitor.Domain.Models
 
             ApplicationConfiguration.MySqlConfiguration = new MySqlConfiguration
             {
-                ConnectionString = Environment.GetEnvironmentVariable("MySqlConnectionString")
+                ConnectionString = Environment.GetEnvironmentVariable("mySqlConnectionString")
             };
         }
     }
