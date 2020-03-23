@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FakeItEasy;
+using LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.StateChange;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Services;
 using Xunit;
@@ -10,6 +11,8 @@ namespace LanSensor.PollingMonitor.Test.Monitor
     public class StateChangeMonitorTest
     {
         private readonly StateChangeNotification _stateChangeNotification;
+        private readonly IDeviceLogService _fakedDeviceLogService;
+        private readonly IAlertService _fakedAlertService;
 
 
         public StateChangeMonitorTest()
@@ -19,7 +22,31 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 OnDataValueChangeFrom = "changefrom",
                 OnDataValueChangeTo = "changeto"
             };
+
+            _fakedDeviceLogService = A.Fake<IDeviceLogService>();
+            _fakedAlertService = A.Fake<IAlertService>();
         }
+
+        [Fact]
+        public void GetStateChangeNotificationCanMonitorRun_NoObject_ReturnFalse()
+        {
+            var monitor = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
+
+            var res = monitor.CanMonitorRun(new DeviceMonitor());
+
+            Assert.False(res);
+        }
+
+        [Fact]
+        public void GetStateChangeNotificationCanMonitorRun_Null_ReturnFalse()
+        {
+            var monitor = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
+
+            var res = monitor.CanMonitorRun(null);
+
+            Assert.False(res);
+        }
+
 
         [Fact]
         public void GetStateChangeNotification_No_Change_Test()

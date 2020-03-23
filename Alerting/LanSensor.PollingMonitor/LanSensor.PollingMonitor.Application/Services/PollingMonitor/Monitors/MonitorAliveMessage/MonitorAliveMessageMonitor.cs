@@ -25,7 +25,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
         public bool CanMonitorRun(DeviceMonitor monitor)
         {
-            return monitor.MonitorAliveMessage.Message != null;
+            return monitor?.MonitorAliveMessage?.Message != null;
         }
 
         public DeviceStateEntity Run(DeviceStateEntity state, DeviceMonitor monitor)
