@@ -40,5 +40,18 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 
             Assert.False(result);
         }
+
+        [Fact]
+        public void MonitorAliveMessageMonitorCanMonitorRun_Null_ReturnsFalse()
+        {
+            var repository = A.Fake<IDeviceLogService>();
+            var getDateTime = A.Fake<IDateTimeService>();
+
+            var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService);
+
+            var result = keepAliveMonitor.CanMonitorRun(null);
+
+            Assert.False(result);
+        }
     }
 }
