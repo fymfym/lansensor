@@ -48,7 +48,7 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"State changed for *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}*, with message *{deviceMonitorMessage}*";
+                $"{deviceMonitor.Name} / *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}*: *{deviceMonitorMessage}*";
             return SendToSlack(deviceMonitor, msg);
         }
 

@@ -1,18 +1,18 @@
 {
     "deviceMonitors": [
         {
-            "name": "Average temperature",
+            "name": "Monitor alive",
             "deviceGroupId": "FYMEA23",
             "deviceId": "Weather",
             "messageMediums": [
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Average Temperatur"
+                    "message": "Monitor still running"
                 }
             ],
             "iAmAlive": {
-                "message": "I'm alive!!!",
+                "message": "I'm alive!!!"
             },
             "timeInterval": [
                 {
@@ -86,7 +86,7 @@
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Lawnmover not home in time"
+                    "message": "Lawnmover going out"
                 }
             ],
             "stateChangeNotification": {
@@ -124,7 +124,7 @@
                                 "minute": "00"
                             },
                             "to": {
-                                "hour": "06",
+                                "hour": "07",
                                 "minute": "00"
                             }
                         }
@@ -173,14 +173,14 @@
             ]
         },
         {
-            "name": "Lawnmover is Out within 120 minutes",
+            "name": "Lawnmover is Out",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
             "messageMediums": [
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Lawnmover not home in time"
+                    "message": "Lawnmover missing to come home, out 4h"
                 }
             ],
             "dataValueToOld": {
@@ -231,19 +231,19 @@
             }
         },
         {
-            "name": "Frontdoor unlocked outside hours",
+            "name": "Frontdoor lock state",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
             "messageMediums": [
                 {
                     "mediumType": "slack",
                     "receiverId": "maude",
-                    "message": "Frontdor unlocked outside hours"
+                    "message": "Frontdor unlocked"
                 }
             ],
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
-                "onDataValueChangeTo": "Open",
+                "onDataValueChangeTo": "Locked",
                 "onEveryChange": "true",
                 "dataType": "FrontdoorLock"
             },
