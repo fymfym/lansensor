@@ -1,0 +1,3 @@
+# m h  dom mon dow   command
+*/2 * * * * /home/pi/checkwifi.sh 2>&1 >> /home/pi/resetwifi.log
+*/15 * * * * /home/pi/ping.sh > /home/pi/ping.log 2>&1

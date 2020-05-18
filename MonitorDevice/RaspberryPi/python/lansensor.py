@@ -69,7 +69,7 @@ printLog("Fetching config")
 
 
 printLog("Waiting for linx to finish boot")
-time.sleep(40)
+time.sleep(1)
 
 #############################################################
 ## load config from server
@@ -196,17 +196,27 @@ class input:
 
 #############################################################
 ## Read inputs from web fetched config
+logging.info("Parsing configuration")
 
 x = 1
 while (x <= inputcount):
     inp = input()
+    keyname = "input_" + str(x)
     inp.state = "unset"
-    inp.truestatetosend = str(config["input_" + str(x)]["truestatetosend"])
-    inp.falsestatetosend = str(config["input_" + str(x)]["falsestatetosend"])
-    inp.addressbutton = str(config["input_" + str(x)]["addressbutton"])
+    inp.truestatetosend = str(config[keyname]["truestatetosend"])
+    inp.falsestatetosend = str(config[keyname]["falsestatetosend"])
+    inp.addressbutton = str(config[keyname]["addressbutton"])
     inp.button=Button(int(inp.addressbutton))
-    inp.inputname = str(config["input_" + str(x)]["inputname"])
+    inp.inputname = str(config[keyname]["inputname"])
     inp.count = 0
+    inp.delay = 5
+
+    if config.has_option(keyname,"delay"):
+        keyvalue = config[keyname]["delay"]
+        if keyvalue.isnumeric():
+            inp.delay = int(keyvalue)
+            print("delay changed from <5> to <" + str(inp.delay) + ">")
+
     inputs.append(inp)
     x = x + 1
 
@@ -227,7 +237,7 @@ while True:
                     activeinput.count = activeinput.count + 1
                 else:
                     activeinput.count = 0
-                if (activeinput.count > 5):
+                if (activeinput.count > activeinput.delay):
                     logging.info("Start changed, sending data")
                     activeinput.state = activeinput.button.is_pressed
                     activeinput.count = 0
