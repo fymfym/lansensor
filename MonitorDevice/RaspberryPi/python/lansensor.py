@@ -9,7 +9,7 @@ import logging
 import logging.handlers
 
 import time
-import socket, struct # , fcntl
+import socket, struct
 import os
 import datetime
 import socket    
@@ -68,13 +68,13 @@ handler.setFormatter(f)
 printLog("Fetching config")
 
 
-printLog("Waiting for linx to finish boot")
-time.sleep(1)
+printLog("Waiting for linx to finish boot (30 sec)")
+time.sleep(30)
 
 #############################################################
 ## load config from server
 
-logging.info("Loading network config")
+logging.info("Loading config from server")
 
 url = configServerUrl + deviceId
 printLog("URL config {}".format(url))
@@ -93,16 +93,14 @@ printLog("Config content: {}".format(content))
 ## Parse config
 
 config = configparser.ConfigParser()
-config.readfp(content)
+config.read_file(content)
 postUrl = config["server"]["posturl"]
 devicename = config["input"]["devicename"]
 inputcount = int(config["input"]["count"])
 
-
 printLog ("Devicename: {}".format(devicename))
 printLog ("Input count: {}".format(inputcount))
 printLog ("Post Url: {}".format(postUrl))
-
 
 #############################################################
 ## GPIO Setup
@@ -117,14 +115,11 @@ if (os.name == "nt"):
     #from gpiozero import Button
     #Device.pin_factory = MockFactory()
 else:
-    logging.info("GPIOZERO instatiate")
-    printLog("gpiozero")
+    logging.info("GPIOZERO instantiate")
     try:
         from gpiozero import Button
-        printLog("Waiting 30 secs for network to come up")
-        #time.sleep(30)
     except RuntimeError:
-        logging.info("GPIOZERO instatiate- FAILED")
+        logging.info("GPIOZERO instantiate - FAILED")
         printLog("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
 
 #############################################################
@@ -254,7 +249,7 @@ while True:
                     setstate('cputemp',  getCPUtemperature())
                     logging.info("Keeep alive done")
 
-            time.sleep(1)
+            time.sleep(0.1)
             
     except Exception as e:
         printLog(e)
