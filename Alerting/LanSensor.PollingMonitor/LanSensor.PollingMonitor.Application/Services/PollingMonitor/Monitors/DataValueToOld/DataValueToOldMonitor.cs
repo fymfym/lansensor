@@ -39,6 +39,11 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
             Task.WaitAll(deviceLogEntityTask);
 
+            if (deviceLogEntityTask.Result?.DateTime == null)
+            {
+                return state;
+            }
+
             var date = _dateTimeService.Now;
             var span = new TimeSpan(date.Ticks - deviceLogEntityTask.Result.DateTime.Ticks);
             if (span.TotalMinutes < monitor.DataValueToOld.MaxAgeInMinutes)
