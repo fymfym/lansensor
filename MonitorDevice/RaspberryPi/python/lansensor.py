@@ -220,6 +220,8 @@ while (x <= inputcount):
 
 maxRange = int(config["input"]["count"])
 
+setstate('keepalive','')
+
 while True:
     logging.info("Starting main loop")
     try:
