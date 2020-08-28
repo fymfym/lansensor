@@ -58,6 +58,11 @@ namespace LanSensor.PollingMonitor.Domain.Models
                     (ApplicationConfiguration) serializer.Deserialize(file, typeof(ApplicationConfiguration));
             }
 
+            if (ApplicationConfiguration == null)
+            {
+                throw new Exception("Configuration deserialize from 'polling(_*).json' fails");
+            }
+
             ApplicationConfiguration.MongoDbConfiguration = new MongoDbConfiguration
             {
                 ConnectionString = Environment.GetEnvironmentVariable("mongoDbConnectionString")
@@ -65,7 +70,9 @@ namespace LanSensor.PollingMonitor.Domain.Models
 
             ApplicationConfiguration.SlackConfiguration = new SlackConfiguration
             {
-                ApiKey = Environment.GetEnvironmentVariable("slackApiKey")
+                ApiKey = Environment.GetEnvironmentVariable("slackApiKey"),
+                ChannelId = Environment.GetEnvironmentVariable("slackChannelId"),
+                ApiUrl = new Uri(Environment.GetEnvironmentVariable("slackApiUrl") ?? "")
             };
 
             ApplicationConfiguration.RestServiceConfiguration = new RestServiceConfiguration

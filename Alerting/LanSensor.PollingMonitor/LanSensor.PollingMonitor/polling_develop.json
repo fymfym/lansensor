@@ -4,13 +4,6 @@
             "name": "Monitor alive",
             "deviceGroupId": "FYMEA23",
             "deviceId": "Weather",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Monitor still running"
-                }
-            ],
             "iAmAlive": {
                 "message": "I'm alive!!!"
             },
@@ -28,19 +21,18 @@
                 "Wednesday",
                 "Thursday",
                 "Friday"
+            ],
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Monitor still running"
+                }
             ]
         },
         {
             "name": "Average temperature",
             "deviceGroupId": "FYMEA23",
             "deviceId": "Weather",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Average Temperatur"
-                }
-            ],
             "averageOverHours": {
                 "hours": "12",
                 "dataType": "OutdoorTemperature"
@@ -59,36 +51,34 @@
                 "Wednesday",
                 "Thursday",
                 "Friday"
-            ]
-        },
-        {
-            "name": "Lawnmover keepalive",
-            "deviceGroupId": "FYMEA23",
-            "deviceId": "lawnmower",
+            ],
             "messageMediums": [
                 {
                     "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Lawnmover keepalive missing"
+                    "message": "Average temperature"
                 }
-            ],
+            ]
+        },
+        {
+            "name": "Lawn mover keep alive",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "lawnmower",
             "keepAlive": {
                 "maxMinutesSinceKeepAlive": 120,
                 "keepAliveDataType": "keepalive",
                 "notifyOnceOnly": "true"
-            }
+            },
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Lawn mover keep alive missing"
+                }
+            ]
         },
         {
             "name": "LawnmoverStateChange",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Lawnmover going out"
-                }
-            ],
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "home",
                 "onDataValueChangeTo": "out",
@@ -130,19 +120,18 @@
                         }
                     ]
                 }
+            ],
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Lawn mover going out"
+                }
             ]
         },
         {
             "name": "Lawnmover is Home within 120 minutes",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Lawnmover not home in time"
-                }
-            ],
             "dataValueToOld": {
                 "dataValue": "home",
                 "maxAgeInMinutes": "120",
@@ -170,19 +159,18 @@
                         }
                     ]
                 }
+            ],
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Lawn mover not home in time"
+                }
             ]
         },
         {
             "name": "Lawnmover is Out",
             "deviceGroupId": "FYMEA23",
             "deviceId": "lawnmower",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Lawnmover missing to come home, out 4h"
-                }
-            ],
             "dataValueToOld": {
                 "dataValue": "out",
                 "maxAgeInMinutes": "120",
@@ -210,6 +198,12 @@
                         }
                     ]
                 }
+            ],
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Lawn mover missing to come home, out 4h"
+                }
             ]
         },
 
@@ -217,30 +211,22 @@
             "name": "Frontdoor keepalive",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Frontdor keepalive missing"
-                }
-            ],
             "keepAlive": {
                 "maxMinutesSinceKeepAlive": 120,
                 "keepAliveDataType": "keepalive",
                 "notifyOnceOnly": "true"
-            }
+            },
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Front door keep alive missing"
+                }
+            ]
         },
         {
             "name": "Frontdoor lock state",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Frontdor unlocked"
-                }
-            ],
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "Locked",
@@ -292,43 +278,46 @@
                         }
                     ]
                 }
+            ],
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Front door unlocked"
+                }
             ]
         },
         {
             "name": "Frontdoor opened",
             "deviceGroupId": "FYMEA23",
             "deviceId": "frontdoor",
-            "messageMediums": [
-                {
-                    "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Frontdoor opened"
-                }
-            ],
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "Open",
-                "onEveryChange": "true",
-                "dataType": "FrontdoorOpen"
-            }
-        },
-        {
-            "name": "Frontdoor closed",
-            "deviceGroupId": "FYMEA23",
-            "deviceId": "frontdoor",
+                "onEveryChange": "true"
+            },
             "messageMediums": [
                 {
                     "mediumType": "slack",
-                    "receiverId": "maude",
-                    "message": "Frontdoor closed"
+                    "message": "Front door opened"
                 }
-            ],
+            ]
+        },
+        {
+            "name": "Front door closed",
+            "deviceGroupId": "FYMEA23",
+            "deviceId": "frontdoor",
             "stateChangeNotification": {
                 "onDataValueChangeFrom": "",
                 "onDataValueChangeTo": "Closed",
                 "onEveryChange": "true",
                 "dataType": "FrontdoorOpen"
-            }
+            },
+            "messageMediums": [
+                {
+                    "mediumType": "slack",
+                    "message": "Front door closed"
+                }
+            ]
         }
     ],
     "monitor": {

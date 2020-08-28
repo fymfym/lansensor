@@ -34,7 +34,6 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
                                 new MessageMedium
                                 {
                                     MediumType = "slack",
-                                    ReceiverId = "slack channel",
                                     Message = "some message"
                                 }
                             }

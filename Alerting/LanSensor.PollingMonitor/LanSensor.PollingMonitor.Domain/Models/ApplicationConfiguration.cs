@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace LanSensor.PollingMonitor.Domain.Models
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class ApplicationConfiguration
+    public class ApplicationConfiguration : IApplicationConfiguration
     {
         [JsonProperty("deviceMonitors")] public IEnumerable<DeviceMonitor> DeviceMonitors { get; set; }
         [JsonProperty("monitor")] public MonitorConfiguration MonitorConfiguration { get; set; }

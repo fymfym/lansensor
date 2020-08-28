@@ -17,6 +17,7 @@ using LanSensor.PollingMonitor.Infrastructure.DeviceLog.RestService;
 using LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb;
 using LanSensor.PollingMonitor.Infrastructure.MappingProfiles;
 using LanSensor.PollingMonitor.Infrastructure.Repositories;
+using LanSensor.PollingMonitor.Infrastructure.RestServices.Slack;
 using NLog.Web;
 
 namespace LanSensor.PollingMonitor
@@ -36,29 +37,37 @@ namespace LanSensor.PollingMonitor
                 {
                     // IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
 
-                    logger.Info("Instanciating http client factory");
+                    logger.Info("Instantiating http client factory");
                     var httpFactory = new HttpClientFactory(configuration);
 
-                    logger.Info("Instanciating IDeviceLogRepository");
+                    logger.Info("Instantiating Http service");
+                    var httpService = new HttpCallExecuteService(configuration.ApplicationConfiguration.SlackConfiguration.ApiUrl);
+
+                    logger.Info("Instantiating IMessage service");
+                    var messageService = new SlackMessageSender(configuration, httpService);
+
+                    messageService.SendMessage("LanSensor.PollingMonitor is starting");
+
+                    logger.Info("Instantiating IDeviceLogRepository");
                     IDeviceLogRepository deviceLogRepository = new RestDeviceLogRepository(httpFactory);
 
-                    logger.Info("Instanciating IDeviceLogService");
+                    logger.Info("Instantiating IDeviceLogService");
                     IDeviceLogService deviceLogService = new DeviceLogService(deviceLogRepository);
 
-                    logger.Info("Instanciating MapperConfiguration");
+                    logger.Info("Instantiating MapperConfiguration");
                     var mapperConfig = new MapperConfiguration(cfg => {
                         cfg.AddProfile<InfrastructureAutoMapProfile>();
                     });
                     var mapper = mapperConfig.CreateMapper();
 
-                    logger.Info("Instanciating the rest of the stuff");
+                    logger.Info("Instantiating the rest of the stuff");
                     IDeviceStateService deviceStateService = new MongoDeviceStateService(configuration, mapper);
                     IDateTimeService dateTimeService = new DateTimeService();
-                    IAlertService alertService = new SendSlackAlertService(configuration, logger);
+                    IAlertService alertService = new SendSlackAlertService(configuration, messageService, logger);
                     IPauseService pauseService = new PauseService();
                     IMonitorTools monitorTools = new MonitorTools();
 
-                    logger.Info("Instanciating IMonitorExecuter list and executers");
+                    logger.Info("Instantiating IMonitorExecuter list and executers");
                     var monitorExecuterList = new IMonitorExecuter[]
                     {
                         new KeepAliveMonitor(deviceLogService, dateTimeService, alertService),
@@ -70,7 +79,7 @@ namespace LanSensor.PollingMonitor
 
                     System.Threading.Thread.Sleep(5000);
 
-                    logger.Info("Instanciating PollingMonitor");
+                    logger.Info("Instantiating PollingMonitor");
                     var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                         configuration,
                         alertService,

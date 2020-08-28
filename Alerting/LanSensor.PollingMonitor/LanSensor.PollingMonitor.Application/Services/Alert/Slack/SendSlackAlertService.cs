@@ -1,47 +1,37 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
+using LanSensor.PollingMonitor.Infrastructure.RestServices;
 using NLog;
-using SlackAPI;
 
 namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
 {
     public class SendSlackAlertService : IAlertService
     {
+        private readonly IMessageSender _messageSender;
         private readonly ILogger _logger;
-        private IList<Channel> _slackAlertChannels;
-        private readonly SlackClient _slackClient;
 
         public SendSlackAlertService(
             IServiceConfiguration configuration,
+            IMessageSender messageSender,
             ILogger logger)
         {
+            _messageSender = messageSender;
             _logger = logger;
             _logger.Info("SendSlackAlertService construct");
 
             var apiKey = configuration?.ApplicationConfiguration?.SlackConfiguration?.ApiKey;
+            var channel = configuration?.ApplicationConfiguration?.SlackConfiguration?.ChannelId;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                _logger.Warn($"Slack not initialized - API key: {configuration?.ApplicationConfiguration?.SlackConfiguration?.ApiKey}");
-                return;
+                _logger.Warn($"Slack API key missing value");
             }
 
-            _slackClient = new SlackClient(apiKey);
-            _logger.Info("GetChannelList");
-            _slackClient.GetChannelList(SlackChannelListResponse);
-        }
-
-        private void SlackChannelListResponse(ChannelListResponse obj)
-        {
-            if (obj?.channels == null)
+            if (string.IsNullOrWhiteSpace(channel))
             {
-                _logger.Warn($"Slack channel list not obtainable - error: {obj?.error}");
-                return;
+                _logger.Warn($"Slack channelæ id missing value");
             }
-
-            _slackAlertChannels = obj.channels.ToList();
         }
 
         public bool SendStateChangeAlert(StateChangeResult stateNotification, DeviceMonitor deviceMonitor)
@@ -65,7 +55,7 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
         {
             var deviceMonitorMessage = GetMonitorMessage(deviceMonitor);
             var msg =
-                $"Device *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}* is outside desired vlaue, message *{deviceMonitorMessage}*";
+                $"Device *{deviceMonitor.DeviceGroupId}* / *{deviceMonitor.DeviceId}* is outside desired value, message *{deviceMonitorMessage}*";
             _logger.Info($"Slack SendTimerIntervalAlert:{msg}");
             return SendToSlack(deviceMonitor, msg);
         }
@@ -78,24 +68,8 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
 
         private bool SendToSlack(DeviceMonitor monitor, string message)
         {
-            var slackChannel = GetMonitorSlackChannel(monitor);
-            if (slackChannel == null) return false;
-            _slackClient.PostMessage(null, slackChannel.id, message);
+            _messageSender.SendMessage(message);
             return true;
-        }
-
-        private Channel GetMonitorSlackChannel(DeviceMonitor monitor)
-        {
-            var messageMedium = monitor.MessageMediums.FirstOrDefault(x => x.MediumType.ToLower().Trim() == "slack");
-            if (messageMedium == null) return null;
-            if (_slackAlertChannels == null)
-            {
-                _logger.Error("Slack not properly configured");
-                return null;
-            }
-
-            var channel = _slackAlertChannels.FirstOrDefault(x => x.name == messageMedium.ReceiverId);
-            return channel;
         }
 
         private static string GetMonitorMessage(DeviceMonitor monitor)
