@@ -3,6 +3,8 @@
         {
             "name": "Monitor alive",
             "deviceGroupId": "FYMEA23",
+            "Front":  "door",
+            "unlocked": null,
             "deviceId": "Weather",
             "iAmAlive": {
                 "message": "I'm alive!!!"

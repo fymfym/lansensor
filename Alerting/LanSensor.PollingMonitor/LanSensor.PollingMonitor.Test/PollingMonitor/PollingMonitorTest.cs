@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using FakeItEasy;
+using LanSensor.PollingMonitor.Application.Services;
 using LanSensor.PollingMonitor.Domain.Models;
+using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
 using NLog;
 using Xunit;
@@ -63,7 +65,13 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         [Fact]
         public void RunConfigurationFileTest()
         {
-            var config = new ServiceConfiguration(null);
+            IReadEnvironmentService readEnv = A.Fake<IReadEnvironmentService>();
+
+            A.CallTo(() => readEnv.GetEnvironmentVariable(
+                    A<string>.Ignored))
+                .Returns("http://127.0.0.1");
+
+            var config = new ServiceConfiguration(readEnv);
             var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,
                 _fakedAlert,
@@ -80,7 +88,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         [Fact]
         public void RunConfigurationFileRunTest()
         {
-            var config = new ServiceConfiguration(null);
+            var config = A.Fake<IServiceConfiguration>();
 
             var monitor = new Application.Services.PollingMonitor.PollingMonitor(
                 config,

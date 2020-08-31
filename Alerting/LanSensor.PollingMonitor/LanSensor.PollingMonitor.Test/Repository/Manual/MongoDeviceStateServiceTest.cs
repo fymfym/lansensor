@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using LanSensor.PollingMonitor.Application.Services;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
+using LanSensor.PollingMonitor.Domain.Services;
 using LanSensor.PollingMonitor.Infrastructure.DeviceState.MongoDb;
 using LanSensor.PollingMonitor.Infrastructure.MappingProfiles;
 using Xunit;
@@ -16,7 +18,8 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
         [Fact(Skip = "Manual")]
         public async Task GetDeviceState()
         {
-            IServiceConfiguration appConfig = new ServiceConfiguration();
+            IReadEnvironmentService readEnv = new ReadEnvironmentService();
+            IServiceConfiguration appConfig = new ServiceConfiguration(readEnv);
 
             var mapperConfig = new MapperConfiguration(cfg => {
                 cfg.AddProfile<InfrastructureAutoMapProfile>();
@@ -32,7 +35,9 @@ namespace LanSensor.PollingMonitor.Test.Repository.Manual
         [Fact(Skip = "Manual")]
         public async Task SetDeviceState()
         {
-            IServiceConfiguration appConfig = new ServiceConfiguration();
+            IReadEnvironmentService readEnv = new ReadEnvironmentService();
+
+            IServiceConfiguration appConfig = new ServiceConfiguration(readEnv);
 
             var mapperConfig = new MapperConfiguration(cfg => {
                 cfg.AddProfile<InfrastructureAutoMapProfile>();

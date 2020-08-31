@@ -31,7 +31,8 @@ namespace LanSensor.PollingMonitor
             {
                 var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
-                IServiceConfiguration configuration = new ServiceConfiguration();
+                IReadEnvironmentService readEnv = new ReadEnvironmentService();
+                IServiceConfiguration configuration = new ServiceConfiguration(readEnv);
 
                 try
                 {

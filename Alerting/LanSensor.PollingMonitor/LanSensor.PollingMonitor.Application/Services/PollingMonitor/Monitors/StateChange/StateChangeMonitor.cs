@@ -32,8 +32,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
 
             var presenceListTask = _deviceLogService.GetPresenceListSince(
                 monitor.DeviceGroupId,
-                monitor.DeviceId,
-                DateTime.MinValue
+                monitor.DeviceId, monitor.StateChangeNotification.DataType,
+                state.LastKnownDataValueDate
                 );
 
             presenceListTask.Wait();
