@@ -1,5 +1,5 @@
 {
-    "deviceMonitors": [
+    "deviceMonitors" : [
         {
             "name": "Monitor alive",
             "deviceGroupId": "FYMEA23",

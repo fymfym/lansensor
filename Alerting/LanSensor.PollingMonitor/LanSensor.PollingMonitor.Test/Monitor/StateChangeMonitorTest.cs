@@ -14,7 +14,6 @@ namespace LanSensor.PollingMonitor.Test.Monitor
         private readonly IDeviceLogService _fakedDeviceLogService;
         private readonly IAlertService _fakedAlertService;
 
-
         public StateChangeMonitorTest()
         {
             _stateChangeNotification = new StateChangeNotification
@@ -47,97 +46,130 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             Assert.False(res);
         }
 
-
         [Fact]
-        public void GetStateChangeNotification_No_Change_Test()
+        public void GetStateChangeNotification_NoLog_ReturnsSameState()
         {
-            var deviceLogList = new List<DeviceLogEntity>
+            IMonitorExecuter worker = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
+
+            var deviceState = new DeviceStateEntity
             {
-                GetDeviceLog("one")
+                LastKnownDataValueDate = DateTime.MinValue
             };
 
-            var fakedDeviceLogService = A.Fake<IDeviceLogService>();
+            var deviceMonitor = GetDeviceMonitor("one", "one", false);
+            worker.Run(deviceState, deviceMonitor);
 
-            A.CallTo(() => fakedDeviceLogService.GetPresenceListSince(
+            A.CallTo(() =>
+                _fakedAlertService.SendStateChangeAlert(
+                    A<StateChangeResult>.Ignored,
+                    A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
+        }
+
+
+        [Fact]
+        public void GetStateChangeNotification_NoChangeInState_NoMessageSend()
+        {
+            var deviceLogList = GetDeviceLogList("one");
+
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(
+                A<string>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
                 A<DateTime>.Ignored)).Returns(deviceLogList);
 
-            // IMonitorExecuter worker = new StateChangeMonitor(fakedDeviceLogService, fakedAlertService);
+            IMonitorExecuter worker = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
 
-            //var result = worker.Run(deviceState, GetDeviceMonitor("one","one", false));
+            var deviceState = new DeviceStateEntity
+            {
+                LastKnownDataValueDate = DateTime.MinValue
+            };
 
-            //A.CallTo(() =>
-            //    fakedAlertService.SendStateChangeAlert(
-            //        A<StateChangeResult>.Ignored,
-            //        A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
+            var deviceMonitor = GetDeviceMonitor("None", "one", false);
+            worker.Run(deviceState, deviceMonitor);
+
+            A.CallTo(() =>
+                _fakedAlertService.SendStateChangeAlert(
+                    A<StateChangeResult>.Ignored,
+                    A<DeviceMonitor>.Ignored)).MustNotHaveHappened();
         }
 
         [Fact]
-        public void GetStateChangeNotification_From_Change_Test_Outside_Value()
+        public void GetStateChangeNotification_StateChange_OutsideRequiredValues()
         {
             var deviceState = GetDeviceState("one");
-            var deviceLog = GetDeviceLog("one");
 
-            //IStateChangeMonitor worker = new StateChangeMonitor();
-            //var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);
+            IMonitorExecuter worker = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
+            var monitor = GetDeviceMonitor("", "", false);
+            var result = worker.Run(deviceState, monitor);
 
-            //Assert.Null(result);
+            Assert.NotNull(result);
+            Assert.Equal(deviceState.LastKnownDataValueDate, result.LastKnownDataValueDate);
         }
 
         [Fact]
-        public void GetStateChangeNotification_From_Change_Test_Inside_Value()
+        public void GetStateChangeNotification_StateChangeFromOneToTwo_SendMessage()
         {
-            var deviceState = GetDeviceState("two");
-            var deviceLog = GetDeviceLog("one");
+            var deviceState = GetDeviceState("one");
             _stateChangeNotification.OnDataValueChangeTo = null;
+            var deviceLogList = GetDeviceLogList("two");
 
-            //IStateChangeMonitor worker = new StateChangeMonitor();
-            //var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);
+            IMonitorExecuter worker = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
 
-            //Assert.NotNull(result);
-            //Assert.True(result.ChangedFromValue);
-            //Assert.Equal(_stateChangeNotification.OnDataValueChangeFrom, result.DataValue);
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<DateTime>.Ignored)).Returns(deviceLogList);
+
+            var monitor = GetDeviceMonitor("one", "two", false);
+            var result = worker.Run(deviceState, monitor);
+
+            A.CallTo(() =>
+                    _fakedAlertService.SendStateChangeAlert(A<StateChangeResult>._, A<DeviceMonitor>._))
+                .MustHaveHappened();
+            Assert.Equal("two", result.LastKnownDataValue);
         }
 
         [Fact]
-        public void GetStateChangeNotification_ToChangeTestInsideValue_ReturnsNotNull()
+        public void GetStateChangeNotification_ChangeToWantedValue_NoMessage()
         {
             var deviceState = GetDeviceState("two");
-            var deviceLog = GetDeviceLog("four");
+            var deviceLogList = GetDeviceLogList("four");
 
-            //IStateChangeMonitor worker = new StateChangeMonitor();
-            //var result = worker.GetStateChangeFromToNotification(deviceState, deviceLog, _stateChangeNotification);
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<DateTime>.Ignored)).Returns(deviceLogList);
 
-            //Assert.NotNull(result);
-            //Assert.True(result.ChangedToValue);
-            //Assert.Equal(_stateChangeNotification.OnDataValueChangeTo, result.DataValue);
+            IMonitorExecuter worker = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
+            var monitor = GetDeviceMonitor(null, "two", false);
+            worker.Run(deviceState, monitor);
+
+            A.CallTo(() =>
+                    _fakedAlertService.SendStateChangeAlert(A<StateChangeResult>._, A<DeviceMonitor>._))
+                .MustNotHaveHappened();
         }
 
         [Fact]
-        public void GetStateChangeNotificationIsChanged()
+        public void GetStateChangeNotification_ChangeToWantedValueMessageAlreadySend_NoMessage()
         {
-            var deviceState = GetDeviceState("one");
-            var deviceLog = GetDeviceLog(_stateChangeNotification.OnDataValueChangeTo);
+            var deviceState = GetDeviceState("two");
+            var deviceLogList = GetDeviceLogList("one");
 
-            //IStateChangeMonitor worker = new StateChangeMonitor();
-            //var result = worker.GetStateChangeNotification(deviceState, deviceLog, _stateChangeNotification);
+            A.CallTo(() => _fakedDeviceLogService.GetPresenceListSince(
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<DateTime>.Ignored)).Returns(deviceLogList);
 
-            //Assert.NotNull(result);
-            //Assert.True(result.ChangedToValue);
-            //Assert.Equal(_stateChangeNotification.OnDataValueChangeTo, result.DataValue);
-        }
+            IMonitorExecuter worker = new StateChangeMonitor(_fakedDeviceLogService, _fakedAlertService);
+            var monitor = GetDeviceMonitor(null, "two", false);
+            worker.Run(deviceState, monitor);
 
-        [Fact]
-        public void GetStateChangeNotificationNotChanged()
-        {
-            var deviceState = GetDeviceState("one");
-            var deviceLog = GetDeviceLog("one");
-
-            //IStateChangeMonitor worker = new StateChangeMonitor();
-            //var result = worker.GetStateChangeNotification(deviceState, deviceLog, _stateChangeNotification);
-
-            //Assert.Null(result);
+            A.CallTo(() =>
+                    _fakedAlertService.SendStateChangeAlert(A<StateChangeResult>._, A<DeviceMonitor>._))
+                .MustNotHaveHappened();
         }
 
         private static DeviceMonitor GetDeviceMonitor(string fromValue, string toValue, bool onEveryChange)
@@ -154,6 +186,15 @@ namespace LanSensor.PollingMonitor.Test.Monitor
                 }
             };
         }
+
+        private static List<DeviceLogEntity> GetDeviceLogList(string dataValue)
+        {
+            return new List<DeviceLogEntity>
+            {
+                GetDeviceLog(dataValue)
+            };
+        }
+
 
         private static DeviceLogEntity GetDeviceLog(string dataValue)
         {

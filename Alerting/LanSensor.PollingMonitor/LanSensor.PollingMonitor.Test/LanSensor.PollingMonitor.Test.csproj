@@ -17,4 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LanSensor.PollingMonitor\LanSensor.PollingMonitor.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repository\" />
+  </ItemGroup>
 </Project>

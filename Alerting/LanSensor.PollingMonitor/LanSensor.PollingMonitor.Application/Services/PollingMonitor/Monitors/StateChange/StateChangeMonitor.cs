@@ -22,8 +22,8 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
         public bool CanMonitorRun(DeviceMonitor monitor)
         {
             if (monitor?.DeviceGroupId == null || monitor.DeviceId == null) return false;
-            return monitor?.StateChangeNotification?.OnDataValueChangeTo != null
-                   || monitor?.StateChangeNotification?.OnDataValueChangeFrom != null;
+            return monitor.StateChangeNotification?.OnDataValueChangeTo != null
+                   || monitor.StateChangeNotification?.OnDataValueChangeFrom != null;
         }
 
         public DeviceStateEntity Run(DeviceStateEntity state, DeviceMonitor monitor)
@@ -59,7 +59,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
             else
             {
                 if (!IsValueReached(
-                    deviceLogEntity.DataValue,
+                    "",
                     deviceLogEntity.DataValue,
                     monitor.StateChangeNotification.OnDataValueChangeFrom)) return state;
 
@@ -85,7 +85,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
             if (string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            return !string.Equals(deviceDataValue, wantedDataValue, StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(deviceDataValue, wantedDataValue, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
