@@ -187,7 +187,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             };
         }
 
-        private static List<DeviceLogEntity> GetDeviceLogList(string dataValue)
+        private static IEnumerable<DeviceLogEntity> GetDeviceLogList(string dataValue)
         {
             return new List<DeviceLogEntity>
             {

@@ -112,7 +112,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
             {
                 DeviceId = "1",
                 DeviceGroupId = "2",
-                DataValueToOld = new DataValueToOld()
+                DataValueToOld = new DataValueToOld
                 {
                     MaxAgeInMinutes = 1,
                     DataValue = "value",

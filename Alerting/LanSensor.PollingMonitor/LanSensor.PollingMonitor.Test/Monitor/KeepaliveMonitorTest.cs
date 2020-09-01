@@ -34,9 +34,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService);
 
             var result = keepAliveMonitor.CanMonitorRun(
-                new DeviceMonitor
-                {
-                });
+                new DeviceMonitor());
 
             Assert.False(result);
         }

@@ -48,7 +48,7 @@ namespace LanSensor.PollingMonitor.Infrastructure.DeviceLog.MySqlDeviceLog
                 {
                     using (var rdr = await cmd.ExecuteReaderAsync())
                     {
-                        while (rdr.Read())
+                        while (await rdr.ReadAsync())
                         {
                             resultRecord.DataValue = rdr.GetString(0);
                             resultRecord.DataType = rdr.GetString(1);
@@ -86,7 +86,7 @@ namespace LanSensor.PollingMonitor.Infrastructure.DeviceLog.MySqlDeviceLog
                 {
                     using (var rdr = await cmd.ExecuteReaderAsync())
                     {
-                        while (rdr.Read())
+                        while (await rdr.ReadAsync())
                         {
                             resultRecord = new DeviceLogEntity
                             {

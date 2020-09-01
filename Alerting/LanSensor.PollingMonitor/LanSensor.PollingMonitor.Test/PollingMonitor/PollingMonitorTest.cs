@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using LanSensor.PollingMonitor.Application.Services;
 using LanSensor.PollingMonitor.Domain.Models;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
@@ -65,7 +64,7 @@ namespace LanSensor.PollingMonitor.Test.PollingMonitor
         [Fact]
         public void RunConfigurationFileTest()
         {
-            IReadEnvironmentService readEnv = A.Fake<IReadEnvironmentService>();
+            var readEnv = A.Fake<IReadEnvironmentService>();
 
             A.CallTo(() => readEnv.GetEnvironmentVariable(
                     A<string>.Ignored))

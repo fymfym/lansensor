@@ -1,6 +1,8 @@
-﻿namespace LanSensor.PollingMonitor.Infrastructure.Models.Slack
+﻿// ReSharper disable InconsistentNaming
+
+namespace LanSensor.PollingMonitor.Infrastructure.Models.Slack
 {
-    class SlackPostMessageResponse
+    public class SlackPostMessageResponse
     {
         public bool ok { get; set; }
         public string channel { get; set; }

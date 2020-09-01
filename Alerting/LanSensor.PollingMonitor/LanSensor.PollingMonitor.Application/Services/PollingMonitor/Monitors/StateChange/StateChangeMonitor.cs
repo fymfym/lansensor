@@ -82,10 +82,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
             if (string.IsNullOrEmpty(deviceDataValue)) return false;
             if (string.IsNullOrEmpty(wantedDataValue)) return false;
 
-            if (string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase))
-                return false;
-
-            return string.Equals(deviceDataValue, wantedDataValue, StringComparison.InvariantCultureIgnoreCase);
+            return !string.Equals(deviceDataValue, stateDataValue, StringComparison.InvariantCultureIgnoreCase) && string.Equals(deviceDataValue, wantedDataValue, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

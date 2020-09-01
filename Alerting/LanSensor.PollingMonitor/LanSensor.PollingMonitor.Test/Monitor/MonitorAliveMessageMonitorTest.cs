@@ -10,15 +10,14 @@ namespace LanSensor.PollingMonitor.Test.Monitor
 {
     public class MonitorAliveMessageMonitorTest
     {
-        private readonly IDeviceLogService _fakedService;
         private readonly IAlertService _fakedAlertService;
 
         public MonitorAliveMessageMonitorTest()
         {
-            _fakedService = A.Fake<IDeviceLogService>();
+            var fakedService = A.Fake<IDeviceLogService>();
             _fakedAlertService = A.Fake<IAlertService>();
 
-            A.CallTo(() => _fakedService.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
+            A.CallTo(() => fakedService.GetLatestPresence(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored))
                 .Returns(Task.FromResult(new DeviceLogEntity
                 {
                     DateTime = new DateTime(1, 1, 1, 1, 1, 10)
@@ -34,9 +33,7 @@ namespace LanSensor.PollingMonitor.Test.Monitor
             var keepAliveMonitor = new KeepAliveMonitor(repository, getDateTime, _fakedAlertService);
 
             var result = keepAliveMonitor.CanMonitorRun(
-                new DeviceMonitor
-                {
-                });
+                new DeviceMonitor());
 
             Assert.False(result);
         }

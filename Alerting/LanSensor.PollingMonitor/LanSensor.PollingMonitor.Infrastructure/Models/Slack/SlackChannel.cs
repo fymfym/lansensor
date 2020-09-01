@@ -1,4 +1,5 @@
-﻿
+﻿// ReSharper disable InconsistentNaming
+
 namespace LanSensor.PollingMonitor.Infrastructure.Models.Slack
 {
     public class SlackChannel

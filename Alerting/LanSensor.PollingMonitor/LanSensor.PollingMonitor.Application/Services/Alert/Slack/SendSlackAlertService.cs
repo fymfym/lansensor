@@ -25,12 +25,12 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
             var channel = configuration?.ApplicationConfiguration?.SlackConfiguration?.ChannelId;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                _logger.Warn($"Slack API key missing value");
+                _logger.Warn("Slack API key missing value");
             }
 
             if (string.IsNullOrWhiteSpace(channel))
             {
-                _logger.Warn($"Slack channelæ id missing value");
+                _logger.Warn("Slack channelæ id missing value");
             }
         }
 

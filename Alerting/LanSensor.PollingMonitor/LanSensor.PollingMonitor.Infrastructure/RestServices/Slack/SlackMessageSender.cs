@@ -51,13 +51,10 @@ namespace LanSensor.PollingMonitor.Infrastructure.RestServices.Slack
 
             var postResult = JsonConvert.DeserializeObject<SlackPostMessageResponse>(postMessageResult);
 
-            if (!postResult.ok)
-            {
-                var errorResult = JsonConvert.DeserializeObject<SlackError>(postMessageResult);
-                throw new Exception($"Post message fails, with error: {errorResult.error}");
-            }
+            if (postResult.ok) return true;
 
-            return true;
+            var errorResult = JsonConvert.DeserializeObject<SlackError>(postMessageResult);
+            throw new Exception($"Post message fails, with error: {errorResult.error}");
         }
     }
 }

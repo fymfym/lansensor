@@ -30,7 +30,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor.Monitors.
         public bool CanMonitorRun(DeviceMonitor monitor)
         {
             if (monitor?.DeviceGroupId == null || monitor.DeviceId == null) return false;
-            if (monitor?.AverageOverHour?.DataValue == null) return false;
+            if (monitor.AverageOverHour?.DataValue == null) return false;
             if (monitor.AverageOverHour.AlertBelow == null && monitor.AverageOverHour.AlertAbove == null) return false;
             return monitor.AverageOverHour.Hours >= 1;
         }
