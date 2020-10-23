@@ -36,7 +36,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
             _monitorTools = monitorTools;
             _dateTimeService = dateTimeService;
             _deviceStateRepositoryService = deviceStateRepositoryService;
-            _configuration = configuration ?? throw new Exception("Add configurtation");
+            _configuration = configuration ?? throw new Exception("Add configuration");
             _alert = alert;
             _monitorExecuterList = monitorExecuterList;
             StoppedIntentionally = false;
@@ -52,7 +52,7 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
 
         public void RunThroughDeviceMonitors()
         {
-            _logger.Info("RunThroughDeviceMonitors");
+            _logger.Debug("RunThroughDeviceMonitors");
 
             foreach (var deviceMonitor in _configuration.ApplicationConfiguration.DeviceMonitors)
             {

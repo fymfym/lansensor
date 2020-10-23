@@ -36,8 +36,6 @@ namespace LanSensor.PollingMonitor
 
                 try
                 {
-                    // IDeviceLogRepository deviceLogRepository = new MySqlDataStoreRepository(configuration);
-
                     logger.Info("Instantiating http client factory");
                     var httpFactory = new HttpClientFactory(configuration);
 
@@ -47,7 +45,7 @@ namespace LanSensor.PollingMonitor
                     logger.Info("Instantiating IMessage service");
                     var messageService = new SlackMessageSender(configuration, httpService);
 
-                    messageService.SendMessage("LanSensor.PollingMonitor is starting");
+                    messageService.SendMessage("LanSensor.PollingMonitor is running initialization");
 
                     logger.Info("Instantiating IDeviceLogRepository");
                     IDeviceLogRepository deviceLogRepository = new RestDeviceLogRepository(httpFactory);
@@ -101,6 +99,7 @@ namespace LanSensor.PollingMonitor
                 {
                     logger.Fatal($"globalRetryCount:{globalRetryCount}");
                     logger.Fatal(ex.ToString());
+
                     globalRetryCount--;
                     if (globalRetryCount < 0)
                     {
