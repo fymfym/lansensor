@@ -68,7 +68,13 @@ namespace LanSensor.PollingMonitor.Application.Services.Alert.Slack
 
         private bool SendToSlack(DeviceMonitor monitor, string message)
         {
-            _messageSender.SendMessage(message);
+            var monitorName = "(Monitor less)";
+            if (monitor?.Name != null)
+            {
+                monitorName = monitor.Name;
+            }
+
+            _messageSender.SendMessage($"{message} - {monitorName}");
             return true;
         }
 

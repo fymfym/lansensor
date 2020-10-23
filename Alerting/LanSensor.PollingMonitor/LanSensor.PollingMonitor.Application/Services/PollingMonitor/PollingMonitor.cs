@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using LanSensor.PollingMonitor.Domain.Repositories;
 using LanSensor.PollingMonitor.Domain.Services;
@@ -95,9 +96,17 @@ namespace LanSensor.PollingMonitor.Application.Services.PollingMonitor
 
             _logger.Info("Starting run loop");
 
+            var lastKeepAlive = DateTime.Now;
+
+
             while (!StoppedIntentionally)
             {
                 RunThroughDeviceMonitors();
+                if (new TimeSpan(lastKeepAlive.Ticks - DateTime.Now.Ticks).Hours > 24 && DateTime.Now.Hour == 8)
+                {
+                    _alert.SendTextMessage(null, "My daily 8 o'clock check-in");
+                    lastKeepAlive = DateTime.Now;
+                }
             }
 
             return 1;
